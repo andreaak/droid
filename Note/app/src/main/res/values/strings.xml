@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Note</string>
+    <string name="menu_settings">Settings</string>
+    <string name="current_dir">Current Dir:</string>
+    <string name="item">item</string>
+    <string name="items">items</string>
+    <string name="bytes">MB</string>
+    <string name="connect">Connect</string>
+    <string name="connected">Connected</string>
+</resources>
