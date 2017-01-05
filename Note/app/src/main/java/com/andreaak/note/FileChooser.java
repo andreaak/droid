@@ -18,6 +18,7 @@ import android.widget.ListView;
 import com.andreaak.note.adapters.Constants;
 import com.andreaak.note.adapters.FileArrayAdapter;
 import com.andreaak.note.adapters.Item;
+import com.andreaak.note.files.FilesHelper;
 
 public class FileChooser extends ListActivity {
 
@@ -29,47 +30,18 @@ public class FileChooser extends ListActivity {
     private File sdCard = Environment.getExternalStorageDirectory();
     private File currentDir;
     private FileArrayAdapter adapter;
-
+    private FilesHelper helper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         currentDir = sdCard;//new File("/" + ROOT_DIRECTORY + "/");
+        helper = new FilesHelper(this);
         fill(currentDir);
     }
 
     private void fill(File f) {
-        File[] dirs = f.listFiles();
         this.setTitle(f.getAbsolutePath());
-        List<Item> dir = new ArrayList<Item>();
-        List<Item> fls = new ArrayList<Item>();
-        try {
-            for (File ff : dirs) {
-                Date lastModDate = new Date(ff.lastModified());
-                DateFormat formater = DateFormat.getDateTimeInstance();
-                String date_modify = formater.format(lastModDate);
-                if (ff.isDirectory()) {
-                    File[] files = ff.listFiles();
-                    int filesCount = files != null ? files.length : 0;
-
-                    int id = filesCount == 0 ? R.string.item : R.string.items;
-                    String num_item = Constants.getText(String.valueOf(filesCount), getString(id));
-
-                    //String formated = lastModDate.toString();
-                    dir.add(new Item(ff.getName(), num_item, date_modify, ff.getAbsolutePath(), Constants.DIRECTORY_ICON));
-                } else {
-                    float length = ff.length() / 1000000f;
-                    DecimalFormat df = new DecimalFormat("#.00");
-                    fls.add(new Item(ff.getName(), df.format(length) + getString(R.string.bytes), date_modify, ff.getAbsolutePath(), Constants.FILE_ICON));
-                }
-            }
-        } catch (Exception e) {
-
-        }
-        Collections.sort(dir);
-        Collections.sort(fls);
-        dir.addAll(fls);
-        if (!f.getName().equalsIgnoreCase(ROOT_DIRECTORY))
-            dir.add(0, new Item(PARENT_DIRECTORY_NAME, PARENT_DIRECTORY_DATA, "", f.getParent(), Constants.DIRECTORY_UP));
+        List<Item> dir = helper.getDirectory(f);
         adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view, dir);
         this.setListAdapter(adapter);
     }
@@ -79,7 +51,7 @@ public class FileChooser extends ListActivity {
         // TODO Auto-generated method stub
         super.onListItemClick(l, v, position, id);
         Item o = adapter.getItem(position);
-        if (o.getImage().equalsIgnoreCase(Constants.DIRECTORY_ICON) || o.getImage().equalsIgnoreCase(Constants.DIRECTORY_UP)) {
+        if (o.getImage() == R.drawable.directory_icon || o.getImage() == R.drawable.directory_up) {
             currentDir = new File(o.getPath());
             fill(currentDir);
         } else {

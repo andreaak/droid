@@ -47,9 +47,9 @@ public class FileArrayAdapter extends ArrayAdapter<Item>{
             TextView tvDate = (TextView) v.findViewById(R.id.TextViewDate);
                        /* Take the ImageView from layout and set the city's image */
             ImageView imageCity = (ImageView) v.findViewById(R.id.fd_Icon1);
-            String uri = Constants.DRAWABLE + o.getImage();
-            int imageResource = c.getResources().getIdentifier(uri, null, c.getPackageName());
-            Drawable image = c.getResources().getDrawable(imageResource);
+            //String uri = Constants.DRAWABLE + o.getImage();
+            //int imageResource = c.getResources().getIdentifier(uri, null, c.getPackageName());
+            Drawable image = c.getResources().getDrawable(o.getImage());
             imageCity.setImageDrawable(image);
 
             if(tvName!=null)

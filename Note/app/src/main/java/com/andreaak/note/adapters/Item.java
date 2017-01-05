@@ -5,9 +5,9 @@ public class Item implements Comparable<Item> {
     private String data;
     private String date;
     private String path;
-    private String image;
+    private int image;
 
-    public Item(String name, String data, String date, String path, String image) {
+    public Item(String name, String data, String date, String path, int image) {
         this.name = name;
         this.data = data;
         this.date = date;
@@ -31,9 +31,7 @@ public class Item implements Comparable<Item> {
         return path;
     }
 
-    public String getImage() {
-        return image;
-    }
+    public int getImage() { return image; }
 
     public int compareTo(Item o) {
         if (this.name != null)
