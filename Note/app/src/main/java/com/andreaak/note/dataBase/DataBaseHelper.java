@@ -1,6 +1,7 @@
 package com.andreaak.note.dataBase;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -17,9 +18,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     //The Android's default system path of your application database.
     private static String STANDART_DB_PATH = "/data/data/com.andreaak.note/databases/";
 
-    //private static String DB_NAME = "myDBName";
+    public static String ENTITY = "Entity";
+    public static String ID = "ID";
+    public static String PARENT_ID = "ParentID";
+    public static String ORDER_POSITION = "OrderPosition";
+    public static String TYPE = "Type";
+    public static String DESCRIPTION = "Description";
 
-    private SQLiteDatabase myDataBase;
+    private static String ENTITY_DATA = "EntityData";
+    public static String TEXT = "TextData";
+    public static String DATA = "Data";
+
+    private SQLiteDatabase database;
 
     private final Context myContext;
 
@@ -30,7 +40,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         super(context, dbName, null, 1);
         this.myContext = context;
-        this.dbPath = dbPath + "/";
+        this.dbPath = dbPath;// + "/";
         this.dbName = dbName;
     }
 
@@ -59,20 +69,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
             }
         }
-
     }
 
     /**
      * Check if the database already exist to avoid re-copying the file each time you open the application.
-     *
-     * @return true if it exists, false if it doesn't
      */
     public boolean checkDataBase() {
 
         SQLiteDatabase checkDB = null;
 
         try {
-            String myPath = dbPath + dbName;
+            String myPath = dbPath;// + dbName;
             checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
 
         } catch (SQLiteException e) {
@@ -97,7 +104,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      */
     private void copyDataBase() throws IOException {
 
-        String inFileName = dbPath + dbName;
+        String inFileName = dbPath;// + dbName;
 
         //Open your local db as the input stream
         InputStream myInput = new FileInputStream(inFileName);
@@ -125,19 +132,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void openDataBase() throws SQLException {
 
         //Open the database
-        String myPath = dbPath + dbName;
-        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        String myPath = dbPath;// + dbName;
+        database = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
 
     }
 
     @Override
     public synchronized void close() {
 
-        if (myDataBase != null)
-            myDataBase.close();
+        if (database != null)
+            database.close();
 
         super.close();
-
     }
 
     @Override
@@ -154,4 +160,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     // You could return cursors by doing "return myDataBase.query(....)" so it'd be easy
     // to you to create adapters for your views.
 
+    public Cursor GetEntities(int parentId) {
+        return database.query(ENTITY, null, PARENT_ID + "=?", new String[]{String.valueOf(parentId)}, null, null, ORDER_POSITION);
+    }
+
+    public String GetEntityData(int id) {
+        Cursor cursor = database.query(ENTITY_DATA, null, ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+        String text = "";
+        if(cursor.moveToNext()) {
+            int textIndex = cursor.getColumnIndex(DataBaseHelper.DATA);
+            text = cursor.getString(textIndex);
+        }
+
+        cursor.close();
+        return text;
+    }
 }

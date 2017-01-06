@@ -3,8 +3,8 @@ package com.andreaak.note.files;
 import android.content.Context;
 
 import com.andreaak.note.R;
-import com.andreaak.note.adapters.Constants;
-import com.andreaak.note.adapters.Item;
+import com.andreaak.note.Constants;
+import com.andreaak.note.utils.ItemType;
 
 import java.io.File;
 import java.sql.Date;
@@ -25,38 +25,39 @@ public class FilesHelper {
         this.context = context;
     }
 
-    public List<Item> getDirectory(File f) {
-        File[] dirs = f.listFiles();
-        List<Item> dir = new ArrayList<Item>();
-        List<Item> fls = new ArrayList<Item>();
+    public List<FileItem> getDirectory(File parent) {
+        File[] dirs = parent.listFiles();
+        List<FileItem> directories = new ArrayList<FileItem>();
+        List<FileItem> files = new ArrayList<FileItem>();
         try {
-            for (File ff : dirs) {
-                Date lastModDate = new Date(ff.lastModified());
+            for (File file : dirs) {
+                Date lastModDate = new Date(file.lastModified());
                 DateFormat formater = DateFormat.getDateTimeInstance();
                 String date_modify = formater.format(lastModDate);
-                if (ff.isDirectory()) {
-                    File[] files = ff.listFiles();
-                    int filesCount = files != null ? files.length : 0;
+                if (file.isDirectory()) {
+                    File[] filesInDirectory = file.listFiles();
+                    int filesCount = filesInDirectory != null ? filesInDirectory.length : 0;
 
                     int id = filesCount == 0 ? R.string.item : R.string.items;
                     String num_item = Constants.getText(String.valueOf(filesCount), context.getString(id));
 
                     //String formated = lastModDate.toString();
-                    dir.add(new Item(ff.getName(), num_item, date_modify, ff.getAbsolutePath(), R.drawable.directory_icon));
+                    directories.add(new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory));
                 } else {
-                    float length = ff.length() / 1000000f;
+                    float length = file.length() / 1000000f;
                     DecimalFormat df = new DecimalFormat("#.00");
-                    fls.add(new Item(ff.getName(), df.format(length) + context.getString(R.string.bytes), date_modify, ff.getAbsolutePath(), R.drawable.file_icon));
+                    files.add(new FileItem(file.getName(), df.format(length) + context.getString(R.string.bytes), date_modify, file.getAbsolutePath(), ItemType.File));
                 }
             }
         } catch (Exception e) {
 
         }
-        Collections.sort(dir);
-        Collections.sort(fls);
-        dir.addAll(fls);
-        if (!f.getName().equalsIgnoreCase(ROOT_DIRECTORY))
-            dir.add(0, new Item(PARENT_DIRECTORY_NAME, PARENT_DIRECTORY_DATA, "", f.getParent(), R.drawable.directory_up));
-        return dir;
+        Collections.sort(directories);
+        Collections.sort(files);
+        directories.addAll(files);
+        if (!parent.getName().equalsIgnoreCase(ROOT_DIRECTORY)) {
+            directories.add(0, new FileItem(PARENT_DIRECTORY_NAME, PARENT_DIRECTORY_DATA, "", parent.getParent(), ItemType.ParentDirectory));
+        }
+        return directories;
     }
 }

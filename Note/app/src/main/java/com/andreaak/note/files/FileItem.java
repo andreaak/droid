@@ -1,18 +1,20 @@
-package com.andreaak.note.adapters;
+package com.andreaak.note.files;
 
-public class Item implements Comparable<Item> {
+import com.andreaak.note.utils.Item;
+import com.andreaak.note.utils.ItemType;
+
+public class FileItem extends Item implements Comparable<FileItem> {
     private String name;
     private String data;
     private String date;
     private String path;
-    private int image;
 
-    public Item(String name, String data, String date, String path, int image) {
+    public FileItem(String name, String data, String date, String path, ItemType type) {
+        super(type);
         this.name = name;
         this.data = data;
         this.date = date;
         this.path = path;
-        this.image = image;
     }
 
     public String getName() {
@@ -31,9 +33,7 @@ public class Item implements Comparable<Item> {
         return path;
     }
 
-    public int getImage() { return image; }
-
-    public int compareTo(Item o) {
+    public int compareTo(FileItem o) {
         if (this.name != null)
             return this.name.toLowerCase().compareTo(o.getName().toLowerCase());
         else

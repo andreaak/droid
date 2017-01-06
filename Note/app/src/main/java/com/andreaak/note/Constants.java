@@ -1,10 +1,6 @@
-package com.andreaak.note.adapters;
+package com.andreaak.note;
 
 public class Constants {
-//    public static final String FILE_ICON = "file_icon";
-//    public static final String DIRECTORY_ICON = "directory_icon";
-//    public static final String DIRECTORY_UP = "directory_up";
-//    public static final String DRAWABLE = "drawable/";
     public static final String LOG_TAG = "Note";
 
     public static String getText(String ... args) {

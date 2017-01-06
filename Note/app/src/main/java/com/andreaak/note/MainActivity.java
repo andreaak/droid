@@ -2,13 +2,10 @@ package com.andreaak.note;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.SQLException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.andreaak.note.adapters.Constants;
 import com.andreaak.note.dataBase.DataBaseHelper;
 
 public class MainActivity extends Activity {
