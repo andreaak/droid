@@ -6,12 +6,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.andreaak.note.Constants;
+import com.andreaak.note.utils.ItemType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -20,121 +21,107 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public static String ENTITY = "Entity";
     public static String ID = "ID";
-    public static String PARENT_ID = "ParentID";
-    public static String ORDER_POSITION = "OrderPosition";
-    public static String TYPE = "Type";
-    public static String DESCRIPTION = "Description";
+    public static String ENTITY_PARENT_ID = "ParentID";
+    public static String ENTITY_ORDER_POSITION = "OrderPosition";
+    public static String ENTITY_TYPE = "Type";
+    public static String ENTITY_DESCRIPTION = "Description";
 
     private static String ENTITY_DATA = "EntityData";
-    public static String TEXT = "TextData";
-    public static String DATA = "Data";
+    private static String ENTITY_DATA_TEXT = "TextData";
+    private static String ENTITY_DATA_DATA = "Data";
 
     private SQLiteDatabase database;
 
-    private final Context myContext;
-
     private String dbPath;
-    private String dbName;
 
-    public DataBaseHelper(Context context, String dbPath, String dbName) {
+    private static DataBaseHelper instance;
 
-        super(context, dbName, null, 1);
-        this.myContext = context;
-        this.dbPath = dbPath;// + "/";
-        this.dbName = dbName;
-    }
-
-    /**
-     * Creates a empty database on the system and rewrites it with your own database.
-     */
-    public void createDataBase() throws IOException {
-
-        boolean dbExist = checkDataBase();
-
-        if (dbExist) {
-            //do nothing - database already exist
-        } else {
-
-            //By calling this method and empty database will be created into the default system path
-            //of your application so we are gonna be able to overwrite that database with our database.
-            this.getReadableDatabase();
-
-            try {
-
-                copyDataBase();
-
-            } catch (IOException e) {
-
-                throw new Error("Error copying database");
-
-            }
+    public static void initInstance(Context context, String dbPath) {
+        if(instance != null) {
+            instance.close();
         }
+        instance = new DataBaseHelper(context, dbPath);
     }
 
-    /**
-     * Check if the database already exist to avoid re-copying the file each time you open the application.
-     */
+    public static DataBaseHelper getInstance() {
+        return instance;
+    }
+
+    private DataBaseHelper(Context context, String dbPath) {
+
+        super(context, dbPath, null, 1);
+        this.dbPath = dbPath;
+    }
+
     public boolean checkDataBase() {
+
+        boolean res = false;
 
         SQLiteDatabase checkDB = null;
 
         try {
-            String myPath = dbPath;// + dbName;
-            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-
+            checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
+            checkDB.getVersion();
+            res = true;
         } catch (SQLiteException e) {
-
-            //database does't exist yet.
-
+            Log.e(Constants.LOG_TAG, e.getMessage(), e);
         }
 
         if (checkDB != null) {
-
             checkDB.close();
-
         }
 
-        return checkDB != null ? true : false;
-    }
-
-    /**
-     * Copies your database from your local assets-folder to the just created empty database in the
-     * system folder, from where it can be accessed and handled.
-     * This is done by transfering bytestream.
-     */
-    private void copyDataBase() throws IOException {
-
-        String inFileName = dbPath;// + dbName;
-
-        //Open your local db as the input stream
-        InputStream myInput = new FileInputStream(inFileName);
-
-        // Path to the just created empty db
-        String outFileName = STANDART_DB_PATH + dbName;
-
-        //Open the empty db as the output stream
-        OutputStream myOutput = new FileOutputStream(outFileName);
-
-        //transfer bytes from the inputfile to the outputfile
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = myInput.read(buffer)) > 0) {
-            myOutput.write(buffer, 0, length);
-        }
-
-        //Close the streams
-        myOutput.flush();
-        myOutput.close();
-        myInput.close();
-
+        return res;
     }
 
     public void openDataBase() throws SQLException {
+        database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
+    }
 
-        //Open the database
-        String myPath = dbPath;// + dbName;
-        database = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+    public List<NoteItem> GetEntities(int parentId) {
+        List<NoteItem> items = new ArrayList<NoteItem>();
+        Cursor cursor = database.query(ENTITY, new String[]{ID, ENTITY_DESCRIPTION, ENTITY_TYPE},
+                ENTITY_PARENT_ID + "=?", new String[]{String.valueOf(parentId)},
+                null, null, ENTITY_ORDER_POSITION);
+        while (cursor.moveToNext()) {
+            int idIndex = cursor.getColumnIndex(DataBaseHelper.ID);
+            int id = cursor.getInt(idIndex);
 
+            int descriptionIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION);
+            String description = cursor.getString(descriptionIndex);
+
+            int typeIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_TYPE);
+            ItemType type = cursor.getInt(typeIndex) == 0 ? ItemType.Directory : ItemType.File;
+
+            NoteItem item = new NoteItem(id, description, type);
+            items.add(item);
+        }
+        cursor.close();
+        return items;
+    }
+
+    public String GetEntityData(int id) {
+        Cursor cursor = database.query(ENTITY_DATA, new String[]{ENTITY_DATA_TEXT}, ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+        String text = "";
+        if (cursor.moveToNext()) {
+            int textIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DATA_TEXT);
+            text = cursor.getString(textIndex);
+        }
+
+        cursor.close();
+        return text;
+    }
+
+    public int GetParentId(int id) {
+        Cursor cursor = database.query(ENTITY, new String[]{ENTITY_PARENT_ID}, ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+        int parentId = 0;
+        if (cursor.moveToNext()) {
+            int parentIdIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID);
+            parentId = cursor.getInt(parentIdIndex);
+        }
+
+        cursor.close();
+        return parentId;
     }
 
     @Override
@@ -154,25 +141,5 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-    }
-
-    // Add your public helper methods to access and get content from the database.
-    // You could return cursors by doing "return myDataBase.query(....)" so it'd be easy
-    // to you to create adapters for your views.
-
-    public Cursor GetEntities(int parentId) {
-        return database.query(ENTITY, null, PARENT_ID + "=?", new String[]{String.valueOf(parentId)}, null, null, ORDER_POSITION);
-    }
-
-    public String GetEntityData(int id) {
-        Cursor cursor = database.query(ENTITY_DATA, null, ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
-        String text = "";
-        if(cursor.moveToNext()) {
-            int textIndex = cursor.getColumnIndex(DataBaseHelper.DATA);
-            text = cursor.getString(textIndex);
-        }
-
-        cursor.close();
-        return text;
     }
 }

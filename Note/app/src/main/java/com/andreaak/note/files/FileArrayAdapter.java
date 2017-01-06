@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andreaak.note.R;
-import com.andreaak.note.files.FileItem;
 
 public class FileArrayAdapter extends ArrayAdapter<FileItem> {
 
@@ -40,9 +39,6 @@ public class FileArrayAdapter extends ArrayAdapter<FileItem> {
             LayoutInflater vi = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = vi.inflate(id, null);
         }
-
-               /* create a new view of my layout and inflate it in the row */
-        //convertView = ( RelativeLayout ) inflater.inflate( resource, null );
 
         final FileItem item = items.get(position);
         if (item != null) {

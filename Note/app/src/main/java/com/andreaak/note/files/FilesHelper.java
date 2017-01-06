@@ -1,6 +1,7 @@
 package com.andreaak.note.files;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.andreaak.note.R;
 import com.andreaak.note.Constants;
@@ -17,9 +18,8 @@ import java.util.List;
 public class FilesHelper {
 
     private static final String ROOT_DIRECTORY = "";
-    private static final String PARENT_DIRECTORY_NAME = " ";
-    private static final String PARENT_DIRECTORY_DATA = "..";
-    Context context;
+
+    private final Context context;
 
     public FilesHelper(Context context) {
         this.context = context;
@@ -40,8 +40,6 @@ public class FilesHelper {
 
                     int id = filesCount == 0 ? R.string.item : R.string.items;
                     String num_item = Constants.getText(String.valueOf(filesCount), context.getString(id));
-
-                    //String formated = lastModDate.toString();
                     directories.add(new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory));
                 } else {
                     float length = file.length() / 1000000f;
@@ -50,13 +48,13 @@ public class FilesHelper {
                 }
             }
         } catch (Exception e) {
-
+            Log.e(Constants.LOG_TAG, e.getMessage(), e);
         }
         Collections.sort(directories);
         Collections.sort(files);
         directories.addAll(files);
         if (!parent.getName().equalsIgnoreCase(ROOT_DIRECTORY)) {
-            directories.add(0, new FileItem(PARENT_DIRECTORY_NAME, PARENT_DIRECTORY_DATA, "", parent.getParent(), ItemType.ParentDirectory));
+            directories.add(0, new FileItem("", context.getString(R.string.parentDirectory), "", parent.getParent(), ItemType.ParentDirectory));
         }
         return directories;
     }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.dataBase.NoteArrayAdapter;
@@ -13,24 +14,33 @@ import com.andreaak.note.dataBase.NoteHelper;
 
 import java.util.List;
 
-public class NoteChooser extends ListActivity {
+public class NoteChooserActivity extends ListActivity {
 
     private NoteArrayAdapter adapter;
     private NoteHelper helper;
-    private String path;
-    private String fileName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        path = getIntent().getStringExtra(FileChooser.PATH);
-        fileName = getIntent().getStringExtra(FileChooser.FILE_NAME);
-        helper = new NoteHelper(this, path, fileName);
-        if(!helper.IsActive()) {
+        onRestoreNonConfigurationInstance();
+    }
+
+    private void onRestoreNonConfigurationInstance() {
+        helper = (NoteHelper) getLastNonConfigurationInstance();
+        if (helper == null) {
+            helper = new NoteHelper(this);
+        }
+        if (!helper.openDatabase()) {
+            Toast.makeText(this, "Database fault", Toast.LENGTH_LONG).show();
             finishWithFault();
             return;
         }
-        fill(NoteHelper.ROOT);
+        fill(helper.getCurrentId());
+    }
+
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        return helper;
     }
 
     private void finishWithFault() {
@@ -41,7 +51,7 @@ public class NoteChooser extends ListActivity {
 
     private void fill(int currentId) {
         List<NoteItem> dir = helper.getNoteItems(currentId);
-        adapter = new NoteArrayAdapter(NoteChooser.this, R.layout.note_view, dir);
+        adapter = new NoteArrayAdapter(NoteChooserActivity.this, R.layout.activity_note_chooser, dir);
         this.setListAdapter(adapter);
     }
 
@@ -50,19 +60,23 @@ public class NoteChooser extends ListActivity {
         super.onListItemClick(l, v, position, id);
 
         NoteItem item = adapter.getItem(position);
-        if (item.getType() == ItemType.Directory ||item.getType() == ItemType.ParentDirectory) {
+        if (item.getType() == ItemType.Directory || item.getType() == ItemType.ParentDirectory) {
             fill(item.getId());
         } else {
             onNoteClick(item);
         }
     }
 
+    @Override
+    public void onDestroy() {
+        helper.close();
+        super.onDestroy();
+    }
+
     private void onNoteClick(NoteItem item) {
-        Intent intent = new Intent(this, NoteActivity.class);
-        intent.putExtra(NoteActivity.ID, item.getId());
-        intent.putExtra(NoteActivity.DESCRIPTION, item.getDescription());
-        intent.putExtra(FileChooser.PATH, path);
-        intent.putExtra(FileChooser.FILE_NAME, fileName);
+        Intent intent = new Intent(this, NoteTextActivity.class);
+        intent.putExtra(NoteTextActivity.ID, item.getId());
+        intent.putExtra(NoteTextActivity.DESCRIPTION, item.getDescription());
         startActivity(intent);
     }
 }

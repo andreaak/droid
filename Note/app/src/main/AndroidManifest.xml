@@ -24,22 +24,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FileChooser"
+            android:name=".FileChooserActivity"
             android:label="Choose File"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.FileChooser" />
+            <action android:name="com.andreaak.note.FileChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".NoteChooser"
+            android:name=".NoteChooserActivity"
             android:label="Note"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.NoteChooser" />
+            <action android:name="com.andreaak.note.NoteChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
-        <activity android:name=".NoteActivity"></activity>
+        <activity android:name=".NoteTextActivity"></activity>
     </application>
 
 </manifest>

@@ -2,13 +2,12 @@ package com.andreaak.note;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
+import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 
 import com.andreaak.note.dataBase.DataBaseHelper;
 
-public class NoteActivity extends Activity {
+public class NoteTextActivity extends Activity {
 
     public static final String ID = "id";
     public static final String DESCRIPTION = "description";
@@ -16,9 +15,8 @@ public class NoteActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note);
+        setContentView(R.layout.activity_note_text);
         loadText();
-
     }
 
     private void loadText() {
@@ -27,13 +25,10 @@ public class NoteActivity extends Activity {
         setTitle(description);
 
         int id = getIntent().getIntExtra(ID, -1);
-        String path = getIntent().getStringExtra(FileChooser.PATH);
-        String fileName = getIntent().getStringExtra(FileChooser.FILE_NAME);
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(this, path, fileName);
-        dataBaseHelper.openDataBase();
+        DataBaseHelper dataBaseHelper = DataBaseHelper.getInstance();
         String text = dataBaseHelper.GetEntityData(id);
-        Spanned sp =  Html.fromHtml(text);
-        TextView tv = (TextView) findViewById(R.id.textView);
-        tv.setText(text);
+        TextView textview = (TextView) findViewById(R.id.textView);
+        textview.setMovementMethod(new ScrollingMovementMethod());
+        textview.setText(text);
     }
 }
