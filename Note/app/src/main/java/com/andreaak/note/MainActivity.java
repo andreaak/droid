@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import com.andreaak.note.dataBase.DataBaseHelper;
 
+import java.io.File;
+
 public class MainActivity extends Activity {
 
     private static final int REQUEST_FILE_CHOOSER = 1;
@@ -63,9 +65,10 @@ public class MainActivity extends Activity {
 
         boolean dbExist = databaseHelper.checkDataBase();
         if (dbExist) {
-            SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+            SharedPreferences sPref = getSharedPreferences(FileChooserActivity.PREFS_NAME, MODE_PRIVATE);
             SharedPreferences.Editor ed = sPref.edit();
-            ed.putString(FileChooserActivity.SAVED_PATH, path);
+            String savePath = new File(path).getParent();
+            ed.putString(FileChooserActivity.SAVED_PATH, savePath);
             boolean res = ed.commit();
 
             Intent intent = new Intent(this, NoteChooserActivity.class);

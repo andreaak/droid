@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_plus"
+        android:icon="@drawable/plus"
+        android:showAsAction="always"
+        android:title="Plus"></item>
+    <item
+        android:id="@+id/menu_minus"
+        android:icon="@drawable/minus"
+        android:showAsAction="always"
+        android:title="Minus"></item>
+</menu>

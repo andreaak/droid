@@ -28,6 +28,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static String ENTITY_DATA = "EntityData";
     private static String ENTITY_DATA_TEXT = "TextData";
+    private static String ENTITY_DATA_HTML = "HtmlData";
     private static String ENTITY_DATA_DATA = "Data";
 
     private SQLiteDatabase database;
@@ -60,7 +61,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
 
         try {
-            checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
+            checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS);
             checkDB.getVersion();
             res = true;
         } catch (SQLiteException e) {
@@ -75,7 +76,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void openDataBase() throws SQLException {
-        database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
+        database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS);
     }
 
     public List<NoteItem> GetEntities(int parentId) {
@@ -112,8 +113,22 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return text;
     }
 
+    public String GetEntityDataHtml(int id) {
+        Cursor cursor = database.query(ENTITY_DATA, new String[]{ENTITY_DATA_HTML},
+                ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+        String text = "";
+        if (cursor.moveToNext()) {
+            int textIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DATA_HTML);
+            text = cursor.getString(textIndex);
+        }
+
+        cursor.close();
+        return text;
+    }
+
     public int GetParentId(int id) {
-        Cursor cursor = database.query(ENTITY, new String[]{ENTITY_PARENT_ID}, ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+        Cursor cursor = database.query(ENTITY, new String[]{ENTITY_PARENT_ID},
+                ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
         int parentId = 0;
         if (cursor.moveToNext()) {
             int parentIdIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID);

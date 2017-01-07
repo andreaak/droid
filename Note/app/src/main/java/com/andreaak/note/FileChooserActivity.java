@@ -19,7 +19,8 @@ import com.andreaak.note.utils.ItemType;
 public class FileChooserActivity extends ListActivity {
     public static final String FILE_NAME = "FileName";
     public static final String PATH = "Path";
-    public static final String SAVED_PATH = "saved_path";
+    public static final String PREFS_NAME = "PREFS_NAME";
+    public static final String SAVED_PATH = "SAVED_PATH";
 
     private FileArrayAdapter adapter;
     private FilesHelper helper;
@@ -36,10 +37,10 @@ public class FileChooserActivity extends ListActivity {
     private void onRestoreNonConfigurationInstance() {
         currentDir = (File) getLastNonConfigurationInstance();
         if (currentDir == null) {
-            SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+            SharedPreferences sPref = getSharedPreferences(FileChooserActivity.PREFS_NAME, MODE_PRIVATE);
             String savedPath = sPref.getString(SAVED_PATH, "");
 
-            currentDir = savedPath == null || savedPath.equals("") ?
+            currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
                     Environment.getExternalStorageDirectory() :
                     new File(savedPath);
         }

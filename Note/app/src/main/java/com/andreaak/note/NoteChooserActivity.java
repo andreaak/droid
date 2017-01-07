@@ -74,7 +74,8 @@ public class NoteChooserActivity extends ListActivity {
     }
 
     private void onNoteClick(NoteItem item) {
-        Intent intent = new Intent(this, NoteTextActivity.class);
+        //Intent intent = new Intent(this, NoteTextActivity.class);
+        Intent intent = new Intent(this, NoteHtmlActivity.class);
         intent.putExtra(NoteTextActivity.ID, item.getId());
         intent.putExtra(NoteTextActivity.DESCRIPTION, item.getDescription());
         startActivity(intent);
