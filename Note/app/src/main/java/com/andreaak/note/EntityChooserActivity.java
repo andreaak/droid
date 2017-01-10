@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -55,6 +57,22 @@ public class EntityChooserActivity extends ListActivity {
         return helper;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_entity_chooser, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.menu_find) {
+            onFindClick();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void finishWithFault() {
         Intent intent = new Intent();
         setResult(RESULT_CANCELED, intent);
@@ -99,6 +117,11 @@ public class EntityChooserActivity extends ListActivity {
         Intent intent = new Intent(this, NoteHtmlActivity.class);
         intent.putExtra(NoteTextActivity.ID, item.getId());
         intent.putExtra(NoteTextActivity.DESCRIPTION, item.getDescription());
+        startActivity(intent);
+    }
+
+    private void onFindClick() {
+        Intent intent = new Intent(this, NoteFindActivity.class);
         startActivity(intent);
     }
 }

@@ -102,6 +102,27 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return items;
     }
 
+    public List<EntityItem> findNotes(String text) {
+
+        List<EntityItem> items = new ArrayList<EntityItem>();
+
+        String sql = "SELECT Entity.id, Entity.description FROM Entity, EntityData WHERE Entity.id=EntityData.id AND EntityData.TextData LIKE '%?%'";
+        Cursor cursor = database.rawQuery(sql, new String[]{text});
+        while (cursor.moveToNext()) {
+            int idIndex = cursor.getColumnIndex(DataBaseHelper.ID);
+            int id = cursor.getInt(idIndex);
+
+            int descriptionIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION);
+            String description = cursor.getString(descriptionIndex);
+
+            EntityItem item = new EntityItem(id, description, ItemType.File);
+            items.add(item);
+        }
+        cursor.close();
+        return items;
+    }
+
+
     public List<String> GetDescriptions(int currentId) {
 
         List<String> items = new ArrayList<String>();

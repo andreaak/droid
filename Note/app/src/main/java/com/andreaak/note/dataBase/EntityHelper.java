@@ -17,15 +17,21 @@ public class EntityHelper {
 
     private Context context;
     private DataBaseHelper dataBaseHelper;
-    private int currentId;
+
 
     public EntityHelper(Context context) {
         this.context = context;
         currentId = ROOT;
     }
 
+    private int currentId;
     public int getCurrentId() {
         return currentId;
+    }
+
+    private String currentText;
+    public String getCurrentText() {
+        return currentText;
     }
 
     public List<EntityItem> getEntities(int currentId) {
@@ -38,6 +44,11 @@ public class EntityHelper {
         }
         this.currentId = currentId;
         return items;
+    }
+
+    public List<EntityItem> findNotes(String text) {
+        currentText = text;
+        return dataBaseHelper.findNotes(text);
     }
 
     public List<String> getDescriptions(int currentId) {

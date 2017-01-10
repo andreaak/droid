@@ -49,6 +49,14 @@
             android:theme="@android:style/Theme.Holo">
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
+        <activity
+            android:name=".NoteFindActivity"
+            android:label="Note"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.note.NoteFindActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
     </application>
 
 </manifest>
