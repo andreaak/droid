@@ -77,7 +77,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void openDataBase() throws SQLException {
-        database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
+        if(database == null || !database.isOpen()) {
+            database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
+        }
     }
 
     public List<EntityItem> GetEntities(int parentId) {
@@ -102,12 +104,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return items;
     }
 
-    public List<EntityItem> findNotes(String text) {
+    public List<FindNoteItem> findNotes(String text) {
 
-        List<EntityItem> items = new ArrayList<EntityItem>();
+        List<FindNoteItem> items = new ArrayList<FindNoteItem>();
 
-        String sql = "SELECT Entity.id, Entity.description FROM Entity, EntityData WHERE Entity.id=EntityData.id AND EntityData.TextData LIKE '%?%'";
-        Cursor cursor = database.rawQuery(sql, new String[]{text});
+        String sql = "SELECT Entity.id, Entity.description " +
+                    "FROM Entity, EntityData " +
+                    "WHERE Entity.id=EntityData.id AND EntityData.TextData LIKE ? ESCAPE '#'";
+        Cursor cursor = database.rawQuery(sql, new String[]{"%" + text + "%"});
         while (cursor.moveToNext()) {
             int idIndex = cursor.getColumnIndex(DataBaseHelper.ID);
             int id = cursor.getInt(idIndex);
@@ -115,7 +119,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             int descriptionIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION);
             String description = cursor.getString(descriptionIndex);
 
-            EntityItem item = new EntityItem(id, description, ItemType.File);
+            FindNoteItem item = new FindNoteItem(id, description, ItemType.File,
+                    Constants.getText("/", GetDescriptions(id)));
             items.add(item);
         }
         cursor.close();

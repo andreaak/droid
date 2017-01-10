@@ -13,21 +13,21 @@ import com.andreaak.note.R;
 
 import java.util.List;
 
-public class EntityArrayAdapter extends ArrayAdapter<EntityItem> {
+public class FindNoteArrayAdapter extends ArrayAdapter<FindNoteItem> {
 
     private Context c;
     private int id;
-    private List<EntityItem> items;
+    private List<FindNoteItem> items;
 
-    public EntityArrayAdapter(Context context, int textViewResourceId,
-                              List<EntityItem> objects) {
+    public FindNoteArrayAdapter(Context context, int textViewResourceId,
+                                List<FindNoteItem> objects) {
         super(context, textViewResourceId, objects);
         c = context;
         id = textViewResourceId;
         items = objects;
     }
 
-    public EntityItem getItem(int i) {
+    public FindNoteItem getItem(int i) {
 
         return items.get(i);
     }
@@ -40,16 +40,19 @@ public class EntityArrayAdapter extends ArrayAdapter<EntityItem> {
             view = vi.inflate(id, null);
         }
 
-        final EntityItem item = items.get(position);
+        final FindNoteItem item = items.get(position);
         if (item != null) {
             TextView tvName = (TextView) view.findViewById(R.id.TextViewName);
-            ImageView imageView = (ImageView) view.findViewById(R.id.fd_Icon1);
+            TextView tvData = (TextView) view.findViewById(R.id.TextViewData);
+            ImageView imageCity = (ImageView) view.findViewById(R.id.fd_Icon1);
 
             Drawable image = c.getResources().getDrawable(item.GetImageId());
-            imageView.setImageDrawable(image);
+            imageCity.setImageDrawable(image);
 
             if (tvName != null)
                 tvName.setText(item.getDescription());
+            if (tvData != null)
+                tvData.setText(item.getPath());
         }
         return view;
     }

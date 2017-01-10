@@ -1,14 +1,18 @@
 package com.andreaak.note;
 
 import android.app.ListActivity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +23,7 @@ import com.andreaak.note.dataBase.EntityHelper;
 
 import java.util.List;
 
-public class EntityChooserActivity extends ListActivity {
+public class EntityChooserActivity extends ListActivity implements SearchView.OnQueryTextListener {
 
     private EntityArrayAdapter adapter;
     private EntityHelper helper;
@@ -59,18 +63,31 @@ public class EntityChooserActivity extends ListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_entity_chooser, menu);
-        return super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_entity_chooser, menu);
+
+        SearchManager searchManager = (SearchManager)
+                getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchMenuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();
+
+        searchView.setSearchableInfo(searchManager.
+                getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(this);
+
+        return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onQueryTextSubmit(String query) {
+        onFindClick(query);
+        return true;
+    }
 
-        if (item.getItemId() == R.id.menu_find) {
-            onFindClick();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return true;
     }
 
     private void finishWithFault() {
@@ -120,8 +137,9 @@ public class EntityChooserActivity extends ListActivity {
         startActivity(intent);
     }
 
-    private void onFindClick() {
+    private void onFindClick(String text) {
         Intent intent = new Intent(this, NoteFindActivity.class);
+        intent.putExtra(NoteFindActivity.TEXT, text);
         startActivity(intent);
     }
 }

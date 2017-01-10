@@ -8,7 +8,6 @@ import com.andreaak.note.Constants;
 import com.andreaak.note.R;
 import com.andreaak.note.utils.ItemType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class EntityHelper {
@@ -25,11 +24,13 @@ public class EntityHelper {
     }
 
     private int currentId;
+
     public int getCurrentId() {
         return currentId;
     }
 
     private String currentText;
+
     public String getCurrentText() {
         return currentText;
     }
@@ -46,7 +47,7 @@ public class EntityHelper {
         return items;
     }
 
-    public List<EntityItem> findNotes(String text) {
+    public List<FindNoteItem> findNotes(String text) {
         currentText = text;
         return dataBaseHelper.findNotes(text);
     }

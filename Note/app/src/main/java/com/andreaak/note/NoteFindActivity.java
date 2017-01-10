@@ -7,36 +7,41 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.andreaak.note.dataBase.EntityArrayAdapter;
 import com.andreaak.note.dataBase.EntityHelper;
 import com.andreaak.note.dataBase.EntityItem;
+import com.andreaak.note.dataBase.FindNoteArrayAdapter;
+import com.andreaak.note.dataBase.FindNoteItem;
 
 import java.util.List;
-import java.util.StringTokenizer;
 
 public class NoteFindActivity extends ListActivity {
 
-    private EntityArrayAdapter adapter;
+    public static final String TEXT = "text";
+
+    private FindNoteArrayAdapter adapter;
     private EntityHelper helper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onRestoreNonConfigurationInstance();
+        String text = getIntent().getStringExtra(NoteFindActivity.TEXT);
+        fill(text);
     }
 
     private void onRestoreNonConfigurationInstance() {
         helper = (EntityHelper) getLastNonConfigurationInstance();
         if (helper == null) {
             helper = new EntityHelper(this);
-        }
-        if (!helper.openDatabase()) {
-            Toast.makeText(this, "Database fault", Toast.LENGTH_LONG).show();
-            finishWithFault();
-            return;
+            if (!helper.openDatabase()) {
+                Toast.makeText(this, "Database fault", Toast.LENGTH_LONG).show();
+                finishWithFault();
+                return;
+            }
         }
 
-        if(helper.getCurrentText() != null)
+
+        if (helper.getCurrentText() != null)
             fill(helper.getCurrentText());
     }
 
@@ -52,8 +57,8 @@ public class NoteFindActivity extends ListActivity {
     }
 
     private void fill(String text) {
-        List<EntityItem> dir = helper.findNotes(text);
-        adapter = new EntityArrayAdapter(NoteFindActivity.this, R.layout.activity_note_find, dir);
+        List<FindNoteItem> dir = helper.findNotes(text);
+        adapter = new FindNoteArrayAdapter(NoteFindActivity.this, R.layout.activity_note_find, dir);
         this.setListAdapter(adapter);
     }
 
@@ -65,14 +70,7 @@ public class NoteFindActivity extends ListActivity {
         onNoteClick(item);
     }
 
-    @Override
-    public void onDestroy() {
-        helper.close();
-        super.onDestroy();
-    }
-
     private void onNoteClick(EntityItem item) {
-        //Intent intent = new Intent(this, NoteTextActivity.class);
         Intent intent = new Intent(this, NoteHtmlActivity.class);
         intent.putExtra(NoteTextActivity.ID, item.getId());
         intent.putExtra(NoteTextActivity.DESCRIPTION, item.getDescription());
