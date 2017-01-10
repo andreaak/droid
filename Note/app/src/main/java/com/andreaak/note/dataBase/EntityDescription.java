@@ -1,9 +1,6 @@
 package com.andreaak.note.dataBase;
 
-import com.andreaak.note.utils.Item;
-import com.andreaak.note.utils.ItemType;
-
-public class NoteItem extends Item {
+public class EntityDescription {
     private int id;
 
     public int getId() {
@@ -16,8 +13,7 @@ public class NoteItem extends Item {
         return description;
     }
 
-    public NoteItem(int id, String description, ItemType type) {
-        super(type);
+    public EntityDescription(int id, String description) {
         this.id = id;
         this.description = description;
     }

@@ -12,6 +12,7 @@ import com.andreaak.note.Constants;
 import com.andreaak.note.utils.ItemType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
@@ -38,7 +39,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static DataBaseHelper instance;
 
     public static void initInstance(Context context, String dbPath) {
-        if(instance != null) {
+        if (instance != null) {
             instance.close();
         }
         instance = new DataBaseHelper(context, dbPath);
@@ -61,7 +62,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
 
         try {
-            checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+            checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
             checkDB.getVersion();
             res = true;
         } catch (SQLiteException e) {
@@ -76,11 +77,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void openDataBase() throws SQLException {
-        database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+        database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
     }
 
-    public List<NoteItem> GetEntities(int parentId) {
-        List<NoteItem> items = new ArrayList<NoteItem>();
+    public List<EntityItem> GetEntities(int parentId) {
+        List<EntityItem> items = new ArrayList<EntityItem>();
         Cursor cursor = database.query(ENTITY, new String[]{ID, ENTITY_DESCRIPTION, ENTITY_TYPE},
                 ENTITY_PARENT_ID + "=?", new String[]{String.valueOf(parentId)},
                 null, null, ENTITY_ORDER_POSITION);
@@ -94,23 +95,40 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             int typeIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_TYPE);
             ItemType type = cursor.getInt(typeIndex) == 0 ? ItemType.Directory : ItemType.File;
 
-            NoteItem item = new NoteItem(id, description, type);
+            EntityItem item = new EntityItem(id, description, type);
             items.add(item);
         }
         cursor.close();
         return items;
     }
 
-    public String GetEntityData(int id) {
-        Cursor cursor = database.query(ENTITY_DATA, new String[]{ENTITY_DATA_TEXT}, ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
-        String text = "";
-        if (cursor.moveToNext()) {
-            int textIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DATA_TEXT);
-            text = cursor.getString(textIndex);
-        }
+    public List<String> GetDescriptions(int currentId) {
 
-        cursor.close();
-        return text;
+        List<String> items = new ArrayList<String>();
+
+        while (true) {
+
+            Cursor cursor = database.query(ENTITY, new String[]{ENTITY_DESCRIPTION, ENTITY_PARENT_ID},
+                    ID + "=?", new String[]{String.valueOf(currentId)},
+                    null, null, ENTITY_ORDER_POSITION);
+
+            if (cursor.moveToNext()) {
+
+                int descriptionIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION);
+                String description = cursor.getString(descriptionIndex);
+
+                int parentIdIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID);
+                currentId = cursor.getInt(parentIdIndex);
+
+                items.add(description);
+                cursor.close();
+            } else {
+                cursor.close();
+                break;
+            }
+        }
+        Collections.reverse(items);
+        return items;
     }
 
     public String GetEntityDataHtml(int id) {

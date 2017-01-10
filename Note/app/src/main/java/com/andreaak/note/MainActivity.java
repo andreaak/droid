@@ -71,7 +71,7 @@ public class MainActivity extends Activity {
             ed.putString(FileChooserActivity.SAVED_PATH, savePath);
             boolean res = ed.commit();
 
-            Intent intent = new Intent(this, NoteChooserActivity.class);
+            Intent intent = new Intent(this, EntityChooserActivity.class);
             startActivity(intent);
         } else {
             Toast.makeText(this, "Database fault", Toast.LENGTH_LONG).show();

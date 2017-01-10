@@ -12,6 +12,7 @@ import java.sql.Date;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,7 +40,8 @@ public class FilesHelper {
                     int filesCount = filesInDirectory != null ? filesInDirectory.length : 0;
 
                     int id = filesCount == 0 ? R.string.item : R.string.items;
-                    String num_item = Constants.getText(String.valueOf(filesCount), context.getString(id));
+                    String[] args = new String[] { String.valueOf(filesCount), context.getString(id) };
+                    String num_item = Constants.getText(" ", Arrays.asList(args));
                     directories.add(new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory));
                 } else {
                     float length = file.length() / 1000000f;

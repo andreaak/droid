@@ -8,9 +8,10 @@ import com.andreaak.note.Constants;
 import com.andreaak.note.R;
 import com.andreaak.note.utils.ItemType;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class NoteHelper {
+public class EntityHelper {
 
     private static final int ROOT = -1;
 
@@ -18,7 +19,7 @@ public class NoteHelper {
     private DataBaseHelper dataBaseHelper;
     private int currentId;
 
-    public NoteHelper(Context context) {
+    public EntityHelper(Context context) {
         this.context = context;
         currentId = ROOT;
     }
@@ -27,16 +28,20 @@ public class NoteHelper {
         return currentId;
     }
 
-    public List<NoteItem> getNoteItems(int currentId) {
+    public List<EntityItem> getEntities(int currentId) {
 
-        List<NoteItem> items = dataBaseHelper.GetEntities(currentId);
+        List<EntityItem> items = dataBaseHelper.GetEntities(currentId);
         if (currentId != ROOT) {
             int parentId = dataBaseHelper.GetParentId(currentId);
-            NoteItem item = new NoteItem(parentId, context.getString(R.string.parentDirectory), ItemType.ParentDirectory);
+            EntityItem item = new EntityItem(parentId, context.getString(R.string.parentDirectory), ItemType.ParentDirectory);
             items.add(0, item);
         }
         this.currentId = currentId;
         return items;
+    }
+
+    public List<String> getDescriptions(int currentId) {
+        return dataBaseHelper.GetDescriptions(currentId);
     }
 
     public boolean openDatabase() {

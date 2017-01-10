@@ -32,10 +32,10 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".NoteChooserActivity"
+            android:name=".EntityChooserActivity"
             android:label="Note"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.NoteChooserActivity" />
+            <action android:name="com.andreaak.note.EntityChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>

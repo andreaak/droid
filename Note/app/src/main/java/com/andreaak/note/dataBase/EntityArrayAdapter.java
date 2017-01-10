@@ -13,21 +13,21 @@ import com.andreaak.note.R;
 
 import java.util.List;
 
-public class NoteArrayAdapter extends ArrayAdapter<NoteItem> {
+public class EntityArrayAdapter extends ArrayAdapter<EntityItem> {
 
     private Context c;
     private int id;
-    private List<NoteItem> items;
+    private List<EntityItem> items;
 
-    public NoteArrayAdapter(Context context, int textViewResourceId,
-                            List<NoteItem> objects) {
+    public EntityArrayAdapter(Context context, int textViewResourceId,
+                              List<EntityItem> objects) {
         super(context, textViewResourceId, objects);
         c = context;
         id = textViewResourceId;
         items = objects;
     }
 
-    public NoteItem getItem(int i) {
+    public EntityItem getItem(int i) {
 
         return items.get(i);
     }
@@ -40,7 +40,7 @@ public class NoteArrayAdapter extends ArrayAdapter<NoteItem> {
             view = vi.inflate(id, null);
         }
 
-        final NoteItem item = items.get(position);
+        final EntityItem item = items.get(position);
         if (item != null) {
             TextView tvName = (TextView) view.findViewById(R.id.TextViewName);
             TextView tvData = (TextView) view.findViewById(R.id.TextViewData);

@@ -2,33 +2,45 @@ package com.andreaak.note;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andreaak.note.utils.ItemType;
-import com.andreaak.note.dataBase.NoteArrayAdapter;
-import com.andreaak.note.dataBase.NoteItem;
-import com.andreaak.note.dataBase.NoteHelper;
+import com.andreaak.note.dataBase.EntityArrayAdapter;
+import com.andreaak.note.dataBase.EntityItem;
+import com.andreaak.note.dataBase.EntityHelper;
 
 import java.util.List;
 
-public class NoteChooserActivity extends ListActivity {
+public class EntityChooserActivity extends ListActivity {
 
-    private NoteArrayAdapter adapter;
-    private NoteHelper helper;
+    private EntityArrayAdapter adapter;
+    private EntityHelper helper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onRestoreNonConfigurationInstance();
+
+        int titleId = Resources.getSystem()
+                .getIdentifier("action_bar_title", "id", "android");
+        if (titleId > 0) {
+            TextView title = (TextView) findViewById(titleId);
+            title.setSingleLine(false);
+            title.setMaxLines(2);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+        }
     }
 
     private void onRestoreNonConfigurationInstance() {
-        helper = (NoteHelper) getLastNonConfigurationInstance();
+        helper = (EntityHelper) getLastNonConfigurationInstance();
         if (helper == null) {
-            helper = new NoteHelper(this);
+            helper = new EntityHelper(this);
         }
         if (!helper.openDatabase()) {
             Toast.makeText(this, "Database fault", Toast.LENGTH_LONG).show();
@@ -49,9 +61,18 @@ public class NoteChooserActivity extends ListActivity {
         finish();
     }
 
+    private void SetTilte(List<String> descriptions) {
+        if (descriptions.isEmpty()) {
+            setTitle(getString(R.string.app_name));
+            return;
+        }
+        setTitle(Constants.getText("/", descriptions));
+    }
+
     private void fill(int currentId) {
-        List<NoteItem> dir = helper.getNoteItems(currentId);
-        adapter = new NoteArrayAdapter(NoteChooserActivity.this, R.layout.activity_note_chooser, dir);
+        List<EntityItem> dir = helper.getEntities(currentId);
+        SetTilte(helper.getDescriptions(currentId));
+        adapter = new EntityArrayAdapter(EntityChooserActivity.this, R.layout.activity_entity_chooser, dir);
         this.setListAdapter(adapter);
     }
 
@@ -59,7 +80,7 @@ public class NoteChooserActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        NoteItem item = adapter.getItem(position);
+        EntityItem item = adapter.getItem(position);
         if (item.getType() == ItemType.Directory || item.getType() == ItemType.ParentDirectory) {
             fill(item.getId());
         } else {
@@ -73,7 +94,7 @@ public class NoteChooserActivity extends ListActivity {
         super.onDestroy();
     }
 
-    private void onNoteClick(NoteItem item) {
+    private void onNoteClick(EntityItem item) {
         //Intent intent = new Intent(this, NoteTextActivity.class);
         Intent intent = new Intent(this, NoteHtmlActivity.class);
         intent.putExtra(NoteTextActivity.ID, item.getId());
