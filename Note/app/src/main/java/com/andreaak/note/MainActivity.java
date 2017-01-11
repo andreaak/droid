@@ -2,13 +2,13 @@ package com.andreaak.note;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.andreaak.note.dataBase.DataBaseHelper;
+import com.andreaak.note.utils.SharedPreferencesHelper;
 
 import java.io.File;
 
@@ -20,6 +20,7 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferencesHelper.initInstance(this);
     }
 
     @Override
@@ -60,11 +61,8 @@ public class MainActivity extends Activity {
 
         boolean dbExist = databaseHelper.checkDataBase();
         if (dbExist) {
-            SharedPreferences sPref = getSharedPreferences(FileChooserActivity.PREFS_NAME, MODE_PRIVATE);
-            SharedPreferences.Editor ed = sPref.edit();
             String savePath = new File(path).getParent();
-            ed.putString(FileChooserActivity.SAVED_PATH, savePath);
-            ed.commit();
+            SharedPreferencesHelper.getInstance().save(FileChooserActivity.SAVED_PATH, savePath);
 
             Intent intent = new Intent(this, EntityChooserActivity.class);
             startActivity(intent);

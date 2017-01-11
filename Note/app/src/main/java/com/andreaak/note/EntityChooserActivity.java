@@ -16,6 +16,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.dataBase.EntityArrayAdapter;
 import com.andreaak.note.dataBase.EntityItem;

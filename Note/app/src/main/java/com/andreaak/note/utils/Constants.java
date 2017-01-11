@@ -1,4 +1,4 @@
-package com.andreaak.note;
+package com.andreaak.note.utils;
 
 import java.util.List;
 

@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.andreaak.note.Constants;
+import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
 
 import java.util.ArrayList;
@@ -126,6 +126,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             items.add(item);
         }
         cursor.close();
+        Collections.sort(items);
         return items;
     }
 

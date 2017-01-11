@@ -8,11 +8,14 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.andreaak.note.dataBase.DataBaseHelper;
+import com.andreaak.note.utils.SharedPreferencesHelper;
 
 public class NoteHtmlActivity extends Activity {
 
     public static final String ID = "id";
     public static final String DESCRIPTION = "description";
+    private static final String TEXT_ZOOM = "TEXT_ZOOM";
+
     private WebView webView;
 
     @Override
@@ -21,6 +24,7 @@ public class NoteHtmlActivity extends Activity {
         setContentView(R.layout.activity_note_html);
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDisplayZoomControls(false);
         loadText();
     }
 
@@ -47,15 +51,21 @@ public class NoteHtmlActivity extends Activity {
 
         WebSettings settings = webView.getSettings();
         settings.setTextZoom(settings.getTextZoom() - 10);
+        saveTextZoom(settings.getTextZoom());
     }
 
     private void textBigger() {
 
         WebSettings settings = webView.getSettings();
         settings.setTextZoom(settings.getTextZoom() + 10);
+        saveTextZoom(settings.getTextZoom());
     }
 
     private void loadText() {
+        int zoom = SharedPreferencesHelper.getInstance().readInt(TEXT_ZOOM);
+        if (zoom != SharedPreferencesHelper.NOT_DEFINED_INT) {
+            webView.getSettings().setTextZoom(zoom);
+        }
 
         String description = getIntent().getStringExtra(DESCRIPTION);
         setTitle(description);
@@ -64,5 +74,9 @@ public class NoteHtmlActivity extends Activity {
         DataBaseHelper dataBaseHelper = DataBaseHelper.getInstance();
         String text = dataBaseHelper.GetEntityDataHtml(id);
         webView.loadData(text, "text/html; charset=UTF-8", null);
+    }
+
+    private void saveTextZoom(int textZoom) {
+        SharedPreferencesHelper.getInstance().save(TEXT_ZOOM, textZoom);
     }
 }

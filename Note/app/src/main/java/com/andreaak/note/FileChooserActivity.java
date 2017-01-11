@@ -3,7 +3,6 @@ package com.andreaak.note;
 import java.io.File;
 import java.util.List;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -15,11 +14,11 @@ import com.andreaak.note.files.FileArrayAdapter;
 import com.andreaak.note.files.FileItem;
 import com.andreaak.note.files.FilesHelper;
 import com.andreaak.note.utils.ItemType;
+import com.andreaak.note.utils.SharedPreferencesHelper;
 
 public class FileChooserActivity extends ListActivity {
     public static final String FILE_NAME = "FileName";
     public static final String PATH = "Path";
-    public static final String PREFS_NAME = "PREFS_NAME";
     public static final String SAVED_PATH = "SAVED_PATH";
 
     private FileArrayAdapter adapter;
@@ -37,9 +36,7 @@ public class FileChooserActivity extends ListActivity {
     private void onRestoreNonConfigurationInstance() {
         currentDir = (File) getLastNonConfigurationInstance();
         if (currentDir == null) {
-            SharedPreferences sPref = getSharedPreferences(FileChooserActivity.PREFS_NAME, MODE_PRIVATE);
-            String savedPath = sPref.getString(SAVED_PATH, "");
-
+            String savedPath = SharedPreferencesHelper.getInstance().read(SAVED_PATH);
             currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
                     Environment.getExternalStorageDirectory() :
                     new File(savedPath);
