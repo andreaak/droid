@@ -14,15 +14,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/webView"/>
-
-    <!--ScrollView
-        android:id="@+id/SCROLLER_ID"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:fillViewport="true">
-
-
-
-    </ScrollView-->
 </LinearLayout>

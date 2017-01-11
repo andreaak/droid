@@ -15,7 +15,6 @@ import java.io.File;
 public class MainActivity extends Activity {
 
     private static final int REQUEST_FILE_CHOOSER = 1;
-    private static final int REQUEST_NOTE_CHOOSER = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,10 +49,6 @@ public class MainActivity extends Activity {
                 String path = data.getStringExtra(FileChooserActivity.PATH);
                 checkDatabase(path);
             }
-        } else if (requestCode == REQUEST_NOTE_CHOOSER) {
-            if (resultCode == RESULT_OK) {
-
-            }
         }
     }
 
@@ -69,12 +64,12 @@ public class MainActivity extends Activity {
             SharedPreferences.Editor ed = sPref.edit();
             String savePath = new File(path).getParent();
             ed.putString(FileChooserActivity.SAVED_PATH, savePath);
-            boolean res = ed.commit();
+            ed.commit();
 
             Intent intent = new Intent(this, EntityChooserActivity.class);
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Database fault", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.db_fault), Toast.LENGTH_LONG).show();
         }
     }
 }

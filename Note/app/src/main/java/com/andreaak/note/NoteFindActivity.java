@@ -34,7 +34,7 @@ public class NoteFindActivity extends ListActivity {
         if (helper == null) {
             helper = new EntityHelper(this);
             if (!helper.openDatabase()) {
-                Toast.makeText(this, "Database fault", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.db_fault), Toast.LENGTH_LONG).show();
                 finishWithFault();
                 return;
             }
@@ -72,8 +72,8 @@ public class NoteFindActivity extends ListActivity {
 
     private void onNoteClick(EntityItem item) {
         Intent intent = new Intent(this, NoteHtmlActivity.class);
-        intent.putExtra(NoteTextActivity.ID, item.getId());
-        intent.putExtra(NoteTextActivity.DESCRIPTION, item.getDescription());
+        intent.putExtra(NoteHtmlActivity.ID, item.getId());
+        intent.putExtra(NoteHtmlActivity.DESCRIPTION, item.getDescription());
         startActivity(intent);
     }
 }

@@ -8,8 +8,8 @@ public class Constants {
     public static String getText(String sep, List<String> args) {
 
         StringBuffer sb = new StringBuffer();
-        for(String str : args) {
-            if(sb.length() != 0) {
+        for (String str : args) {
+            if (sb.length() != 0) {
                 sb.append(sep);
             }
             sb.append(str);

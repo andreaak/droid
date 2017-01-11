@@ -38,15 +38,6 @@
             <action android:name="com.andreaak.note.EntityChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable">
-            </meta-data>
-        </activity>
-        <activity
-            android:name=".NoteTextActivity"
-            android:theme="@android:style/Theme.Holo">
-            <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
             android:name=".NoteHtmlActivity"

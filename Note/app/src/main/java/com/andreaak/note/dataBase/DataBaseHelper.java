@@ -66,6 +66,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             checkDB.getVersion();
             res = true;
         } catch (SQLiteException e) {
+            Log.d(Constants.LOG_TAG, "Database error!!!");
             Log.e(Constants.LOG_TAG, e.getMessage(), e);
         }
 
@@ -77,8 +78,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void openDataBase() throws SQLException {
-        if(database == null || !database.isOpen()) {
+        if (database == null || !database.isOpen()) {
             database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
+            Log.d(Constants.LOG_TAG, "Database opened");
         }
     }
 
@@ -109,8 +111,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         List<FindNoteItem> items = new ArrayList<FindNoteItem>();
 
         String sql = "SELECT Entity.id, Entity.description " +
-                    "FROM Entity, EntityData " +
-                    "WHERE Entity.id=EntityData.id AND EntityData.TextData LIKE ? ESCAPE '#'";
+                "FROM Entity, EntityData " +
+                "WHERE Entity.id=EntityData.id AND EntityData.TextData LIKE ? ESCAPE '#'";
         Cursor cursor = database.rawQuery(sql, new String[]{"%" + text + "%"});
         while (cursor.moveToNext()) {
             int idIndex = cursor.getColumnIndex(DataBaseHelper.ID);
@@ -190,6 +192,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             database.close();
 
         super.close();
+        Log.d(Constants.LOG_TAG, "Database closed");
     }
 
     @Override
