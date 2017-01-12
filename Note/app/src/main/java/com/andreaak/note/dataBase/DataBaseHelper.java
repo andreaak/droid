@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.andreaak.note.R;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
 
@@ -32,11 +34,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static String ENTITY_DATA_HTML = "HtmlData";
     private static String ENTITY_DATA_DATA = "Data";
 
-    private SQLiteDatabase database;
-
-    private String dbPath;
-
     private static DataBaseHelper instance;
+
+    private SQLiteDatabase database;
+    private String dbPath;
+    private Context context;
 
     public static void initInstance(Context context, String dbPath) {
         if (instance != null) {
@@ -53,6 +55,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         super(context, dbPath, null, 1);
         this.dbPath = dbPath;
+        this.context = context;
     }
 
     public boolean checkDataBase() {
@@ -130,7 +133,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return items;
     }
 
-
     public List<String> GetDescriptions(int currentId) {
 
         List<String> items = new ArrayList<String>();
@@ -160,16 +162,52 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return items;
     }
 
-    public String GetEntityDataHtml(int id) {
-        Cursor cursor = database.query(ENTITY_DATA, new String[]{ENTITY_DATA_HTML},
-                ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+    public String GetEntityDataText(int id) {
+
+        Cursor cursor = null;
         String text = "";
-        if (cursor.moveToNext()) {
-            int textIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DATA_HTML);
-            text = cursor.getString(textIndex);
+
+        try {
+            cursor = database.query(ENTITY_DATA, new String[]{ENTITY_DATA_TEXT},
+                    ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+            if (cursor.moveToNext()) {
+                int textIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DATA_TEXT);
+                text = cursor.getString(textIndex);
+            }
+        } catch (Exception ex) {
+            Log.e("Text read fault", ex.getMessage(), ex);
+            text = ex.getMessage();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
-        cursor.close();
+        return text;
+    }
+
+    public String GetEntityDataHtml(int id) {
+
+        Cursor cursor = null;
+        String text = "";
+
+        try {
+            cursor = database.query(ENTITY_DATA, new String[]{ENTITY_DATA_HTML},
+                    ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+            if (cursor.moveToNext()) {
+                int textIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DATA_HTML);
+                text = cursor.getString(textIndex);
+            }
+        } catch (Exception ex) {
+            Log.e("Html read fault", ex.getMessage(), ex);
+            Toast.makeText(context, R.string.html_read_fault, Toast.LENGTH_LONG).show();
+            text = GetEntityDataText(id);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
         return text;
     }
 
