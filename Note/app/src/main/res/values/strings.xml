@@ -11,4 +11,8 @@
     <string name="search">Search</string>
     <string name="db_fault">Database fault</string>
     <string name="html_read_fault">Html read fault</string>
+    <string name="select_account">Select Google Account…</string>
+    <string name="no_google_account">No Google account</string>
+    <string name="download">Download</string>
+    <string name="google_error">Google Error</string>
 </resources>
