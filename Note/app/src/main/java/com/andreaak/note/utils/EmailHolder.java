@@ -1,7 +1,7 @@
 package com.andreaak.note.utils;
 
 public class EmailHolder {
-    private static final String ACC_NAME = "account_name";
+    private static final String GOOGLE_ACCOUNT_NAME = "GOOGLE_ACCOUNT_NAME";
 
     SharedPreferencesHelper preferences;
 
@@ -13,10 +13,10 @@ public class EmailHolder {
 
     public void setEmail(String email) {
         this.email = email;
-        preferences.save(ACC_NAME, email);
+        preferences.save(GOOGLE_ACCOUNT_NAME, email);
     }
 
     public String getEmail() {
-        return email != null ? email : (email = preferences.read(ACC_NAME));
+        return email != null ? email : (email = preferences.read(GOOGLE_ACCOUNT_NAME));
     }
 }

@@ -24,7 +24,8 @@ import java.io.File;
 public class MainActivity extends Activity implements GoogleDriveHelper.ConnectCBs {
 
     private static final int REQUEST_FILE_CHOOSER = 1;
-    private static final int REQ_ACCPICK = 2;
+    private static final int GOOGLE_ACCOUNT_PICK = 2;
+    private static final int REQUEST_DIRECTORY_CHOOSER = 3;
     private  EmailHolder emailHolder;
     private  Menu menu;
 
@@ -58,22 +59,16 @@ public class MainActivity extends Activity implements GoogleDriveHelper.ConnectC
             }
             case R.id.menu_select_account: {
                 startActivityForResult(AccountPicker.newChooseAccountIntent(
-                        null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null), REQ_ACCPICK);
+                        null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null), GOOGLE_ACCOUNT_PICK);
                 return true;
             }
             case R.id.menu_download: {
-                startActivityForResult(AccountPicker.newChooseAccountIntent(
-                        null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null), REQ_ACCPICK);
+                getDirectory();
                 return true;
             }
 
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void getfile() {
-        Intent intent1 = new Intent(this, FileChooserActivity.class);
-        startActivityForResult(intent1, REQUEST_FILE_CHOOSER);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -84,7 +79,7 @@ public class MainActivity extends Activity implements GoogleDriveHelper.ConnectC
                     checkDatabase(path);
                 }
                 break;
-            case REQ_ACCPICK:
+            case GOOGLE_ACCOUNT_PICK:
                 if (data != null && data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) != null)
                     emailHolder.setEmail(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
                 if (!GoogleDriveHelper.getInstance().init(this)) {
@@ -95,8 +90,24 @@ public class MainActivity extends Activity implements GoogleDriveHelper.ConnectC
 
                 }
                 break;
+            case REQUEST_DIRECTORY_CHOOSER:
+                if (resultCode == RESULT_OK) {
+                    String path = data.getStringExtra(DirectoryChooserActivity.PATH);
+
+                }
+                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void getfile() {
+        Intent intent1 = new Intent(this, FileChooserActivity.class);
+        startActivityForResult(intent1, REQUEST_FILE_CHOOSER);
+    }
+
+    private void getDirectory() {
+        Intent intent1 = new Intent(this, DirectoryChooserActivity.class);
+        startActivityForResult(intent1, REQUEST_DIRECTORY_CHOOSER);
     }
 
     private void checkDatabase(String path) {
@@ -108,7 +119,7 @@ public class MainActivity extends Activity implements GoogleDriveHelper.ConnectC
         boolean dbExist = databaseHelper.checkDataBase();
         if (dbExist) {
             String savePath = new File(path).getParent();
-            SharedPreferencesHelper.getInstance().save(FileChooserActivity.SAVED_PATH, savePath);
+            SharedPreferencesHelper.getInstance().save(FileChooserActivity.DIRECTORY_WITH_DB_PATH, savePath);
 
             Intent intent = new Intent(this, EntityChooserActivity.class);
             startActivity(intent);

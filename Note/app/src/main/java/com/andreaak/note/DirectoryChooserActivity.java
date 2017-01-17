@@ -1,42 +1,42 @@
 package com.andreaak.note;
 
-import java.io.File;
-import java.util.List;
-
-import android.os.Bundle;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.ListView;
 
+import com.andreaak.note.files.DirectoriesHelper;
 import com.andreaak.note.files.FileArrayAdapter;
 import com.andreaak.note.files.FileItem;
-import com.andreaak.note.files.FilesHelper;
 import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.SharedPreferencesHelper;
 
-public class FileChooserActivity extends ListActivity {
-    public static final String FILE_NAME = "FileName";
+import java.io.File;
+import java.util.List;
+
+public class DirectoryChooserActivity extends ListActivity {
+
     public static final String PATH = "Path";
-    public static final String DIRECTORY_WITH_DB_PATH = "DIRECTORY_WITH_DB_PATH";
+    public static final String DOWNLOAD_DIR_PATH = "DOWNLOAD_DIR_PATH";
 
     private FileArrayAdapter adapter;
-    private FilesHelper helper;
+    private DirectoriesHelper helper;
     private File currentDir;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onRestoreNonConfigurationInstance();
-        helper = new FilesHelper(this);
+        helper = new DirectoriesHelper(this);
         fill(currentDir);
     }
 
     private void onRestoreNonConfigurationInstance() {
         currentDir = (File) getLastNonConfigurationInstance();
         if (currentDir == null) {
-            String savedPath = SharedPreferencesHelper.getInstance().read(DIRECTORY_WITH_DB_PATH);
+            String savedPath = SharedPreferencesHelper.getInstance().read(DOWNLOAD_DIR_PATH);
             currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
                     Environment.getExternalStorageDirectory() :
                     new File(savedPath);
@@ -51,7 +51,7 @@ public class FileChooserActivity extends ListActivity {
     private void fill(File file) {
         this.setTitle(file.getAbsolutePath());
         List<FileItem> dir = helper.getDirectory(file);
-        adapter = new FileArrayAdapter(FileChooserActivity.this, R.layout.activity_file_chooser, dir);
+        adapter = new FileArrayAdapter(DirectoryChooserActivity.this, R.layout.activity_dir_chooser, dir);
         this.setListAdapter(adapter);
     }
 
@@ -70,7 +70,6 @@ public class FileChooserActivity extends ListActivity {
     private void onFileClick(FileItem item) {
         Intent intent = new Intent();
         intent.putExtra(PATH, item.getPath());
-        intent.putExtra(FILE_NAME, item.getName());
         setResult(RESULT_OK, intent);
         finish();
     }
