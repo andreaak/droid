@@ -1,10 +1,11 @@
-package com.andreaak.note.utils;
+package com.andreaak.note.google;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.andreaak.note.utils.Constants;
+import com.andreaak.note.utils.Utils;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException;
@@ -25,9 +26,20 @@ import java.util.Collections;
 
 public class GoogleDriveHelper {
 
-    EmailHolder emailHolder;
-
     private static GoogleDriveHelper instance;
+    public final String MIME_TEXT = "text/plain";
+    public final String MIME_FLDR = "application/vnd.google-apps.folder";
+    //    public final String TITL = "titl";
+//    public final String GDID = "gdid";
+//    public final String MIME = "mime";
+    private Drive service;
+    private IConnectGoogleDrive connectInstance;
+    private boolean isConnected;
+    private EmailHolder emailHolder;
+
+    private GoogleDriveHelper(EmailHolder emailHolder) {
+        this.emailHolder = emailHolder;
+    }
 
     public static void initInstance(EmailHolder emailHolder) {
         instance = new GoogleDriveHelper(emailHolder);
@@ -37,32 +49,21 @@ public class GoogleDriveHelper {
         return instance;
     }
 
-    private GoogleDriveHelper(EmailHolder emailHolder) {
-        this.emailHolder = emailHolder;
+    public EmailHolder getEmailHolder() {
+        return emailHolder;
     }
 
-    public interface ConnectCBs {
-        void onConnFail(Exception ex);
-
-        void onConnOK();
+    public boolean isConnected() {
+        return isConnected;
     }
 
-    private static Drive service;
-    private static ConnectCBs mConnCBs;
-    private static boolean isConnected;
-
-    /************************************************************************************************
-     * initialize Google Drive Api
-     *
-     * @param act activity context
-     */
     public boolean init(Activity act) {
         if (act != null) try {
             String email = emailHolder.getEmail();
             if (email != null) {
-                mConnCBs = (ConnectCBs) act;
+                connectInstance = (IConnectGoogleDrive) act;
                 service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(),
-                        GoogleAccountCredential.usingOAuth2(UT.acx, Collections.singletonList(DriveScopes.DRIVE))
+                        GoogleAccountCredential.usingOAuth2(Utils.acx, Collections.singletonList(DriveScopes.DRIVE))
                                 .setSelectedAccountName(email)
                 ).build();
                 return true;
@@ -107,9 +108,9 @@ public class GoogleDriveHelper {
                 protected void onPostExecute(Exception ex) {
                     super.onPostExecute(ex);
                     if (isConnected) {
-                        mConnCBs.onConnOK();
+                        connectInstance.onConnectionOK();
                     } else {  // null indicates general error (fatal)
-                        mConnCBs.onConnFail(ex);
+                        connectInstance.onConnectionFail(ex);
                     }
                 }
             }.execute();
@@ -125,39 +126,68 @@ public class GoogleDriveHelper {
     /************************************************************************************************
      * find file/folder in GOODrive
      *
-     * @param prnId parent ID (optional), null searches full drive, "root" searches Drive root
-     * @param titl  file/folder name (optional)
+     * @param id    parent ID (optional), null searches full drive, "root" searches Drive root
+     * @param title file/folder name (optional)
      * @param mime  file/folder mime type (optional)
      * @return arraylist of found objects
      */
-    public ArrayList<ContentValues> search(String prnId, String titl, String mime) {
-        ArrayList<ContentValues> gfs = new ArrayList<>();
-        if (service != null && isConnected) try {
-            // add query conditions, build query
-            String qryClause = "'me' in owners and ";
-            if (prnId != null) qryClause += "'" + prnId + "' in parents and ";
-            if (titl != null) qryClause += "title = '" + titl + "' and ";
-            if (mime != null) qryClause += "mimeType = '" + mime + "' and ";
-            qryClause = qryClause.substring(0, qryClause.length() - " and ".length());
-            Drive.Files.List qry = service.files().list().setQ(qryClause)
-                    .setFields("items(id,mimeType,labels/trashed,title),nextPageToken");
-            String npTok = null;
-            if (qry != null) do {
-                FileList gLst = qry.execute();
-                if (gLst != null) {
-                    for (File gFl : gLst.getItems()) {
-                        if (gFl.getLabels().getTrashed()) continue;
-                        gfs.add(UT.newCVs(gFl.getTitle(), gFl.getId(), gFl.getMimeType()));
-                    }                                                                 //else UT.lg("failed " + gFl.getTitle());
-                    npTok = gLst.getNextPageToken();
-                    qry.setPageToken(npTok);
+    public ArrayList<GoogleItem> search(String id, String title, String mime) {
+        ArrayList<GoogleItem> result = new ArrayList<GoogleItem>();
+        if (service != null && isConnected) {
+            try {
+                // add query conditions, build query
+                // String qryClause = "'me' in owners and ";
+
+                StringBuilder sb = new StringBuilder();
+                AddClause(sb, "'me' in owners");
+                if (id != null) {
+                    AddClause(sb, String.format("'%1$s' in parents", id));
+                    //qryClause += "'" + prnId + "' in parents and ";
                 }
+                if (title != null) {
+                    AddClause(sb, String.format("title = '%1$s'", title));
+                    //qryClause += "title = '" + titl + "' and ";
+                }
+                if (mime != null) {
+                    AddClause(sb, String.format("mimeType = '%1$s'", mime));
+                    //qryClause += "mimeType = '" + mime + "' and ";
+                }
+                //qryClause = qryClause.substring(0, qryClause.length() - " and ".length());
+                Drive.Files.List qry = service.files().list().setQ(sb.toString())
+                        .setFields("items(id,mimeType,labels/trashed,title),nextPageToken");
+
+                if (qry == null) {
+                    return result;
+                }
+
+                String pageToken = null;
+                do {
+                    FileList files = qry.execute();
+                    if (files != null) {
+                        for (File file : files.getItems()) {
+                            if (file.getLabels().getTrashed())
+                                continue;
+                            GoogleItem item = new GoogleItem(file);
+                            result.add(item);
+                        }
+                        pageToken = files.getNextPageToken();
+                        qry.setPageToken(pageToken);
+                    }
+                }
+                while (pageToken != null && pageToken.length() > 0);                     //Utils.lg("found " + vlss.size());
+
+            } catch (Exception e) {
+                Log.e(Constants.LOG_TAG, e.getMessage(), e);
             }
-            while (npTok != null && npTok.length() > 0);                     //UT.lg("found " + vlss.size());
-        } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
         }
-        return gfs;
+        return result;
+    }
+
+    private void AddClause(StringBuilder sb, String clause) {
+        if (sb.length() != 0) {
+            sb.append(" and ");
+        }
+        sb.append(clause);
     }
 
     /************************************************************************************************
@@ -173,7 +203,7 @@ public class GoogleDriveHelper {
             File meta = new File();
             meta.setParents(Collections.singletonList(new ParentReference().setId(prnId == null ? "root" : prnId)));
             meta.setTitle(titl);
-            meta.setMimeType(UT.MIME_FLDR);
+            meta.setMimeType(MIME_FLDR);
 
             File gFl = null;
             try {
@@ -217,15 +247,16 @@ public class GoogleDriveHelper {
     }
 
     public boolean saveToFile(String resId, java.io.File file) {
-        if (service != null && isConnected && resId != null) try {
-            File gFl = service.files().get(resId).setFields("downloadUrl").execute();
-            if (gFl != null) {
-                String strUrl = gFl.getDownloadUrl();
-                return UT.saveToFile(service.getRequestFactory().buildGetRequest(new GenericUrl(strUrl)).execute().getContent(), file);
+        if (service != null && isConnected && resId != null)
+            try {
+                File googleFile = service.files().get(resId).setFields("downloadUrl").execute();
+                if (googleFile != null) {
+                    String strUrl = googleFile.getDownloadUrl();
+                    return Utils.saveToFile(service.getRequestFactory().buildGetRequest(new GenericUrl(strUrl)).execute().getContent(), file);
+                }
+            } catch (Exception e) {
+                Log.e(Constants.LOG_TAG, e.getMessage(), e);
             }
-        } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
-        }
         return false;
     }
 
@@ -279,10 +310,9 @@ public class GoogleDriveHelper {
      * @param cv oontent values
      * @return TRUE if FOLDER, FALSE otherwise
      */
-    public boolean isFolder(ContentValues cv) {
-        String mime = cv.getAsString(UT.MIME);
-        return mime != null && UT.MIME_FLDR.equalsIgnoreCase(mime);
+    public boolean isFolder(GoogleItem cv) {
+        String mime = cv.getMime();
+        return mime != null && MIME_FLDR.equalsIgnoreCase(mime);
     }
-
 }
 

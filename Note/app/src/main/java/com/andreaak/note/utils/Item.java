@@ -10,10 +10,12 @@ public abstract class Item {
         this.type = type;
     }
 
-    public ItemType getType() { return type; }
+    public ItemType getType() {
+        return type;
+    }
 
-    public int GetImageId(){
-        switch(getType()){
+    public int GetImageId() {
+        switch (getType()) {
             case Directory:
                 return R.drawable.directory_icon;
             case File:

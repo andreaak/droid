@@ -1,11 +1,8 @@
 package com.andreaak.note;
 
-import java.io.File;
-import java.util.List;
-
-import android.os.Bundle;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.ListView;
@@ -13,13 +10,16 @@ import android.widget.ListView;
 import com.andreaak.note.files.FileArrayAdapter;
 import com.andreaak.note.files.FileItem;
 import com.andreaak.note.files.FilesHelper;
+import com.andreaak.note.utils.Configs;
 import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.SharedPreferencesHelper;
+
+import java.io.File;
+import java.util.List;
 
 public class FileChooserActivity extends ListActivity {
     public static final String FILE_NAME = "FileName";
     public static final String PATH = "Path";
-    public static final String DIRECTORY_WITH_DB_PATH = "DIRECTORY_WITH_DB_PATH";
 
     private FileArrayAdapter adapter;
     private FilesHelper helper;
@@ -36,7 +36,7 @@ public class FileChooserActivity extends ListActivity {
     private void onRestoreNonConfigurationInstance() {
         currentDir = (File) getLastNonConfigurationInstance();
         if (currentDir == null) {
-            String savedPath = SharedPreferencesHelper.getInstance().read(DIRECTORY_WITH_DB_PATH);
+            String savedPath = SharedPreferencesHelper.getInstance().read(Configs.DIRECTORY_WITH_DB_PATH);
             currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
                     Environment.getExternalStorageDirectory() :
                     new File(savedPath);

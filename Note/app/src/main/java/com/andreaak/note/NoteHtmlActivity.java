@@ -8,13 +8,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.andreaak.note.dataBase.DataBaseHelper;
+import com.andreaak.note.utils.Configs;
 import com.andreaak.note.utils.SharedPreferencesHelper;
 
 public class NoteHtmlActivity extends Activity {
 
     public static final String ID = "id";
     public static final String DESCRIPTION = "description";
-    private static final String TEXT_ZOOM = "TEXT_ZOOM";
 
     private WebView webView;
 
@@ -62,7 +62,7 @@ public class NoteHtmlActivity extends Activity {
     }
 
     private void loadText() {
-        int zoom = SharedPreferencesHelper.getInstance().readInt(TEXT_ZOOM);
+        int zoom = SharedPreferencesHelper.getInstance().readInt(Configs.TEXT_ZOOM);
         if (zoom != SharedPreferencesHelper.NOT_DEFINED_INT) {
             webView.getSettings().setTextZoom(zoom);
         }
@@ -77,6 +77,6 @@ public class NoteHtmlActivity extends Activity {
     }
 
     private void saveTextZoom(int textZoom) {
-        SharedPreferencesHelper.getInstance().save(TEXT_ZOOM, textZoom);
+        SharedPreferencesHelper.getInstance().save(Configs.TEXT_ZOOM, textZoom);
     }
 }

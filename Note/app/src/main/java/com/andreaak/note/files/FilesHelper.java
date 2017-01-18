@@ -6,6 +6,7 @@ import android.util.Log;
 import com.andreaak.note.R;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
+import com.andreaak.note.utils.Utils;
 
 import java.io.File;
 import java.sql.Date;
@@ -40,8 +41,8 @@ public class FilesHelper {
                     int filesCount = filesInDirectory != null ? filesInDirectory.length : 0;
 
                     int id = filesCount == 0 ? R.string.item : R.string.items;
-                    String[] args = new String[] { String.valueOf(filesCount), context.getString(id) };
-                    String num_item = Constants.getText(" ", Arrays.asList(args));
+                    String[] args = new String[]{String.valueOf(filesCount), context.getString(id)};
+                    String num_item = Utils.getSeparatedText(" ", Arrays.asList(args));
                     directories.add(new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory));
                 } else {
                     float length = file.length() / 1000000f;

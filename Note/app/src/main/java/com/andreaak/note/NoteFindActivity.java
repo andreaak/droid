@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.andreaak.note.dataBase.EntityHelper;
 import com.andreaak.note.dataBase.EntityItem;
 import com.andreaak.note.dataBase.FindNoteArrayAdapter;
 import com.andreaak.note.dataBase.FindNoteItem;
+import com.andreaak.note.utils.Utils;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class NoteFindActivity extends ListActivity {
         if (helper == null) {
             helper = new EntityHelper(this);
             if (!helper.openDatabase()) {
-                Toast.makeText(this, getString(R.string.db_fault), Toast.LENGTH_LONG).show();
+                Utils.showText(this, R.string.db_fault);
                 finishWithFault();
                 return;
             }

@@ -14,15 +14,16 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.andreaak.note.utils.Constants;
-import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.dataBase.EntityArrayAdapter;
-import com.andreaak.note.dataBase.EntityItem;
 import com.andreaak.note.dataBase.EntityHelper;
+import com.andreaak.note.dataBase.EntityItem;
+import com.andreaak.note.utils.ItemType;
 
 import java.util.List;
+
+import static com.andreaak.note.utils.Utils.getSeparatedText;
+import static com.andreaak.note.utils.Utils.showText;
 
 public class EntityChooserActivity extends ListActivity implements SearchView.OnQueryTextListener {
 
@@ -50,7 +51,7 @@ public class EntityChooserActivity extends ListActivity implements SearchView.On
             helper = new EntityHelper(this);
         }
         if (!helper.openDatabase()) {
-            Toast.makeText(this, R.string.db_fault, Toast.LENGTH_LONG).show();
+            showText(this, R.string.db_fault);
             finishWithFault();
             return;
         }
@@ -102,7 +103,7 @@ public class EntityChooserActivity extends ListActivity implements SearchView.On
             setTitle(getString(R.string.app_name));
             return;
         }
-        setTitle(Constants.getText("/", descriptions));
+        setTitle(getSeparatedText("/", descriptions));
     }
 
     private void fill(int currentId) {

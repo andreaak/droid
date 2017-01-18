@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.SQLException;
 import android.util.Log;
 
-import com.andreaak.note.utils.Constants;
 import com.andreaak.note.R;
+import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
 
 import java.util.List;
@@ -16,20 +16,17 @@ public class EntityHelper {
 
     private Context context;
     private DataBaseHelper dataBaseHelper;
-
+    private int currentId;
+    private String currentText;
 
     public EntityHelper(Context context) {
         this.context = context;
         currentId = ROOT;
     }
 
-    private int currentId;
-
     public int getCurrentId() {
         return currentId;
     }
-
-    private String currentText;
 
     public String getCurrentText() {
         return currentText;

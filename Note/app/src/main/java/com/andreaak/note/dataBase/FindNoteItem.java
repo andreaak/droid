@@ -6,13 +6,13 @@ public class FindNoteItem extends EntityItem implements Comparable<FindNoteItem>
 
     private String path;
 
-    public String getPath() {
-        return path;
-    }
-
     public FindNoteItem(int id, String description, ItemType type, String path) {
         super(id, description, type);
         this.path = path;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     @Override

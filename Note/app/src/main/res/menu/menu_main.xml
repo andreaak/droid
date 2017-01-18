@@ -1,17 +1,16 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_connect"
         android:icon="@android:drawable/ic_menu_view"
-        android:title="@string/connect"
-        android:showAsAction="always" />
+        android:showAsAction="always"
+        android:title="@string/connect" />
 
     <group android:id="@+id/group1">
         <item
             android:id="@+id/menu_download"
             android:icon="@drawable/ic_action_download"
-            android:title="@string/download"
-            android:showAsAction="always" />
+            android:showAsAction="always"
+            android:title="@string/download" />
     </group>
     <item
         android:id="@+id/menu_settings"

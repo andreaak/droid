@@ -7,20 +7,19 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.andreaak.note.R;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
+import com.andreaak.note.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DataBaseHelper extends SQLiteOpenHelper {
+import static com.andreaak.note.utils.Utils.showText;
 
-    //The Android's default system path of your application database.
-    private static String STANDART_DB_PATH = "/data/data/com.andreaak.note/databases/";
+public class DataBaseHelper extends SQLiteOpenHelper {
 
     public static String ENTITY = "Entity";
     public static String ID = "ID";
@@ -28,7 +27,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static String ENTITY_ORDER_POSITION = "OrderPosition";
     public static String ENTITY_TYPE = "Type";
     public static String ENTITY_DESCRIPTION = "Description";
-
+    //The Android's default system path of your application database.
+    private static String STANDART_DB_PATH = "/data/data/com.andreaak.note/databases/";
     private static String ENTITY_DATA = "EntityData";
     private static String ENTITY_DATA_TEXT = "TextData";
     private static String ENTITY_DATA_HTML = "HtmlData";
@@ -40,6 +40,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private String dbPath;
     private Context context;
 
+    private DataBaseHelper(Context context, String dbPath) {
+
+        super(context, dbPath, null, 1);
+        this.dbPath = dbPath;
+        this.context = context;
+    }
+
     public static void initInstance(Context context, String dbPath) {
         if (instance != null) {
             instance.close();
@@ -49,13 +56,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public static DataBaseHelper getInstance() {
         return instance;
-    }
-
-    private DataBaseHelper(Context context, String dbPath) {
-
-        super(context, dbPath, null, 1);
-        this.dbPath = dbPath;
-        this.context = context;
     }
 
     public boolean checkDataBase() {
@@ -125,7 +125,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             String description = cursor.getString(descriptionIndex);
 
             FindNoteItem item = new FindNoteItem(id, description, ItemType.File,
-                    Constants.getText("/", GetDescriptions(id)));
+                    Utils.getSeparatedText("/", GetDescriptions(id)));
             items.add(item);
         }
         cursor.close();
@@ -200,7 +200,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             }
         } catch (Exception ex) {
             Log.e("Html read fault", ex.getMessage(), ex);
-            Toast.makeText(context, R.string.html_read_fault, Toast.LENGTH_LONG).show();
+            showText(context, R.string.html_read_fault);
             text = GetEntityDataText(id);
         } finally {
             if (cursor != null) {

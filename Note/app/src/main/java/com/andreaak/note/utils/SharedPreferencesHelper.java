@@ -14,16 +14,16 @@ public class SharedPreferencesHelper {
     private static SharedPreferencesHelper instance;
     private Context context;
 
+    private SharedPreferencesHelper(Context context) {
+        this.context = context;
+    }
+
     public static void initInstance(Context context) {
         instance = new SharedPreferencesHelper(context);
     }
 
     public static SharedPreferencesHelper getInstance() {
         return instance;
-    }
-
-    private SharedPreferencesHelper(Context context) {
-        this.context = context;
     }
 
     public boolean save(String id, String value) {

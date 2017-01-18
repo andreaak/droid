@@ -13,14 +13,14 @@ import com.andreaak.note.R;
 
 import java.util.List;
 
-public class FileArrayAdapter extends ArrayAdapter<FileItem> {
+public class DirectoryArrayAdapter extends ArrayAdapter<FileItem> {
 
     private Context c;
     private int id;
     private List<FileItem> items;
 
-    public FileArrayAdapter(Context context, int textViewResourceId,
-                            List<FileItem> objects) {
+    public DirectoryArrayAdapter(Context context, int textViewResourceId,
+                                 List<FileItem> objects) {
         super(context, textViewResourceId, objects);
         c = context;
         id = textViewResourceId;
@@ -51,6 +51,7 @@ public class FileArrayAdapter extends ArrayAdapter<FileItem> {
                 Drawable image = c.getResources().getDrawable(item.GetImageId());
                 imageCity.setImageDrawable(image);
             }
+
             if (tvName != null)
                 tvName.setText(item.getName());
             if (tvData != null)

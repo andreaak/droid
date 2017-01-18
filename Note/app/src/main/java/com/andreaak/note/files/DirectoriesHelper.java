@@ -6,6 +6,7 @@ import android.util.Log;
 import com.andreaak.note.R;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
+import com.andreaak.note.utils.Utils;
 
 import java.io.File;
 import java.sql.Date;
@@ -25,31 +26,45 @@ public class DirectoriesHelper {
         this.context = context;
     }
 
-    public List<FileItem> getDirectory(File parent) {
-        File[] dirs = parent.listFiles();
+    private FileItem currentDirectory;
+
+    public FileItem getCurrentDirectory() {
+        return currentDirectory;
+    }
+
+    public List<FileItem> getDirectory(File current) {
+        currentDirectory = getFileItem(current);
+        File[] dirs = current.listFiles();
         List<FileItem> directories = new ArrayList<FileItem>();
         try {
             for (File file : dirs) {
-                Date lastModDate = new Date(file.lastModified());
-                DateFormat formater = DateFormat.getDateTimeInstance();
-                String date_modify = formater.format(lastModDate);
-                if (file.isDirectory()) {
-                    File[] filesInDirectory = file.listFiles();
-                    int filesCount = filesInDirectory != null ? filesInDirectory.length : 0;
 
-                    int id = filesCount == 0 ? R.string.item : R.string.items;
-                    String[] args = new String[]{String.valueOf(filesCount), context.getString(id)};
-                    String num_item = Constants.getText(" ", Arrays.asList(args));
-                    directories.add(new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory));
+                if (file.isDirectory()) {
+                    FileItem fileItem = getFileItem(file);
+                    directories.add(fileItem);
                 }
             }
         } catch (Exception e) {
             Log.e(Constants.LOG_TAG, e.getMessage(), e);
         }
         Collections.sort(directories);
-        if (!parent.getName().equalsIgnoreCase(ROOT_DIRECTORY)) {
-            directories.add(0, new FileItem("", context.getString(R.string.parentDirectory), "", parent.getParent(), ItemType.ParentDirectory));
+        if (!current.getName().equalsIgnoreCase(ROOT_DIRECTORY)) {
+            directories.add(0, new FileItem("", context.getString(R.string.parentDirectory), "", current.getParent(), ItemType.ParentDirectory));
         }
         return directories;
+    }
+
+    private FileItem getFileItem(File file) {
+        Date lastModDate = new Date(file.lastModified());
+        DateFormat formater = DateFormat.getDateTimeInstance();
+        String date_modify = formater.format(lastModDate);
+
+        File[] filesInDirectory = file.listFiles();
+        int filesCount = filesInDirectory != null ? filesInDirectory.length : 0;
+
+        int id = filesCount == 0 ? R.string.item : R.string.items;
+        String[] args = new String[]{String.valueOf(filesCount), context.getString(id)};
+        String num_item = Utils.getSeparatedText(" ", Arrays.asList(args));
+        return new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory);
     }
 }
