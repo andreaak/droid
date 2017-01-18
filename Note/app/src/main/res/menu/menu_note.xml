@@ -4,10 +4,10 @@
         android:id="@+id/menu_plus"
         android:icon="@drawable/plus"
         android:title="@string/plus"
-        app:showAsAction="always"></item>
+        android:showAsAction="ifRoom"></item>
     <item
         android:id="@+id/menu_minus"
         android:icon="@drawable/minus"
         android:title="@string/minus"
-        app:showAsAction="always"></item>
+        android:showAsAction="ifRoom"></item>
 </menu>

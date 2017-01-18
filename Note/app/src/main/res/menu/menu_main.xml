@@ -2,14 +2,14 @@
     <item
         android:id="@+id/menu_connect"
         android:icon="@android:drawable/ic_menu_view"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/connect" />
 
     <group android:id="@+id/group1">
         <item
             android:id="@+id/menu_download"
             android:icon="@drawable/ic_action_download"
-            android:showAsAction="always"
+            android:showAsAction="ifRoom"
             android:title="@string/download" />
     </group>
     <item

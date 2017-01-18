@@ -97,9 +97,13 @@ public class GoogleDriveHelper {
                         if (e instanceof GoogleJsonResponseException) {
                             if (404 == ((GoogleJsonResponseException) e).getStatusCode())
                                 isConnected = true;
+                        } else {
+                            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                            return e;
                         }
                     } catch (Exception e) {  // "the name must not be empty" indicates
                         Log.e(Constants.LOG_TAG, e.getMessage(), e);           // UNREGISTERED / EMPTY account in 'setSelectedAccountName()' above
+                        return e;
                     }
                     return null;
                 }
