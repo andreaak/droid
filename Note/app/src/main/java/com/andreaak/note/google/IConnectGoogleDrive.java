@@ -5,9 +5,7 @@ public interface IConnectGoogleDrive {
 
     void onConnectionOK();
 
-    void onDownloadOK();
-
-    void onDownloadFail(Exception ex);
+    void onDownloadFinished(Exception ex);
 }
 
 

@@ -5,7 +5,7 @@
         android:showAsAction="ifRoom"
         android:title="@string/connect" />
 
-    <group android:id="@+id/group1">
+    <group android:id="@+id/groupGoogle">
         <item
             android:id="@+id/menu_download"
             android:icon="@drawable/ic_action_download"

@@ -2,11 +2,11 @@ package com.andreaak.note.dataBase;
 
 import android.content.Context;
 import android.database.SQLException;
-import android.util.Log;
 
 import com.andreaak.note.R;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
+import com.andreaak.note.utils.logger.Logger;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class EntityHelper {
             dataBaseHelper.openDataBase();
             res = true;
         } catch (SQLException ex) {
-            Log.e(Constants.LOG_TAG, ex.getMessage(), ex);
+            Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
         }
         return res;
     }

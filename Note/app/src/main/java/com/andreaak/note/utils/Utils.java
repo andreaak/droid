@@ -1,8 +1,9 @@
 package com.andreaak.note.utils;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.andreaak.note.utils.logger.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -39,6 +40,9 @@ public class Utils {
         Toast.makeText(context, id, Toast.LENGTH_LONG).show();
     }
 
+    public static void showText(Context context, String text) {
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+    }
 
 //    private static File cchFile(String flNm) {
 //        File cche = Utils.acx.getExternalCacheDir();
@@ -82,12 +86,12 @@ public class Utils {
             fileOutput.close();
             return true;
         } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
         } finally {
             try {
                 if (bufferedStream != null) bufferedStream.close();
             } catch (Exception e) {
-                Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             }
         }
         return false;

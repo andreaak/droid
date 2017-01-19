@@ -1,13 +1,12 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_plus"
         android:icon="@drawable/plus"
-        android:title="@string/plus"
-        android:showAsAction="ifRoom"></item>
+        android:showAsAction="ifRoom"
+        android:title="@string/plus"></item>
     <item
         android:id="@+id/menu_minus"
         android:icon="@drawable/minus"
-        android:title="@string/minus"
-        android:showAsAction="ifRoom"></item>
+        android:showAsAction="ifRoom"
+        android:title="@string/minus"></item>
 </menu>

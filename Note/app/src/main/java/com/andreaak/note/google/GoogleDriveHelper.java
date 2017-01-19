@@ -2,10 +2,9 @@ package com.andreaak.note.google;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.Utils;
+import com.andreaak.note.utils.logger.Logger;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException;
@@ -24,14 +23,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static com.andreaak.note.utils.Constants.LOG_TAG;
+
 public class GoogleDriveHelper {
 
     private static GoogleDriveHelper instance;
     public final String MIME_TEXT = "text/plain";
     public final String MIME_FLDR = "application/vnd.google-apps.folder";
-    //    public final String TITL = "titl";
-//    public final String GDID = "gdid";
-//    public final String MIME = "mime";
     private Drive service;
     private IConnectGoogleDrive connectInstance;
     private boolean isConnected;
@@ -66,10 +64,11 @@ public class GoogleDriveHelper {
                         GoogleAccountCredential.usingOAuth2(Utils.acx, Collections.singletonList(DriveScopes.DRIVE))
                                 .setSelectedAccountName(email)
                 ).build();
+                Logger.d(LOG_TAG, "Google drive initialized");
                 return true;
             }
         } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+            Logger.e(LOG_TAG, e.getMessage(), e);
         }
         return false;
     }
@@ -87,22 +86,26 @@ public class GoogleDriveHelper {
                         // GoogleAuthUtil.getToken(mAct, email, DriveScopes.DRIVE_FILE);   SO 30122755
                         service.files().get("root").setFields("title").execute();
                         isConnected = true;
+                        Logger.d(LOG_TAG, "Google drive connected");
                     } catch (UserRecoverableAuthIOException e) {  // standard authorization failure - user fixable
-                        Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                        Logger.e(LOG_TAG, e.getMessage(), e);
                         return e;
                     } catch (GoogleAuthIOException e) {  // usually PackageName /SHA1 mismatch in DevConsole
-                        Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                        Logger.e(LOG_TAG, e.getMessage(), e);
                         return e;
                     } catch (IOException e) {   // '404 not found' in FILE scope, consider connected
                         if (e instanceof GoogleJsonResponseException) {
-                            if (404 == ((GoogleJsonResponseException) e).getStatusCode())
+                            if (404 == ((GoogleJsonResponseException) e).getStatusCode()) {
                                 isConnected = true;
+                                Logger.d(LOG_TAG, "Google drive connected");
+                            }
+
                         } else {
-                            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                            Logger.e(LOG_TAG, e.getMessage(), e);
                             return e;
                         }
                     } catch (Exception e) {  // "the name must not be empty" indicates
-                        Log.e(Constants.LOG_TAG, e.getMessage(), e);           // UNREGISTERED / EMPTY account in 'setSelectedAccountName()' above
+                        Logger.e(LOG_TAG, e.getMessage(), e);           // UNREGISTERED / EMPTY account in 'setSelectedAccountName()' above
                         return e;
                     }
                     return null;
@@ -181,7 +184,7 @@ public class GoogleDriveHelper {
                 while (pageToken != null && pageToken.length() > 0);                     //Utils.lg("found " + vlss.size());
 
             } catch (Exception e) {
-                Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                Logger.e(LOG_TAG, e.getMessage(), e);
             }
         }
         return result;
@@ -213,13 +216,13 @@ public class GoogleDriveHelper {
             try {
                 gFl = service.files().insert(meta).execute();
             } catch (Exception e) {
-                Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                Logger.e(LOG_TAG, e.getMessage(), e);
             }
             if (gFl != null && gFl.getId() != null) {
                 rsId = gFl.getId();
             }
         } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+            Logger.e(LOG_TAG, e.getMessage(), e);
         }
         return rsId;
     }
@@ -245,7 +248,7 @@ public class GoogleDriveHelper {
             if (gFl != null)
                 rsId = gFl.getId();
         } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+            Logger.e(LOG_TAG, e.getMessage(), e);
         }
         return rsId;
     }
@@ -259,7 +262,7 @@ public class GoogleDriveHelper {
                     return Utils.saveToFile(service.getRequestFactory().buildGetRequest(new GenericUrl(strUrl)).execute().getContent(), file);
                 }
             } catch (Exception e) {
-                Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                Logger.e(LOG_TAG, e.getMessage(), e);
             }
         return false;
     }
@@ -288,7 +291,7 @@ public class GoogleDriveHelper {
                 gFl = service.files().update(resId, meta, new FileContent(mime, file)).execute();
 
         } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+            Logger.e(LOG_TAG, e.getMessage(), e);
         }
         return gFl == null ? null : gFl.getId();
     }
@@ -303,7 +306,7 @@ public class GoogleDriveHelper {
         if (service != null && isConnected && resId != null) try {
             return null != service.files().trash(resId).execute();
         } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+            Logger.e(LOG_TAG, e.getMessage(), e);
         }
         return false;
     }

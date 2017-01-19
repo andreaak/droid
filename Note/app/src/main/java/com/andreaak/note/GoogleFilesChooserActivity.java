@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +14,7 @@ import com.andreaak.note.google.GoogleDriveHelper;
 import com.andreaak.note.google.GoogleItem;
 import com.andreaak.note.google.IGoogleSearch;
 import com.andreaak.note.utils.Utils;
+import com.andreaak.note.utils.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,10 +77,10 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
                             }
                         }
                     }
-                    publishProgress("Completed");
+                    publishProgress("Search Completed");
                     isDownload[0] = true;
                 } catch (Exception ex) {
-                    Log.e(LOG_TAG, ex.getMessage(), ex);
+                    Logger.e(LOG_TAG, ex.getMessage(), ex);
                     return ex;
                 }
                 return null;
@@ -89,7 +89,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
             @Override
             protected void onProgressUpdate(String... strings) {
                 super.onProgressUpdate(strings);
-                Log.d(LOG_TAG, strings[0]);
+                Logger.d(LOG_TAG, strings[0]);
             }
 
             @Override
@@ -139,7 +139,6 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
             if (sbArray.get(key)) {
                 GoogleItem file = databaseFiles.get(key);
                 selectedFiles.add(file);
-                Log.d(LOG_TAG, file.getTitle());
             }
         }
         getDirectory();
@@ -168,7 +167,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         String[] ids = new String[selectedFiles.size()];
         String[] names = new String[selectedFiles.size()];
 
-        for(int i = 0; i < selectedFiles.size(); i++) {
+        for (int i = 0; i < selectedFiles.size(); i++) {
             GoogleItem gi = selectedFiles.get(i);
             ids[i] = gi.getId();
             names[i] = gi.getTitle();

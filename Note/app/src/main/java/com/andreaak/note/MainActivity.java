@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,6 +15,8 @@ import com.andreaak.note.google.IConnectGoogleDrive;
 import com.andreaak.note.utils.Configs;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.SharedPreferencesHelper;
+import com.andreaak.note.utils.logger.FileLogger;
+import com.andreaak.note.utils.logger.Logger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
@@ -49,6 +50,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             helper = GoogleDriveHelper.getInstance();
             emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
             init(this);
+            Logger.setLogger(new FileLogger());
         }
         emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
     }
@@ -61,7 +63,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.setGroupVisible(R.id.group1, helper.isConnected());
+        menu.setGroupVisible(R.id.groupGoogle, helper.isConnected());
         this.menu = menu;
         return super.onCreateOptionsMenu(menu);
     }
@@ -103,7 +105,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                 if (!helper.init(this)) {
                     showText(this, R.string.no_google_account);
                     setTitle(R.string.app_name);
-                    Log.d(Constants.LOG_TAG, getString(R.string.no_google_account));
+                    Logger.d(Constants.LOG_TAG, getString(R.string.no_google_account));
                 } else {
                     helper.connect();
                 }
@@ -136,7 +138,9 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         if (ids.length == 0) {
             return;
         }
+
         setTitle(R.string.download);
+        menu.setGroupVisible(R.id.groupGoogle, false);
         new AsyncTask<Void, Void, Exception>() {
             @Override
             protected Exception doInBackground(Void... nadas) {
@@ -149,7 +153,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                     }
                     isDownload[0] = res;
                 } catch (Exception e) {
-                    Log.e(Constants.LOG_TAG, e.getMessage(), e);
+                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
                     return e;
                 }
                 return null;
@@ -159,9 +163,10 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             protected void onPostExecute(Exception ex) {
                 super.onPostExecute(ex);
                 if (isDownload[0]) {
-                    act.onDownloadOK();
+                    act.onDownloadFinished(null);
                 } else {
-                    act.onDownloadFail(ex);
+                    Exception e = ex != null ? ex : new Exception("Undefined");
+                    act.onDownloadFinished(ex);
                 }
             }
         }.execute();
@@ -187,7 +192,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
 
     @Override
     public void onConnectionOK() {
-        menu.setGroupVisible(R.id.group1, true);
+        menu.setGroupVisible(R.id.groupGoogle, true);
         setTitle(R.string.app_name);
     }
 
@@ -195,19 +200,18 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     public void onConnectionFail(Exception ex) {
         showText(this, R.string.google_error);
         setTitle(R.string.app_name);
-        Log.d(Constants.LOG_TAG, ex.getMessage(), ex);
+        Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
     }
 
     @Override
-    public void onDownloadOK() {
-        showText(this, R.string.download_success);
+    public void onDownloadFinished(Exception ex) {
+        menu.setGroupVisible(R.id.groupGoogle, true);
+        if (ex == null) {
+            showText(this, R.string.download_success);
+        } else {
+            showText(this, R.string.download_fault);
+            Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+        }
         setTitle(R.string.app_name);
-    }
-
-    @Override
-    public void onDownloadFail(Exception ex) {
-        showText(this, R.string.download_fault);
-        setTitle(R.string.app_name);
-        Log.d(Constants.LOG_TAG, ex.getMessage(), ex);
     }
 }

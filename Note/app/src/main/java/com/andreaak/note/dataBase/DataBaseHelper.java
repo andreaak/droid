@@ -6,12 +6,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.andreaak.note.R;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.Utils;
+import com.andreaak.note.utils.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,8 +69,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             checkDB.getVersion();
             res = true;
         } catch (SQLiteException e) {
-            Log.d(Constants.LOG_TAG, "Database error!!!");
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+            Logger.d(Constants.LOG_TAG, "Database error!!!");
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
         }
 
         if (checkDB != null) {
@@ -83,7 +83,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void openDataBase() throws SQLException {
         if (database == null || !database.isOpen()) {
             database = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
-            Log.d(Constants.LOG_TAG, "Database opened");
+            Logger.d(Constants.LOG_TAG, "Database opened");
         }
     }
 
@@ -175,7 +175,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 text = cursor.getString(textIndex);
             }
         } catch (Exception ex) {
-            Log.e("Text read fault", ex.getMessage(), ex);
+            Logger.e("Text read fault", ex.getMessage(), ex);
             text = ex.getMessage();
         } finally {
             if (cursor != null) {
@@ -199,7 +199,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 text = cursor.getString(textIndex);
             }
         } catch (Exception ex) {
-            Log.e("Html read fault", ex.getMessage(), ex);
+            Logger.e("Html read fault", ex.getMessage(), ex);
             showText(context, R.string.html_read_fault);
             text = GetEntityDataText(id);
         } finally {
@@ -231,7 +231,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             database.close();
 
         super.close();
-        Log.d(Constants.LOG_TAG, "Database closed");
+        Logger.d(Constants.LOG_TAG, "Database closed");
     }
 
     @Override

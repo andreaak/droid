@@ -1,12 +1,12 @@
 package com.andreaak.note.files;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.andreaak.note.R;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.Utils;
+import com.andreaak.note.utils.logger.Logger;
 
 import java.io.File;
 import java.sql.Date;
@@ -21,12 +21,11 @@ public class DirectoriesHelper {
     private static final String ROOT_DIRECTORY = "";
 
     private final Context context;
+    private FileItem currentDirectory;
 
     public DirectoriesHelper(Context context) {
         this.context = context;
     }
-
-    private FileItem currentDirectory;
 
     public FileItem getCurrentDirectory() {
         return currentDirectory;
@@ -45,7 +44,7 @@ public class DirectoriesHelper {
                 }
             }
         } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
         }
         Collections.sort(directories);
         if (!current.getName().equalsIgnoreCase(ROOT_DIRECTORY)) {
