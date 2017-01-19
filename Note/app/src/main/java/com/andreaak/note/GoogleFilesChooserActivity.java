@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.andreaak.note.utils.Configs.DATABASE_EXTENSION;
-import static com.andreaak.note.utils.Constants.GOOGLE_DIR;
+import static com.andreaak.note.utils.Configs.GOOGLE_DIR;
 import static com.andreaak.note.utils.Constants.LOG_TAG;
 
 public class GoogleFilesChooserActivity extends Activity implements View.OnClickListener, IGoogleSearch {

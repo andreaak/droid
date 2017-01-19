@@ -44,6 +44,10 @@ public class Utils {
         Toast.makeText(context, text, Toast.LENGTH_LONG).show();
     }
 
+    public static boolean isEmpty(String str) {
+        return str == null || str == "";
+    }
+
 //    private static File cchFile(String flNm) {
 //        File cche = Utils.acx.getExternalCacheDir();
 //        return (cche == null || flNm == null) ? null : new File(cche.getPath() + File.separator + flNm);

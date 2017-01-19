@@ -3,6 +3,7 @@ package com.andreaak.note.files;
 import android.content.Context;
 
 import com.andreaak.note.R;
+import com.andreaak.note.utils.Configs;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.Utils;
@@ -44,7 +45,7 @@ public class FilesHelper {
                     String[] args = new String[]{String.valueOf(filesCount), context.getString(id)};
                     String num_item = Utils.getSeparatedText(" ", Arrays.asList(args));
                     directories.add(new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory));
-                } else {
+                } else if(file.getName().endsWith(Configs.DATABASE_EXTENSION)){
                     float length = file.length() / 1000000f;
                     DecimalFormat df = new DecimalFormat("#.00");
                     files.add(new FileItem(file.getName(), df.format(length) + context.getString(R.string.bytes), date_modify, file.getAbsolutePath(), ItemType.File));

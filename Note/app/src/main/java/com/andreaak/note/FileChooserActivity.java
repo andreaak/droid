@@ -36,7 +36,7 @@ public class FileChooserActivity extends ListActivity {
     private void onRestoreNonConfigurationInstance() {
         currentDir = (File) getLastNonConfigurationInstance();
         if (currentDir == null) {
-            String savedPath = SharedPreferencesHelper.getInstance().read(Configs.DIRECTORY_WITH_DB_PATH);
+            String savedPath = SharedPreferencesHelper.getInstance().read(Configs.SP_DIRECTORY_WITH_DB_PATH);
             currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
                     Environment.getExternalStorageDirectory() :
                     new File(savedPath);

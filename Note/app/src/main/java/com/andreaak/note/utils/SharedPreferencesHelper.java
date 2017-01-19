@@ -8,7 +8,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class SharedPreferencesHelper {
 
     public static final int NOT_DEFINED_INT = -1;
-    private static final String PREFS_NAME = "PREFS_NAME";
+    private static final String PREFS_NAME = "NOTE_PREFS_NAME";
 
 
     private static SharedPreferencesHelper instance;

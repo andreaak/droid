@@ -28,7 +28,7 @@ import static com.andreaak.note.utils.Utils.showText;
 public class MainActivity extends Activity implements IConnectGoogleDrive {
 
     private static final int REQUEST_FILE_CHOOSER = 1;
-    private static final int GOOGLE_ACCOUNT_PICK = 2;
+    private static final int REQUEST_GOOGLE_CONNECT = 2;
     private static final int REQUEST_GOOGLE_FILES_CHOOSER = 3;
 
     private EmailHolder emailHolder;
@@ -46,7 +46,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         helper = (GoogleDriveHelper) getLastNonConfigurationInstance();
         if (helper == null) {
             SharedPreferencesHelper.initInstance(this);
-            GoogleDriveHelper.initInstance(new EmailHolder(SharedPreferencesHelper.getInstance()));
+            GoogleDriveHelper.initInstance(new EmailHolder());
             helper = GoogleDriveHelper.getInstance();
             emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
             init(this);
@@ -77,7 +77,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             }
             case R.id.menu_select_account: {
                 startActivityForResult(AccountPicker.newChooseAccountIntent(
-                        null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null), GOOGLE_ACCOUNT_PICK);
+                        null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null), REQUEST_GOOGLE_CONNECT);
                 return true;
             }
             case R.id.menu_download: {
@@ -98,16 +98,17 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                     checkDatabase(path);
                 }
                 break;
-            case GOOGLE_ACCOUNT_PICK:
+            case REQUEST_GOOGLE_CONNECT:
                 setTitle(R.string.connecting);
-                if (data != null && data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) != null)
+                if (data != null && data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) != null) {
                     emailHolder.setEmail(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
-                if (!helper.init(this)) {
-                    showText(this, R.string.no_google_account);
-                    setTitle(R.string.app_name);
-                    Logger.d(Constants.LOG_TAG, getString(R.string.no_google_account));
-                } else {
-                    helper.connect();
+                    if (!helper.init(this)) {
+                        showText(this, R.string.no_google_account);
+                        setTitle(R.string.app_name);
+                        Logger.d(Constants.LOG_TAG, getString(R.string.no_google_account));
+                    } else {
+                        helper.connect();
+                    }
                 }
                 break;
             case REQUEST_GOOGLE_FILES_CHOOSER:
@@ -181,7 +182,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         boolean dbExist = databaseHelper.checkDataBase();
         if (dbExist) {
             String savePath = new File(path).getParent();
-            SharedPreferencesHelper.getInstance().save(Configs.DIRECTORY_WITH_DB_PATH, savePath);
+            SharedPreferencesHelper.getInstance().save(Configs.SP_DIRECTORY_WITH_DB_PATH, savePath);
 
             Intent intent = new Intent(this, EntityChooserActivity.class);
             startActivity(intent);

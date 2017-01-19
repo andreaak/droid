@@ -50,7 +50,7 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     private void onRestoreNonConfigurationInstance() {
         currentDir = (File) getLastNonConfigurationInstance();
         if (currentDir == null) {
-            String savedPath = SharedPreferencesHelper.getInstance().read(Configs.DOWNLOAD_DIR_PATH);
+            String savedPath = SharedPreferencesHelper.getInstance().read(Configs.SP_DOWNLOAD_DIR_PATH);
             currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
                     Environment.getExternalStorageDirectory() :
                     new File(savedPath);
@@ -92,7 +92,7 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     }
 
     private void onOkClick(FileItem item) {
-        SharedPreferencesHelper.getInstance().save(Configs.DOWNLOAD_DIR_PATH, item.getPath());
+        SharedPreferencesHelper.getInstance().save(Configs.SP_DOWNLOAD_DIR_PATH, item.getPath());
 
         Intent intent = new Intent();
         intent.putExtra(PATH, item.getPath());
