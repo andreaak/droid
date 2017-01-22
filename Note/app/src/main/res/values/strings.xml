@@ -19,4 +19,5 @@
     <string name="download_success">Download success</string>
     <string name="download_fault">Download fault</string>
     <string name="search_fault">Search fault</string>
+    <string name="menu_exit">Exit</string>
 </resources>

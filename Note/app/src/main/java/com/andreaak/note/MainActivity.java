@@ -84,6 +84,10 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                 getGoogleFiles();
                 return true;
             }
+            case R.id.menu_exit: {
+                finish();
+                return true;
+            }
 
         }
         return super.onOptionsItemSelected(item);

@@ -61,7 +61,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         final boolean[] isDownload = {false};
         final IGoogleSearch act = this;
         databaseFiles = new ArrayList();
-        setTitle(R.string.download);
+        setTitle(R.string.search);
 
         new AsyncTask<Void, String, Exception>() {
 
