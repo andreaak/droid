@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="650768443623-g2nblm238v6vvbbqpkll7sjh5bti5ts5.apps.googleusercontent.com" />
+            android:value="650768443623-fhjb0k1muf6hm4kjnb78qe7ate2betk0.apps.googleusercontent.com" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -31,7 +31,7 @@
         </activity>
         <activity
             android:name=".FileChooserActivity"
-            android:label="Choose File"
+            android:label="Choose Database File"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.note.FileChooserActivity" />
 
@@ -39,7 +39,7 @@
         </activity>
         <activity
             android:name=".DirectoryChooserActivity"
-            android:label="Choose Directory"
+            android:label="Choose Download Directory"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.note.DirectoryChooserActivity" />
 
@@ -47,7 +47,7 @@
         </activity>
         <activity
             android:name=".GoogleFilesChooserActivity"
-            android:label="Choose Directory"
+            android:label="Choose Database Files"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.note.GoogleFilesChooserActivity" />
 
@@ -55,7 +55,6 @@
         </activity>
         <activity
             android:name=".EntityChooserActivity"
-            android:label="Note"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.note.EntityChooserActivity" />
 
@@ -74,6 +73,14 @@
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
+        <activity
+            android:name=".PreferencesActivity"
+            android:label="Preferences"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.note.PreferencesActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+    </activity>
     </application>
 
 </manifest>

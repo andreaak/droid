@@ -62,7 +62,7 @@ public class NoteHtmlActivity extends Activity {
     }
 
     private void loadText() {
-        int zoom = SharedPreferencesHelper.getInstance().readInt(Configs.SP_TEXT_ZOOM);
+        int zoom = SharedPreferencesHelper.getInstance().getInt(Configs.SP_TEXT_ZOOM);
         if (zoom != SharedPreferencesHelper.NOT_DEFINED_INT) {
             webView.getSettings().setTextZoom(zoom);
         }

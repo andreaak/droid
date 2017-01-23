@@ -7,13 +7,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static com.andreaak.note.utils.Configs.LOG_FILE;
+import static com.andreaak.note.utils.Configs.LogFile;
 import static com.andreaak.note.utils.Constants.LOG_TAG;
 
 public class FileLogger implements ILogger {
 
     public FileLogger() {
-        File log = new File(LOG_FILE);
+        File log = new File(LogFile);
         if (log.exists()) {
             log.delete();
         }
@@ -41,7 +41,7 @@ public class FileLogger implements ILogger {
     private void writeMessage(String message) {
         try {
             //BufferedWriter for performance, true to set append to file flag
-            BufferedWriter buf = new BufferedWriter(new FileWriter(LOG_FILE, true));
+            BufferedWriter buf = new BufferedWriter(new FileWriter(LogFile, true));
             buf.append(message);
             buf.newLine();
             buf.close();

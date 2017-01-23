@@ -19,8 +19,8 @@ import com.andreaak.note.utils.logger.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.andreaak.note.utils.Configs.DATABASE_EXTENSION;
-import static com.andreaak.note.utils.Configs.GOOGLE_DIR;
+import static com.andreaak.note.utils.Configs.DatabaseExtension;
+import static com.andreaak.note.utils.Configs.GoogleDir;
 import static com.andreaak.note.utils.Constants.LOG_TAG;
 
 public class GoogleFilesChooserActivity extends Activity implements View.OnClickListener, IGoogleSearch {
@@ -68,11 +68,11 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    List<GoogleItem> directory = helper.search("root", GOOGLE_DIR, null);
+                    List<GoogleItem> directory = helper.search("root", GoogleDir, null);
                     if (directory != null && directory.size() == 1) {
                         ArrayList<GoogleItem> findFiles = helper.search(directory.get(0).getId(), null, null);
                         for (GoogleItem file : findFiles) {
-                            if (!helper.isFolder(file) && file.getTitle().endsWith(DATABASE_EXTENSION)) {
+                            if (!helper.isFolder(file) && file.getTitle().endsWith(DatabaseExtension)) {
                                 databaseFiles.add(file);
                             }
                         }

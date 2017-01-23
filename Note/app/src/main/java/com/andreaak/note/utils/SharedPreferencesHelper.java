@@ -2,14 +2,12 @@ package com.andreaak.note.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import static android.content.Context.MODE_PRIVATE;
+import android.preference.PreferenceManager;
 
 public class SharedPreferencesHelper {
 
     public static final int NOT_DEFINED_INT = -1;
-    private static final String PREFS_NAME = "NOTE_PREFS_NAME";
-
+    public static final boolean NOT_DEFINED_BOOLEAN = false;
 
     private static SharedPreferencesHelper instance;
     private Context context;
@@ -27,26 +25,35 @@ public class SharedPreferencesHelper {
     }
 
     public boolean save(String id, String value) {
-        SharedPreferences sPref = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences sPref = getSharedPreferences();
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString(id, value);
         return ed.commit();
     }
 
     public boolean save(String id, int value) {
-        SharedPreferences sPref = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences sPref = getSharedPreferences();
         SharedPreferences.Editor ed = sPref.edit();
         ed.putInt(id, value);
         return ed.commit();
     }
 
-    public String read(String id) {
-        SharedPreferences sPref = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+    public String getString(String id) {
+        SharedPreferences sPref = getSharedPreferences();
         return sPref.getString(id, "");
     }
 
-    public int readInt(String id) {
-        SharedPreferences sPref = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+    public int getInt(String id) {
+        SharedPreferences sPref = getSharedPreferences();
         return sPref.getInt(id, NOT_DEFINED_INT);
+    }
+
+    public boolean getBoolean(String id) {
+        SharedPreferences sPref = getSharedPreferences();
+        return sPref.getBoolean(id, NOT_DEFINED_BOOLEAN);
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 }

@@ -175,7 +175,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 text = cursor.getString(textIndex);
             }
         } catch (Exception ex) {
-            Logger.e("Text read fault", ex.getMessage(), ex);
+            Logger.e("Text getString fault", ex.getMessage(), ex);
             text = ex.getMessage();
         } finally {
             if (cursor != null) {
@@ -199,7 +199,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 text = cursor.getString(textIndex);
             }
         } catch (Exception ex) {
-            Logger.e("Html read fault", ex.getMessage(), ex);
+            Logger.e("Html getString fault", ex.getMessage(), ex);
             showText(context, R.string.html_read_fault);
             text = GetEntityDataText(id);
         } finally {

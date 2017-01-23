@@ -40,7 +40,6 @@ public class NoteFindActivity extends ListActivity {
             }
         }
 
-
         if (helper.getCurrentText() != null)
             fill(helper.getCurrentText());
     }

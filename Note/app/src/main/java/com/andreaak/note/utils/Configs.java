@@ -1,35 +1,66 @@
 package com.andreaak.note.utils;
 
-import android.os.Environment;
-import static com.andreaak.note.utils.Utils.*;
+import android.content.Context;
+
+import static com.andreaak.note.utils.Utils.isEmpty;
 
 public class Configs {
-    //pref
+    //Keys
     public static final String SP_DOWNLOAD_DIR_PATH = "SP_DOWNLOAD_DIR_PATH";
     public static final String SP_DIRECTORY_WITH_DB_PATH = "SP_DIRECTORY_WITH_DB_PATH";
     public static final String SP_TEXT_ZOOM = "SP_TEXT_ZOOM";
+    //
     public static final String SP_GOOGLE_DIR = "SP_GOOGLE_DIR";
     public static final String SP_DATABASE_EXTENSION = "SP_DATABASE_EXTENSION";
     public static final String SP_LOG_FILE = "SP_LOG_FILE";
+    public static String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";
     //
-    public static String GOOGLE_DIR = "DB";
-    public static String DATABASE_EXTENSION = ".db";
-    public static String LOG_FILE = Environment.getExternalStorageDirectory().getPath() + "/log.file";
+    //
+    private static final String SP_GOOGLE_DIR_DEF = "DB";
+    private static final String SP_DATABASE_EXTENSION_DEF = ".db";
+    private static String SP_LOG_FILE_DEF = "/log.file";
+    //Values
+    public static String GoogleDir;
+    public static String DatabaseExtension;
+    public static String LogFile;
+    public static boolean IsLoggingActive;
+
+    public static void init(Context context) {
+        SP_LOG_FILE_DEF = context.getFilesDir() + SP_LOG_FILE_DEF;
+    }
 
     public static void read() {
-        String temp = SharedPreferencesHelper.getInstance().read(SP_GOOGLE_DIR);
-        if(!isEmpty(temp)) {
-            GOOGLE_DIR = temp;
+        SharedPreferencesHelper helper = SharedPreferencesHelper.getInstance();
+
+        String temp = helper.getString(SP_GOOGLE_DIR);
+        if (!isEmpty(temp)) {
+            GoogleDir = temp;
+        } else {
+            GoogleDir = SP_GOOGLE_DIR_DEF;
+            helper.save(SP_GOOGLE_DIR, SP_GOOGLE_DIR_DEF);
         }
 
-        temp = SharedPreferencesHelper.getInstance().read(SP_DATABASE_EXTENSION);
-        if(!isEmpty(temp)) {
-            DATABASE_EXTENSION = temp;
+        temp = helper.getString(SP_DATABASE_EXTENSION);
+        if (!isEmpty(temp)) {
+            DatabaseExtension = temp;
+        } else {
+            DatabaseExtension = SP_DATABASE_EXTENSION_DEF;
+            helper.save(SP_DATABASE_EXTENSION, SP_DATABASE_EXTENSION_DEF);
         }
 
-        temp = SharedPreferencesHelper.getInstance().read(SP_LOG_FILE);
-        if(!isEmpty(temp)) {
-            LOG_FILE = temp;
+        temp = helper.getString(SP_LOG_FILE);
+        if (!isEmpty(temp)) {
+            LogFile = temp;
+        } else {
+            LogFile = SP_LOG_FILE_DEF;
+            helper.save(SP_LOG_FILE, SP_LOG_FILE_DEF);
         }
+
+        IsLoggingActive = helper.getBoolean(SP_IS_LOGGING_ACTIVE);
+    }
+
+    public static void clear() {
+        SharedPreferencesHelper.getInstance().getSharedPreferences().edit().clear().commit();
+        read();
     }
 }

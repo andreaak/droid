@@ -3,6 +3,7 @@ package com.andreaak.note;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,14 +16,16 @@ import com.andreaak.note.google.IConnectGoogleDrive;
 import com.andreaak.note.utils.Configs;
 import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.SharedPreferencesHelper;
+import com.andreaak.note.utils.Utils;
 import com.andreaak.note.utils.logger.FileLogger;
+import com.andreaak.note.utils.logger.ILogger;
 import com.andreaak.note.utils.logger.Logger;
+import com.andreaak.note.utils.logger.NativeLogger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
 import java.io.File;
 
-import static com.andreaak.note.utils.Utils.init;
 import static com.andreaak.note.utils.Utils.showText;
 
 public class MainActivity extends Activity implements IConnectGoogleDrive {
@@ -30,10 +33,13 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     private static final int REQUEST_FILE_CHOOSER = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     private static final int REQUEST_GOOGLE_FILES_CHOOSER = 3;
+    private static final int REQUEST_PREFERENCES = 4;
 
     private EmailHolder emailHolder;
     private Menu menu;
     private GoogleDriveHelper helper;
+    private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
+    private boolean isPrefChanged;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,8 +55,19 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             GoogleDriveHelper.initInstance(new EmailHolder());
             helper = GoogleDriveHelper.getInstance();
             emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
-            init(this);
-            Logger.setLogger(new FileLogger());
+            Utils.init(this);
+            Configs.init(this);
+            Configs.read();
+
+            prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                    isPrefChanged = true;
+                }
+            };
+
+            SharedPreferencesHelper.getInstance().getSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(prefListener);
+
         }
         emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
     }
@@ -88,7 +105,12 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                 finish();
                 return true;
             }
-
+            case R.id.menu_settings: {
+                isPrefChanged = false;
+                Intent intent = new Intent(this, PreferencesActivity.class);
+                startActivityForResult(intent, REQUEST_PREFERENCES);
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -121,6 +143,13 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                     String[] names = data.getStringArrayExtra(GoogleFilesChooserActivity.NAMES);
                     String path = data.getStringExtra(GoogleFilesChooserActivity.PATH);
                     downloadFromGoogleDrive(ids, names, path);
+                }
+                break;
+            case REQUEST_PREFERENCES:
+                if (isPrefChanged) {
+                    Configs.read();
+                    ILogger log = Configs.IsLoggingActive ? new FileLogger() : new NativeLogger();
+                    Logger.setLogger(log);
                 }
                 break;
         }
