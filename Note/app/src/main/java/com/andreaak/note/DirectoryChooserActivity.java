@@ -52,7 +52,7 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
         if (currentDir == null) {
             String savedPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DOWNLOAD_DIR_PATH);
             currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
-                    Environment.getExternalStorageDirectory() :
+                    Environment.getDataDirectory() :
                     new File(savedPath);
         }
     }

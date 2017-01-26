@@ -107,7 +107,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             }
             case R.id.menu_settings: {
                 isPrefChanged = false;
-                Intent intent = new Intent(this, PreferencesActivity.class);
+                Intent intent = new Intent(this, SettingsActivity.class);
                 startActivityForResult(intent, REQUEST_PREFERENCES);
                 return true;
             }

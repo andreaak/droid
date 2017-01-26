@@ -32,27 +32,29 @@ public class FilesHelper {
         File[] dirs = parent.listFiles();
         List<FileItem> directories = new ArrayList<FileItem>();
         List<FileItem> files = new ArrayList<FileItem>();
-        try {
-            for (File file : dirs) {
-                Date lastModDate = new Date(file.lastModified());
-                DateFormat formater = DateFormat.getDateTimeInstance();
-                String date_modify = formater.format(lastModDate);
-                if (file.isDirectory()) {
-                    File[] filesInDirectory = file.listFiles();
-                    int filesCount = filesInDirectory != null ? filesInDirectory.length : 0;
+        if (dirs != null) {
+            try {
+                for (File file : dirs) {
+                    Date lastModDate = new Date(file.lastModified());
+                    DateFormat formater = DateFormat.getDateTimeInstance();
+                    String date_modify = formater.format(lastModDate);
+                    if (file.isDirectory()) {
+                        File[] filesInDirectory = file.listFiles();
+                        int filesCount = filesInDirectory != null ? filesInDirectory.length : 0;
 
-                    int id = filesCount == 0 ? R.string.item : R.string.items;
-                    String[] args = new String[]{String.valueOf(filesCount), context.getString(id)};
-                    String num_item = Utils.getSeparatedText(" ", Arrays.asList(args));
-                    directories.add(new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory));
-                } else if(file.getName().endsWith(Configs.DatabaseExtension)){
-                    float length = file.length() / 1000000f;
-                    DecimalFormat df = new DecimalFormat("#.00");
-                    files.add(new FileItem(file.getName(), df.format(length) + context.getString(R.string.bytes), date_modify, file.getAbsolutePath(), ItemType.File));
+                        int id = filesCount == 0 ? R.string.item : R.string.items;
+                        String[] args = new String[]{String.valueOf(filesCount), context.getString(id)};
+                        String num_item = Utils.getSeparatedText(" ", Arrays.asList(args));
+                        directories.add(new FileItem(file.getName(), num_item, date_modify, file.getAbsolutePath(), ItemType.Directory));
+                    } else if (file.getName().endsWith(Configs.DatabaseExtension)) {
+                        float length = file.length() / 1000000f;
+                        DecimalFormat df = new DecimalFormat("#.00");
+                        files.add(new FileItem(file.getName(), df.format(length) + context.getString(R.string.bytes), date_modify, file.getAbsolutePath(), ItemType.File));
+                    }
                 }
+            } catch (Exception e) {
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             }
-        } catch (Exception e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
         }
         Collections.sort(directories);
         Collections.sort(files);

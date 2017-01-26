@@ -6,14 +6,14 @@ import android.preference.PreferenceActivity;
 
 import com.andreaak.note.utils.Configs;
 
-public class PreferencesActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener {
+public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener {
 
     private final static String RESET_BUTTON = "RESET_BUTTON";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.settings);
 
         Preference button = findPreference(RESET_BUTTON);
         button.setOnPreferenceClickListener(this);
@@ -25,7 +25,7 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 //        finish();
 //        startActivity(getIntent());
         getPreferenceScreen().removeAll();
-        addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.settings);
         Preference button = findPreference(RESET_BUTTON);
         button.setOnPreferenceClickListener(this);
         return true;

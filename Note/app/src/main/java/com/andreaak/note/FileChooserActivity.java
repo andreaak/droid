@@ -38,7 +38,7 @@ public class FileChooserActivity extends ListActivity {
         if (currentDir == null) {
             String savedPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_DB_PATH);
             currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
-                    Environment.getExternalStorageDirectory() :
+                    Environment.getDataDirectory() :
                     new File(savedPath);
         }
     }
