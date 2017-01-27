@@ -9,9 +9,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.andreaak.note.files.DirectoriesHelper;
 import com.andreaak.note.files.DirectoryArrayAdapter;
 import com.andreaak.note.files.FileItem;
+import com.andreaak.note.files.FilesHelper;
 import com.andreaak.note.utils.Configs;
 import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.SharedPreferencesHelper;
@@ -24,7 +24,7 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     public static final String PATH = "Path";
 
     private DirectoryArrayAdapter adapter;
-    private DirectoriesHelper helper;
+    private FilesHelper helper;
     private File currentDir;
     private ListView listView;
     private Button buttonOk;
@@ -43,7 +43,7 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
         buttonCancel.setOnClickListener(this);
 
         onRestoreNonConfigurationInstance();
-        helper = new DirectoriesHelper(this);
+        helper = new FilesHelper(this, false);
         fill(currentDir);
     }
 

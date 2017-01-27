@@ -13,20 +13,19 @@ public class Configs {
     public static final String SP_GOOGLE_DIR = "SP_GOOGLE_DIR";
     public static final String SP_DATABASE_EXTENSION = "SP_DATABASE_EXTENSION";
     public static final String SP_LOG_FILE = "SP_LOG_FILE";
-    public static String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";
-    //
+    public static final String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";
     //
     private static final String SP_GOOGLE_DIR_DEF = "DB";
     private static final String SP_DATABASE_EXTENSION_DEF = ".db";
-    private static String SP_LOG_FILE_DEF = "/log.file";
     //Values
     public static String GoogleDir;
     public static String DatabaseExtension;
     public static String LogFile;
     public static boolean IsLoggingActive;
+    private static String LogFileDefault = "/log.file";
 
     public static void init(Context context) {
-        SP_LOG_FILE_DEF = context.getFilesDir() + SP_LOG_FILE_DEF;
+        LogFileDefault = context.getFilesDir() + LogFileDefault;
     }
 
     public static void read() {
@@ -52,8 +51,8 @@ public class Configs {
         if (!isEmpty(temp)) {
             LogFile = temp;
         } else {
-            LogFile = SP_LOG_FILE_DEF;
-            helper.save(SP_LOG_FILE, SP_LOG_FILE_DEF);
+            LogFile = LogFileDefault;
+            helper.save(SP_LOG_FILE, LogFileDefault);
         }
 
         IsLoggingActive = helper.getBoolean(SP_IS_LOGGING_ACTIVE);

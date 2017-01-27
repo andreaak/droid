@@ -1,8 +1,5 @@
 package com.andreaak.note.google;
 
-import com.andreaak.note.utils.Configs;
-import com.andreaak.note.utils.SharedPreferencesHelper;
-
 public class EmailHolder {
 
     private String email = null;

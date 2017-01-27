@@ -80,7 +80,7 @@
             <action android:name="com.andreaak.note.SettingsActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
-    </activity>
+        </activity>
     </application>
 
 </manifest>

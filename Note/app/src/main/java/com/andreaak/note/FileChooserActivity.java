@@ -29,7 +29,7 @@ public class FileChooserActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onRestoreNonConfigurationInstance();
-        helper = new FilesHelper(this);
+        helper = new FilesHelper(this, true);
         fill(currentDir);
     }
 
