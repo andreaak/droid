@@ -58,7 +58,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             Utils.init(this);
             Configs.init(this);
             Configs.read();
-
+            setLogger();
             prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     isPrefChanged = true;
@@ -93,8 +93,13 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                 return true;
             }
             case R.id.menu_select_account: {
-                startActivityForResult(AccountPicker.newChooseAccountIntent(
-                        null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null), REQUEST_GOOGLE_CONNECT);
+                try {
+                    startActivityForResult(AccountPicker.newChooseAccountIntent(
+                            null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null), REQUEST_GOOGLE_CONNECT);
+                } catch (Exception e) {
+                    Logger.d(Constants.LOG_TAG, "Google services problem");
+                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                }
                 return true;
             }
             case R.id.menu_download: {
@@ -148,12 +153,16 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             case REQUEST_PREFERENCES:
                 if (isPrefChanged) {
                     Configs.read();
-                    ILogger log = Configs.IsLoggingActive ? new FileLogger() : new NativeLogger();
-                    Logger.setLogger(log);
+                    setLogger();
                 }
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void setLogger() {
+        ILogger log = Configs.IsLoggingActive ? new FileLogger() : new NativeLogger();
+        Logger.setLogger(log);
     }
 
     private void getFile() {
@@ -232,6 +241,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
 
     @Override
     public void onConnectionFail(Exception ex) {
+        menu.setGroupVisible(R.id.groupGoogle, false);
         showText(this, R.string.google_error);
         setTitle(R.string.app_name);
         Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);

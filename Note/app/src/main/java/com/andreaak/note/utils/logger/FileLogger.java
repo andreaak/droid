@@ -6,11 +6,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import static com.andreaak.note.utils.Configs.LogFile;
 import static com.andreaak.note.utils.Constants.LOG_TAG;
 
 public class FileLogger implements ILogger {
+
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public FileLogger() {
         File log = new File(LogFile);
@@ -26,15 +30,17 @@ public class FileLogger implements ILogger {
 
     @Override
     public int d(String tag, String msg) {
-        String message = getMessage(tag, msg);
+        String message = getMessage(msg);
         writeMessage(message);
+        writeMessage("");
         return 0;
     }
 
     @Override
     public int e(String tag, String msg, Throwable tr) {
-        String message = getMessage(tag, msg, tr);
+        String message = getMessage(msg, tr);
         writeMessage(message);
+        writeMessage("");
         return 0;
     }
 
@@ -50,11 +56,15 @@ public class FileLogger implements ILogger {
         }
     }
 
-    private String getMessage(String tag, String msg, Throwable tr) {
-        return String.format("Tag: %1$s Ex: %2$s St: %3$s", tag, msg, tr.toString());
+    private String getMessage(String msg, Throwable tr) {
+        Calendar c = Calendar.getInstance();
+        String formattedDate = df.format(c.getTime());
+        return String.format("%1$s Ex: %2$s \nExceeption: %3$s", formattedDate, msg, tr.getClass().toString());
     }
 
-    private String getMessage(String tag, String msg) {
-        return String.format("Tag: %1$s Ex: %2$s", tag, msg);
+    private String getMessage(String msg) {
+        Calendar c = Calendar.getInstance();
+        String formattedDate = df.format(c.getTime());
+        return String.format("%1$s Message: %2$s", formattedDate, msg);
     }
 }
