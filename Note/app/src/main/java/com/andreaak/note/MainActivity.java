@@ -26,6 +26,7 @@ import com.google.android.gms.common.AccountPicker;
 
 import java.io.File;
 
+import static com.andreaak.note.utils.Constants.LOG_TAG;
 import static com.andreaak.note.utils.Utils.showText;
 
 public class MainActivity extends Activity implements IConnectGoogleDrive {
@@ -182,15 +183,15 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             return;
         }
 
-        setTitle(R.string.download);
         menu.setGroupVisible(R.id.groupGoogle, false);
-        new AsyncTask<Void, Void, Exception>() {
+        new AsyncTask<Void, String, Exception>() {
             @Override
             protected Exception doInBackground(Void... nadas) {
                 try {
                     boolean res = true;
 
                     for (int i = 0; i < ids.length; i++) {
+                        publishProgress(getString(R.string.download) + " " + names[i]);
                         File targetFile = new File(path + "/" + names[i]);
                         res = helper.saveToFile(ids[i], targetFile) && res;
                     }
@@ -200,6 +201,13 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                     return e;
                 }
                 return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(String... strings) {
+                super.onProgressUpdate(strings);
+                Logger.d(LOG_TAG, strings[0]);
+                act.onDownloadProgress(strings[0]);
             }
 
             @Override
@@ -245,6 +253,11 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         showText(this, R.string.google_error);
         setTitle(R.string.app_name);
         Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+    }
+
+    @Override
+    public void onDownloadProgress(String message) {
+        setTitle(message);
     }
 
     @Override

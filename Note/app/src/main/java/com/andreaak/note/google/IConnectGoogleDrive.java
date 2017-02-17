@@ -6,6 +6,8 @@ public interface IConnectGoogleDrive {
     void onConnectionOK();
 
     void onDownloadFinished(Exception ex);
+
+    void onDownloadProgress(String message);
 }
 
 
