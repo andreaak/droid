@@ -3,6 +3,8 @@ package com.andreaak.note.google;
 import android.app.Activity;
 import android.os.AsyncTask;
 
+import com.andreaak.note.R;
+import com.andreaak.note.utils.Constants;
 import com.andreaak.note.utils.Utils;
 import com.andreaak.note.utils.logger.Logger;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -35,6 +37,13 @@ public class GoogleDriveHelper {
     private boolean isConnected;
     private EmailHolder emailHolder;
 
+    private Activity act;
+
+    public void setActivity(Activity act) {
+        this.act = act;
+        connectInstance = (IConnectGoogleDrive) act;
+    }
+
     private GoogleDriveHelper(EmailHolder emailHolder) {
         this.emailHolder = emailHolder;
     }
@@ -55,11 +64,11 @@ public class GoogleDriveHelper {
         return isConnected;
     }
 
-    public boolean init(Activity act) {
-        if (act != null) try {
+    public boolean init() {
+        try {
             String email = emailHolder.getEmail();
             if (email != null) {
-                connectInstance = (IConnectGoogleDrive) act;
+
                 service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(),
                         GoogleAccountCredential.usingOAuth2(Utils.acx, Collections.singletonList(DriveScopes.DRIVE))
                                 .setSelectedAccountName(email)
@@ -320,6 +329,47 @@ public class GoogleDriveHelper {
     public boolean isFolder(GoogleItem cv) {
         String mime = cv.getMime();
         return mime != null && MIME_FLDR.equalsIgnoreCase(mime);
+    }
+
+    public void saveFiles(final String[] ids, final String[] names, final String path) {
+        final boolean[] isDownload = {false};
+        new AsyncTask<Void, String, Exception>() {
+            @Override
+            protected Exception doInBackground(Void... nadas) {
+                try {
+                    boolean res = true;
+
+                    for (int i = 0; i < ids.length; i++) {
+                        publishProgress(act.getString(R.string.download_file) + " " + names[i]);
+                        java.io.File targetFile = new java.io.File(path + "/" + names[i]);
+                        res = saveToFile(ids[i], targetFile) && res;
+                    }
+                    isDownload[0] = res;
+                } catch (Exception e) {
+                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                    return e;
+                }
+                return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(String... strings) {
+                super.onProgressUpdate(strings);
+                Logger.d(LOG_TAG, strings[0]);
+                connectInstance.onDownloadProgress(strings[0]);
+            }
+
+            @Override
+            protected void onPostExecute(Exception ex) {
+                super.onPostExecute(ex);
+                if (isDownload[0]) {
+                    connectInstance.onDownloadFinished(null);
+                } else {
+                    Exception e = ex != null ? ex : new Exception(act.getString(R.string.download_fault));
+                    connectInstance.onDownloadFinished(e);
+                }
+            }
+        }.execute();
     }
 }
 

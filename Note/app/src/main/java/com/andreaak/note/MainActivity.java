@@ -4,7 +4,6 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +25,6 @@ import com.google.android.gms.common.AccountPicker;
 
 import java.io.File;
 
-import static com.andreaak.note.utils.Constants.LOG_TAG;
 import static com.andreaak.note.utils.Utils.showText;
 
 public class MainActivity extends Activity implements IConnectGoogleDrive {
@@ -70,6 +68,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                     .registerOnSharedPreferenceChangeListener(prefListener);
 
         }
+        helper.setActivity(this);
         emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
     }
 
@@ -134,7 +133,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                 setTitle(R.string.connecting);
                 if (data != null && data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) != null) {
                     emailHolder.setEmail(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
-                    if (!helper.init(this)) {
+                    if (!helper.init()) {
                         showText(this, R.string.no_google_account);
                         setTitle(R.string.app_name);
                         Logger.d(Constants.LOG_TAG, getString(R.string.no_google_account));
@@ -177,50 +176,13 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     }
 
     private void downloadFromGoogleDrive(final String[] ids, final String[] names, final String path) {
-        final boolean[] isDownload = {false};
-        final IConnectGoogleDrive act = this;
         if (ids.length == 0) {
             return;
         }
 
         menu.setGroupVisible(R.id.groupGoogle, false);
-        new AsyncTask<Void, String, Exception>() {
-            @Override
-            protected Exception doInBackground(Void... nadas) {
-                try {
-                    boolean res = true;
 
-                    for (int i = 0; i < ids.length; i++) {
-                        publishProgress(getString(R.string.download) + " " + names[i]);
-                        File targetFile = new File(path + "/" + names[i]);
-                        res = helper.saveToFile(ids[i], targetFile) && res;
-                    }
-                    isDownload[0] = res;
-                } catch (Exception e) {
-                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-                    return e;
-                }
-                return null;
-            }
-
-            @Override
-            protected void onProgressUpdate(String... strings) {
-                super.onProgressUpdate(strings);
-                Logger.d(LOG_TAG, strings[0]);
-                act.onDownloadProgress(strings[0]);
-            }
-
-            @Override
-            protected void onPostExecute(Exception ex) {
-                super.onPostExecute(ex);
-                if (isDownload[0]) {
-                    act.onDownloadFinished(null);
-                } else {
-                    Exception e = ex != null ? ex : new Exception("Undefined");
-                    act.onDownloadFinished(ex);
-                }
-            }
-        }.execute();
+        helper.saveFiles(ids, names, path);
     }
 
     private void checkDatabase(String path) {
