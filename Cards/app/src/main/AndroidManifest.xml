@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andreaak.note">
+    package="com.andreaak.cards">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -39,7 +39,7 @@
             android:name=".FileChooserActivity"
             android:label="Choose Database File"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.FileChooserActivity" />
+            <action android:name="com.andreaak.cards.FileChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
@@ -47,7 +47,7 @@
             android:name=".DirectoryChooserActivity"
             android:label="Choose Download Directory"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.DirectoryChooserActivity" />
+            <action android:name="com.andreaak.cards.DirectoryChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
@@ -55,14 +55,14 @@
             android:name=".GoogleFilesChooserActivity"
             android:label="Choose Database Files"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.GoogleFilesChooserActivity" />
+            <action android:name="com.andreaak.cards.GoogleFilesChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
             android:name=".EntityChooserActivity"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.EntityChooserActivity" />
+            <action android:name="com.andreaak.cards.EntityChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
@@ -75,7 +75,7 @@
             android:name=".NoteFindActivity"
             android:label="Note"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.NoteFindActivity" />
+            <action android:name="com.andreaak.cards.NoteFindActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
@@ -83,7 +83,7 @@
             android:name=".SettingsActivity"
             android:label="Preferences"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.SettingsActivity" />
+            <action android:name="com.andreaak.cards.SettingsActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>

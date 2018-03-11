@@ -1,4 +1,4 @@
-package com.andreaak.note.google;
+package com.andreaak.cards.google;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 
-import com.andreaak.note.R;
+import com.andreaak.cards.R;
 
 import java.util.List;
 

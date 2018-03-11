@@ -1,4 +1,4 @@
-package com.andreaak.note.google;
+package com.andreaak.cards.google;
 
 import com.google.api.services.drive.model.File;
 
