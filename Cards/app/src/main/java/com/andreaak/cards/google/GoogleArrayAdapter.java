@@ -42,7 +42,7 @@ public class GoogleArrayAdapter extends ArrayAdapter<GoogleItem> {
         if (item != null) {
             CheckedTextView tvName = (CheckedTextView) view.findViewById(R.id.checkedItem);
             if (tvName != null)
-                tvName.setText(item.getTitle() + " - " + item.getModifiedDate());
+                tvName.setText(item.getTitle());
         }
         return view;
     }

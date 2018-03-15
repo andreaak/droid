@@ -1,44 +1,44 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.utils.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.List;
+import com.andreaak.cards.files.FileItem;
 
-public class LangSpinAdapter extends ArrayAdapter<LanguageItem> {
+import java.io.File;
+
+public class LessonsSpinAdapter extends ArrayAdapter<File> {
 
     // Your sent context
     private Context context;
     // Your custom values for the spinner (User)
-    private List<LanguageItem> values;
-    private String language;
+    private File[] values;
 
-    public LangSpinAdapter(Context context, int textViewResourceId,
-                            List<LanguageItem> values) {
+    public LessonsSpinAdapter(Context context, int textViewResourceId,
+                              File[] values) {
         super(context, textViewResourceId, values);
         this.context = context;
         this.values = values;
-        this.language = language;
     }
 
     @Override
     public int getCount(){
-        return values.size();
+        return values.length;
     }
 
     @Override
-    public LanguageItem getItem(int position){
-        return values.get(position);
+    public File getItem(int position){
+        return values[position];
     }
 
     @Override
     public long getItemId(int position){
         return position;
     }
-
 
     // And the "magic" goes here
     // This is for the "passive" state of the spinner
@@ -49,9 +49,7 @@ public class LangSpinAdapter extends ArrayAdapter<LanguageItem> {
         //label.setTextColor(Color.BLACK);
         // Then you can get the current item using the values array (Users array) and the current position
         // You can NOW reference each method you has created in your bean object (User class)
-        LanguageItem lang = values.get(position);
-        String text = lang.getPrimaryLanguage() + " --> "  + lang.getSecondaryLanguage();
-        label.setText(text);
+        label.setText(values[position].getName());
         label.setTextSize(20);
         label.setPadding(2,5,2,5);
 
@@ -65,9 +63,8 @@ public class LangSpinAdapter extends ArrayAdapter<LanguageItem> {
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         TextView label = new TextView(context);
-        LanguageItem lang = values.get(position);
-        String text = lang.getPrimaryLanguage() + " --> "  + lang.getSecondaryLanguage();
-        label.setText(text);
+        //label.setTextColor(Color.BLACK);
+        label.setText(values[position].getName());
         label.setTextSize(20);
         label.setPadding(2,5,2,5);
 

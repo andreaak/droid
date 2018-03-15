@@ -6,13 +6,11 @@ public class GoogleItem {
     private String title;
     private String id;
     private String mime;
-    private String date;
 
     public GoogleItem(File file) {
         this.id = file.getId();
         this.title = file.getTitle();
         this.mime = file.getMimeType();
-        this.date = file.getModifiedDate() != null ? file.getModifiedDate().toString() : "";
     }
 
     public String getTitle() {
@@ -33,10 +31,6 @@ public class GoogleItem {
 
     public String getMime() {
         return mime;
-    }
-
-    public String getModifiedDate() {
-        return date;
     }
 }
 

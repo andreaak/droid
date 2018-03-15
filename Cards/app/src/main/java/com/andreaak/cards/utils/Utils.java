@@ -48,32 +48,6 @@ public class Utils {
         return str == null || str == "";
     }
 
-//    private static File cchFile(String flNm) {
-//        File cche = Utils.acx.getExternalCacheDir();
-//        return (cche == null || flNm == null) ? null : new File(cche.getPath() + File.separator + flNm);
-//    }
-
-//    static File str2File(String str, String name) {
-//        if (str == null) return null;
-//        byte[] buf = str.getBytes();
-//        File fl = cchFile(name);
-//        if (fl == null) return null;
-//        BufferedOutputStream bs = null;
-//        try {
-//            bs = new BufferedOutputStream(new FileOutputStream(fl));
-//            bs.write(buf);
-//        } catch (Exception e) {
-//            Log.e(Constants.LOG_TAG, e.getMessage(), e);
-//        } finally {
-//            if (bs != null) try {
-//                bs.close();
-//            } catch (Exception e) {
-//                Log.e(Constants.LOG_TAG, e.getMessage(), e);
-//            }
-//        }
-//        return fl;
-//    }
-
     public static boolean saveToFile(InputStream is, File file) {
 
         BufferedInputStream bufferedStream = null;
@@ -100,15 +74,6 @@ public class Utils {
         }
         return false;
     }
-
-//    static String time2Titl(Long milis) {       // time -> yymmdd-hhmmss
-//        Date dt = (milis == null) ? new Date() : (milis >= 0) ? new Date(milis) : null;
-//        return (dt == null) ? null : new SimpleDateFormat(TITL_FMT, Locale.US).format(dt);
-//    }
-//
-//    static String titl2Month(String titl) {
-//        return titl == null ? null : ("20" + titl.substring(0, 2) + "-" + titl.substring(2, 4));
-//    }
 }
 
 
