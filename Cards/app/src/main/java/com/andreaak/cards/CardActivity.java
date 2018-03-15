@@ -1,40 +1,59 @@
 package com.andreaak.cards;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.andreaak.cards.files.FileItem;
-import com.andreaak.cards.utils.Configs;
-import com.andreaak.cards.utils.SharedPreferencesHelper;
+import com.andreaak.cards.utils.LangSpinAdapter;
+import com.andreaak.cards.utils.LanguageItem;
+import com.andreaak.cards.utils.LessonItem;
+import com.andreaak.cards.utils.LessonsSpinAdapter;
 import com.andreaak.cards.utils.WordItem;
+import com.andreaak.cards.utils.WordsSpinAdapter;
+import com.andreaak.cards.utils.XmlParser;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class CardActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+class CardActivityHelper {
+    String path;
+    File[] lessons;
+
+    File currentLesson;
+    WordItem currentWord;
+    ArrayList<WordItem> words;
+
+    LanguageItem language;
+
+    String currentLanguage;
+}
+
+public class CardActivity extends Activity implements View.OnClickListener {
 
     public static final String PATH = "Path";
 
-    private File currentDir;
     private Button buttonPrevious;
     private Button buttonNext;
+    private Button buttonToggle;
+
     private TextView textViewWord;
     private TextView textViewTrans;
+
     private Spinner spinnerLessons;
-    private String path;
-    private File[] files;
-    private String currentLesson;
-    private int currentWordIndex;
-    private ArrayList<WordItem> words;
+    private Spinner spinnerLang;
+    private Spinner spinnerWords;
+
+    private CardActivityHelper helper;
+    private LessonsSpinAdapter lessonsAdapter;
+    private LangSpinAdapter langAdapter;
+    private WordsSpinAdapter wordsAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,65 +64,174 @@ public class CardActivity extends Activity implements View.OnClickListener, Adap
         buttonPrevious.setOnClickListener(this);
         buttonNext = (Button) findViewById(R.id.buttonNext);
         buttonNext.setOnClickListener(this);
+        buttonToggle = (Button) findViewById(R.id.buttonToggle);
+        buttonToggle.setOnClickListener(this);
 
         textViewWord = (TextView) findViewById(R.id.textViewWord);
         textViewTrans = (TextView) findViewById(R.id.textViewTrans);
 
         spinnerLessons = (Spinner)findViewById(R.id.spinnerLessons);
-
-        path = getIntent().getStringExtra(PATH);
-
-        files = GetLessons(path);
-
-        ArrayList<String> names = new ArrayList<>();
-        for (int i = 0; i < files.length; i++) {
-            names.add(files[i].getName());
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, names);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLessons.setAdapter(adapter);
-        spinnerLessons.setOnItemSelectedListener(this);
+        spinnerLang = (Spinner)findViewById(R.id.spinnerLang);
+        spinnerWords = (Spinner)findViewById(R.id.spinnerWords);
 
         onRestoreNonConfigurationInstance();
     }
 
-    private void onRestoreNonConfigurationInstance() {
-        currentDir = (File) getLastNonConfigurationInstance();
-        if (currentDir == null) {
-            String savedPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DOWNLOAD_DIR_PATH);
-            currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
-                    Environment.getDataDirectory() :
-                    new File(savedPath);
-        }
-    }
-
     @Override
     public Object onRetainNonConfigurationInstance() {
-         return currentDir;
+        return helper;
     }
 
-    public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-
-        switch (position) {
-            case 0:
-                // Whatever you want to happen when the first item gets selected
-                break;
-            case 1:
-                // Whatever you want to happen when the second item gets selected
-                break;
-            case 2:
-                // Whatever you want to happen when the thrid item gets selected
-                break;
-
+    private void onRestoreNonConfigurationInstance() {
+        helper = (CardActivityHelper) getLastNonConfigurationInstance();
+        if (helper != null) {
+            initializeLessonsSpinner(helper.lessons);
+            //setActiveLesson(helper.currentLesson);
+        } else {
+            helper = new CardActivityHelper();
+            helper.path = getIntent().getStringExtra(PATH);
+            helper.lessons = GetLessons(helper.path);
+            initializeLessonsSpinner(helper.lessons);
         }
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
+    private void initializeLessonsSpinner(File[] lessons) {
 
+        lessonsAdapter = new LessonsSpinAdapter(CardActivity.this,
+                android.R.layout.simple_spinner_dropdown_item,
+                lessons);
+        //lessonsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLessons.setAdapter(lessonsAdapter); // Set the custom adapter to the spinner
+        // You can create an anonymous listener to handle the event when is selected an spinner item
+        spinnerLessons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                // Here you get the current item (a User object) that is selected by its position
+                File lesson = lessonsAdapter.getItem(position);
+
+                //if(helper.currentLesson == null) {
+                    helper.currentLesson = lesson;
+                    initializeLanguageSpinner(lesson);
+                //}
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+
+            }
+        });
+    }
+
+    private void initializeLanguageSpinner(File lessonFile) {
+
+        final LessonItem lesson = XmlParser.parseLesson(lessonFile);
+
+        List<LanguageItem> langs = GetLangs(lesson);
+
+        langAdapter = new LangSpinAdapter(CardActivity.this,
+                android.R.layout.simple_spinner_dropdown_item,
+                langs);
+        //lessonsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLang.setAdapter(langAdapter); // Set the custom adapter to the spinner
+        // You can create an anonymous listener to handle the event when is selected an spinner item
+        spinnerLang.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                // Here you get the current item (a User object) that is selected by its position
+                LanguageItem language = langAdapter.getItem(position);
+
+                //if(helper.currentLesson == null) {
+                helper.language = language;
+                helper.currentLanguage = language.getPrimaryLanguage();
+                initializeWordsSpinner(lesson, helper.currentLanguage);
+                //}
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+
+            }
+        });
+    }
+
+    private List<LanguageItem> GetLangs(LessonItem lesson) {
+
+        List<LanguageItem> langItems = new ArrayList<LanguageItem>();
+
+        WordItem word = lesson.getWords().get(0);
+        String[] langs = word.getLangs();
+        for(int i = 0; i < langs.length - 1; i++ ) {
+            for(int j = i + 1 ; j < word.getLangs().length; j++ ) {
+                langItems.add(new LanguageItem(langs[i], langs[j]));
+                langItems.add(new LanguageItem(langs[j], langs[i]));
+            }
+        }
+
+        return langItems;
+    }
+
+    private void initializeWordsSpinner(LessonItem lesson, String language) {
+
+        wordsAdapter = new WordsSpinAdapter(CardActivity.this,
+                android.R.layout.simple_spinner_item,
+                lesson.getWords(), language);
+        //wordsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerWords.setAdapter(wordsAdapter); // Set the custom adapter to the spinner
+        // You can create an anonymous listener to handle the event when is selected an spinner item
+        spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                // Here you get the current item (a User object) that is selected by its position
+                WordItem word = wordsAdapter.getItem(position);
+                //if(helper.currentWord == null) {
+                    helper.currentWord = word;
+                    helper.currentLanguage = helper.language.getPrimaryLanguage();
+                    activateWord(word);
+                //}
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.buttonPrevious:
+                previousWord();
+                break;
+            case R.id.buttonNext:
+                nextWord();
+                break;
+            case R.id.buttonToggle:
+                Toggle();
+                break;
+        }
+    }
+
+    private void activateWord(WordItem word) {
+
+        textViewWord.setText(word.getValue(helper.currentLanguage));
+
+        String transcription = word.getTranscription(helper.currentLanguage);
+        if(transcription == null) {
+            textViewTrans.setVisibility(View.INVISIBLE);
+        } else {
+            textViewTrans.setVisibility(View.VISIBLE);
+            textViewTrans.setText(transcription);
+        }
+
+        int position = wordsAdapter.getPosition(word);
+        buttonPrevious.setEnabled(position > 0);
+        buttonNext.setEnabled(position < (wordsAdapter.getCount() - 1));
     }
 
     private File[] GetLessons(String path){
@@ -111,52 +239,29 @@ public class CardActivity extends Activity implements View.OnClickListener, Adap
         File[] files = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
-                return s.startsWith("lesson");
+            return s.startsWith("lesson");
             }
         });
+        Arrays.sort(files) ;
         return files;
     }
 
+    private void Toggle() {
+        LanguageItem lang = helper.language;
+        helper.currentLanguage = helper.currentLanguage.equals(lang.getPrimaryLanguage()) ?
+                lang.getSecondaryLanguage():
+                lang.getPrimaryLanguage();
 
-
-//    private void fill(File file) {
-//        this.setTitle(file.getAbsolutePath());
-//    }
-
-//    @Override
-//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        FileItem item = adapter.getItem(position);
-//        if (item.getType() == ItemType.Directory || item.getType() == ItemType.ParentDirectory) {
-//            currentDir = new File(item.getPath());
-//            fill(currentDir);
-//        }
-//    }
-
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        switch (id) {
-            case R.id.buttonPrevious:
-                //onOkClick(helper.getCurrentDirectory());
-                break;
-            case R.id.buttonNext:
-                //onCancel();
-                break;
-        }
+        activateWord(helper.currentWord);
     }
 
-    private void onOkClick(FileItem item) {
-        SharedPreferencesHelper.getInstance().save(Configs.SP_DOWNLOAD_DIR_PATH, item.getPath());
-
-        Intent intent = new Intent();
-        intent.putExtra(PATH, item.getPath());
-        setResult(RESULT_OK, intent);
-        finish();
+    private void previousWord() {
+        int position = wordsAdapter.getPosition(helper.currentWord);
+        spinnerWords.setSelection(position - 1);
     }
 
-    private void onCancel() {
-        Intent intent = new Intent();
-        setResult(RESULT_CANCELED, intent);
-        finish();
+    private void nextWord() {
+        int position = wordsAdapter.getPosition(helper.currentWord);
+        spinnerWords.setSelection(position + 1);
     }
 }

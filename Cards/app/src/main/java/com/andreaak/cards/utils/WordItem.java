@@ -1,25 +1,35 @@
 package com.andreaak.cards.utils;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 public class WordItem {
-    private String ru;
-    private String en;
-    private String en_tr;
 
-    public String getRu() {
-        return ru;
+    private final String TranscriptionSuffix = "_tr";
+
+    private Map<String, String> words = new LinkedHashMap<String, String>();
+    private Map<String, String> transcriptions = new HashMap<String, String>();
+
+    public String[] getLangs() {
+        return words.keySet().toArray(new String[0]);
     }
 
-    public String getEn_tr() {
-        return en_tr;
+    public String getValue(String language) {
+        return words.get(language);
     }
 
-    public String getEn() {
-        return en;
+    public String getTranscription (String language) {
+        return transcriptions.get(language + TranscriptionSuffix);
     }
 
-    public WordItem(String ru, String en, String en_tr){
-        this.ru = ru;
-        this.en = en;
-        this.en_tr = en_tr;
+    public void addItem(String language, String value){
+        if(language.endsWith(TranscriptionSuffix)){
+            transcriptions.put(language, value);
+        }else {
+            words.put(language, value);
+        }
     }
 }

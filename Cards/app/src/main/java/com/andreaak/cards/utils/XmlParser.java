@@ -16,7 +16,25 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 public class XmlParser {
 
-    public static ArrayList<LessonItem> parseLessonsXmlFiles(String path){
+    public static LessonItem parseLesson(File lessonFile){
+        LessonItem lesson = new LessonItem(lessonFile.getName());
+            try {
+                InputSource input = new InputSource(new FileReader(lessonFile.getPath()));
+                Document doc  = parseXML(input);
+                NodeList words = doc.getElementsByTagName("word");
+                for(int i = 0; i < words.getLength(); i++){
+                    Node node = words.item(i);
+                    WordItem word = parseWord(node);
+                    lesson.add(word);
+                }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        return lesson;
+    }
+
+    public static ArrayList<LessonItem> parseLessons(String path){
 
         ArrayList<LessonItem> lessons = new ArrayList<>();
         File directory =  new File(path);
@@ -51,26 +69,20 @@ public class XmlParser {
     }
 
     private static WordItem parseWord(Node node) {
-        String ru = null;
-        String en = null;
-        String en_tr = null;
+
+        WordItem word = new WordItem();
 
         NodeList items = node.getChildNodes();
         for(int i = 0; i < items.getLength(); i++){
             Node item = items.item(i);
-            switch(item.getNodeName()){
-                case "ru":
-                    ru = item.getFirstChild().getNodeValue();
-                    break;
-                case "en":
-                    en = item.getFirstChild().getNodeValue();
-                    break;
-                case "en_tr":
-                    en_tr = item.getFirstChild().getNodeValue();
-                    break;
+            short type = item.getNodeType();
+            if(type == 1) {
+                String language = item.getNodeName();
+                String value = item.getFirstChild().getNodeValue();
+                word.addItem(language, value);
             }
         }
-        return new WordItem(ru, en, en_tr);
+        return word;
     }
 
     private static Document parseXML(InputSource source) {
