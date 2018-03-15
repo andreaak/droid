@@ -8,25 +8,19 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.andreaak.cards.dataBase.DataBaseHelper;
-import com.andreaak.cards.google.GoogleDriveHelper;
-import com.andreaak.cards.utils.Constants;
-import com.andreaak.cards.utils.LessonItem;
-import com.andreaak.cards.utils.XmlParser;
-import com.andreaak.cards.utils.logger.Logger;
-import com.andreaak.cards.utils.logger.NativeLogger;
 import com.andreaak.cards.google.EmailHolder;
+import com.andreaak.cards.google.GoogleDriveHelper;
 import com.andreaak.cards.google.IConnectGoogleDrive;
 import com.andreaak.cards.utils.Configs;
+import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.SharedPreferencesHelper;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.FileLogger;
 import com.andreaak.cards.utils.logger.ILogger;
+import com.andreaak.cards.utils.logger.Logger;
+import com.andreaak.cards.utils.logger.NativeLogger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
-
-import java.io.File;
-import java.util.ArrayList;
 
 import static com.andreaak.cards.utils.Utils.showText;
 
@@ -168,11 +162,6 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         Logger.setLogger(log);
     }
 
-//    private void getFile() {
-//        Intent intent = new Intent(this, DirectoryChooserActivity.class);
-//        startActivityForResult(intent, REQUEST_DIRECTORY_CHOOSER);
-//    }
-
     private void getDirectory() {
         Intent intent1 = new Intent(this, DirectoryChooserActivity.class);
         startActivityForResult(intent1, REQUEST_DIRECTORY_CHOOSER);
@@ -192,24 +181,6 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
 
         helper.saveFiles(ids, names, path);
     }
-
-//    private void checkDatabase(String path) {
-//
-//        DataBaseHelper.initInstance(this, path);
-//
-//        DataBaseHelper databaseHelper = DataBaseHelper.getInstance();
-//
-//        boolean dbExist = databaseHelper.checkDataBase();
-//        if (dbExist) {
-//            String savePath = new File(path).getParent();
-//            SharedPreferencesHelper.getInstance().save(Configs.SP_DIRECTORY_WITH_DB_PATH, savePath);
-//
-//            Intent intent = new Intent(this, EntityChooserActivity.class);
-//            startActivity(intent);
-//        } else {
-//            showText(this, com.andreaak.cards.R.string.db_fault);
-//        }
-//    }
 
     private void showCards(String path){
         Intent intent = new Intent(this, CardActivity.class);

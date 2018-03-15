@@ -60,26 +60,6 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".EntityChooserActivity"
-            android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.EntityChooserActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-        </activity>
-        <activity
-            android:name=".NoteHtmlActivity"
-            android:theme="@android:style/Theme.Holo">
-            <category android:name="android.intent.category.DEFAULT" />
-        </activity>
-        <activity
-            android:name=".NoteFindActivity"
-            android:label="Note"
-            android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.NoteFindActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-        </activity>
-        <activity
             android:name=".SettingsActivity"
             android:label="Preferences"
             android:theme="@android:style/Theme.Holo">
