@@ -53,7 +53,7 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
         // Then you can get the current item using the values array (Users array) and the current position
         // You can NOW reference each method you has created in your bean object (User class)
         label.setText(values.get(position).getValue(language));
-        label.setTextSize(20);
+        label.setTextSize(15);
         label.setPadding(2,5,2,5);
 
         // And finally return your dynamic (or custom) view for each spinner item
@@ -68,7 +68,7 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
         TextView label = new TextView(context);
         //label.setTextColor(Color.BLACK);
         label.setText(values.get(position).getValue(language));
-        label.setTextSize(20);
+        label.setTextSize(15);
         label.setPadding(2,5,2,5);
 
         return label;

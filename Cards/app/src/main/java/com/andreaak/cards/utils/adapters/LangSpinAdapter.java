@@ -54,7 +54,7 @@ public class LangSpinAdapter extends ArrayAdapter<LanguageItem> {
         LanguageItem lang = values.get(position);
         String text = lang.getPrimaryLanguage() + " --> "  + lang.getSecondaryLanguage();
         label.setText(text);
-        label.setTextSize(20);
+        label.setTextSize(15);
         label.setPadding(2,5,2,5);
 
         // And finally return your dynamic (or custom) view for each spinner item
@@ -70,7 +70,7 @@ public class LangSpinAdapter extends ArrayAdapter<LanguageItem> {
         LanguageItem lang = values.get(position);
         String text = lang.getPrimaryLanguage() + " --> "  + lang.getSecondaryLanguage();
         label.setText(text);
-        label.setTextSize(20);
+        label.setTextSize(15);
         label.setPadding(2,5,2,5);
 
         return label;

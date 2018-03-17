@@ -40,16 +40,16 @@ public class FileLogger implements ILogger {
     public int e(String tag, String msg, Throwable tr) {
         String message = getMessage(msg, tr);
         writeMessage(message);
-        writeMessage("");
+        //writeMessage("");
         return 0;
     }
 
     private void writeMessage(String message) {
         try {
             //BufferedWriter for performance, true to set append to file flag
-            BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.LogFile, true));
+            FileWriter buf = new FileWriter(Configs.LogFile, true);
             buf.append(message);
-            buf.newLine();
+            buf.flush();
             buf.close();
         } catch (IOException e) {
             Log.e(Constants.LOG_TAG, e.getMessage(), e);
@@ -59,7 +59,14 @@ public class FileLogger implements ILogger {
     private String getMessage(String msg, Throwable tr) {
         Calendar c = Calendar.getInstance();
         String formattedDate = df.format(c.getTime());
-        return String.format("%1$s Ex: %2$s \nExceeption: %3$s", formattedDate, msg, tr.getClass().toString());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%1$s Ex: %2$s \nExceeption: %3$s", formattedDate, msg, tr.getClass().toString()) + '\n');
+        StackTraceElement[] elements = tr.getStackTrace();
+        for(StackTraceElement el : tr.getStackTrace()){
+            sb.append(String.format("at %1$s.%2$s (%3$s:%4$d)", el.getClassName(), el.getMethodName(), el.getFileName(), el.getLineNumber()) + '\n');
+        }
+        return sb.toString();
     }
 
     private String getMessage(String msg) {

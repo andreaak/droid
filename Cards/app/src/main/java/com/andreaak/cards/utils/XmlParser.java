@@ -1,5 +1,7 @@
 package com.andreaak.cards.utils;
 
+import com.andreaak.cards.utils.logger.Logger;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,6 +31,7 @@ public class XmlParser {
                 }
 
             } catch (FileNotFoundException e) {
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
         return lesson;
@@ -62,6 +65,7 @@ public class XmlParser {
                     lessons.add(lesson);
                 }
             } catch (FileNotFoundException e) {
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
         }
@@ -93,6 +97,7 @@ public class XmlParser {
             DocumentBuilder db = dbf.newDocumentBuilder();
             return db.parse(source);
         } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
             return null;
         }
