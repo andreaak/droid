@@ -55,6 +55,8 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+
         if (savedInstanceState == null) {
             // Set the local night mode to some value
             getDelegate().setLocalNightMode(
@@ -357,7 +359,7 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 // Return a VelocityTracker object back to be re-used by others.
-                mVelocityTracker.recycle();
+                //mVelocityTracker.recycle();
 
                 if (Math.abs(x) > 500 && wordsAdapter != null) {
 
