@@ -74,6 +74,10 @@ public class Utils {
         }
         return false;
     }
+
+    public static String getFileNameWithoutExtensions(String fileName) {
+        return fileName.replaceFirst("[.][^.]+$", "");
+    }
 }
 
 

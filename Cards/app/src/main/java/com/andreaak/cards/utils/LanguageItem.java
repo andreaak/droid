@@ -1,6 +1,6 @@
 package com.andreaak.cards.utils;
 
-public class LanguageItem {
+public class LanguageItem implements java.io.Serializable {
     private String primaryLanguage;
     private String secondaryLanguage;
 

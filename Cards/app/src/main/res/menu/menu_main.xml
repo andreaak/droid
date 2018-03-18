@@ -1,8 +1,9 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_connect"
-        android:icon="@android:drawable/ic_menu_view"
-        android:showAsAction="ifRoom"
+        android:id="@+id/menu_open_cards"
+        android:icon="@drawable/cards"
+        android:showAsAction="always"
         android:title="@string/connect" />
     <item
         android:id="@+id/menu_select_account"
@@ -19,9 +20,11 @@
     <item
         android:id="@+id/menu_settings"
         android:orderInCategory="100"
+        android:showAsAction="ifRoom"
         android:title="@string/menu_settings" />
     <item
         android:id="@+id/menu_exit"
         android:orderInCategory="100"
+        android:showAsAction="ifRoom"
         android:title="@string/menu_exit" />
 </menu>

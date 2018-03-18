@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_open_folder"
+        android:gravity="right"
+        android:icon="@drawable/folder"
+        app:showAsAction="always"
+        android:title="@string/open_folder" />
+
+    <item
+        android:id="@+id/menu_open_file"
+        android:gravity="right"
+        android:icon="@drawable/file"
+        app:showAsAction="always"
+        android:title="@string/open_file" />
+
+    <item
+        android:id="@+id/spinner"
+        android:gravity="right"
+        android:title="Words"
+        app:actionViewClass="android.widget.Spinner"
+        android:background="#ff00"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_plus"
+        android:gravity="right"
+        android:icon="@drawable/plus"
+        app:showAsAction="ifRoom"
+        android:title="@string/plus"></item>
+    <item
+        android:id="@+id/menu_minus"
+        android:gravity="right"
+        android:icon="@drawable/minus"
+        app:showAsAction="ifRoom"
+        android:title="@string/minus"></item>
+</menu>

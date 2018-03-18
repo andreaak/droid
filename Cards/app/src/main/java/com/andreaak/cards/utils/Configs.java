@@ -17,6 +17,9 @@ public class Configs {
     //
     private static final String SP_GOOGLE_CARD_DIR_DEF = "Eng";
     private static final String SP_LESSONS_EXTENSION_DEF = ".xml";
+    //
+    public static final String SP_TEXT_FONT_SIZE = "SP_TEXT_FONT_SIZE";
+    public static final String SP_TRANS_FONT_SIZE = "SP_TRANS_FONT_SIZE";
     //Values
     public static String GoogleDir;
     public static String DatabaseExtension;

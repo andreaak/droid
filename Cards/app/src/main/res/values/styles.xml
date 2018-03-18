@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+    <style name="AppBaseTheme" parent="android:Theme.Holo">
     </style>
 
     <!-- Application theme. -->
@@ -8,5 +8,6 @@
 
 
     </style>
-
+    <style name="CompatTheme" parent="Theme.AppCompat.DayNight">
+    </style>
 </resources>

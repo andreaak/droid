@@ -26,7 +26,6 @@ import static com.andreaak.cards.utils.Utils.showText;
 
 public class MainActivity extends Activity implements IConnectGoogleDrive {
 
-    private static final int REQUEST_DIRECTORY_CHOOSER = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     private static final int REQUEST_GOOGLE_FILES_CHOOSER = 3;
     private static final int REQUEST_PREFERENCES = 4;
@@ -85,8 +84,8 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case com.andreaak.cards.R.id.menu_connect: {
-                getDirectory();
+            case com.andreaak.cards.R.id.menu_open_cards: {
+                openCards();
                 return true;
             }
             case com.andreaak.cards.R.id.menu_select_account: {
@@ -120,12 +119,6 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_DIRECTORY_CHOOSER:
-                if (resultCode == RESULT_OK) {
-                    String path = data.getStringExtra(DirectoryChooserActivity.PATH);
-                    showCards(path);
-                }
-                break;
             case REQUEST_GOOGLE_CONNECT:
                 setTitle(com.andreaak.cards.R.string.connecting);
                 if (data != null && data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) != null) {
@@ -162,9 +155,9 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         Logger.setLogger(log);
     }
 
-    private void getDirectory() {
-        Intent intent1 = new Intent(this, DirectoryChooserActivity.class);
-        startActivityForResult(intent1, REQUEST_DIRECTORY_CHOOSER);
+    private void openCards() {
+        Intent intent = new Intent(this, CardActivity.class);
+        startActivity(intent);
     }
 
     private void getGoogleFiles() {
@@ -180,12 +173,6 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false);
 
         helper.saveFiles(ids, names, path);
-    }
-
-    private void showCards(String path){
-        Intent intent = new Intent(this, CardActivity.class);
-        intent.putExtra(CardActivity.PATH, path);
-        startActivity(intent);
     }
 
     @Override

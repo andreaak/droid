@@ -3,10 +3,8 @@ package com.andreaak.cards.utils;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
-public class WordItem {
+public class WordItem implements java.io.Serializable {
 
     private final String TranscriptionSuffix = "_tr";
 
@@ -21,14 +19,14 @@ public class WordItem {
         return words.get(language);
     }
 
-    public String getTranscription (String language) {
+    public String getTranscription(String language) {
         return transcriptions.get(language + TranscriptionSuffix);
     }
 
-    public void addItem(String language, String value){
-        if(language.endsWith(TranscriptionSuffix)){
+    public void addItem(String language, String value) {
+        if (language.endsWith(TranscriptionSuffix)) {
             transcriptions.put(language, value);
-        }else {
+        } else {
             words.put(language, value);
         }
     }
