@@ -8,13 +8,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
-import com.andreaak.cards.utils.LanguageItem;
-import com.andreaak.cards.utils.LessonItem;
-import com.andreaak.cards.utils.SelectCardsActivityHelper;
-import com.andreaak.cards.utils.WordItem;
+import com.andreaak.cards.domain.LanguageItem;
+import com.andreaak.cards.domain.LessonItem;
+import com.andreaak.cards.helpers.SelectLessonAndLanguageHelper;
+import com.andreaak.cards.domain.WordItem;
+import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
-import com.andreaak.cards.utils.adapters.LangSpinAdapter;
-import com.andreaak.cards.utils.adapters.LessonsSpinAdapter;
+import com.andreaak.cards.adapters.LangSpinAdapter;
+import com.andreaak.cards.adapters.LessonsSpinAdapter;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SelectCardsActivity extends Activity implements View.OnClickListener {
+public class SelectLanguageActivity extends Activity implements View.OnClickListener {
 
     public static final String DIRECTORY = "Path";
     public static final String HELPER = "Helper";
@@ -34,14 +35,14 @@ public class SelectCardsActivity extends Activity implements View.OnClickListene
     private Button buttonOk;
     private Button buttonCancel;
 
-    private SelectCardsActivityHelper helper;
+    private SelectLessonAndLanguageHelper helper;
     private LessonsSpinAdapter lessonsAdapter;
     private LangSpinAdapter langAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_cards);
+        setContentView(R.layout.activity_select_lesson_and_language);
 
         buttonOk = (Button) findViewById(R.id.buttonOk);
         buttonOk.setOnClickListener(this);
@@ -62,12 +63,12 @@ public class SelectCardsActivity extends Activity implements View.OnClickListene
     }
 
     private void onRestoreNonConfigurationInstance() {
-        helper = (SelectCardsActivityHelper) getLastNonConfigurationInstance();
+        helper = (SelectLessonAndLanguageHelper) getLastNonConfigurationInstance();
         if (helper != null) {
             helper.isRestore = true;
             initializeLessonsSpinner(helper.lessons);
         } else {
-            helper = new SelectCardsActivityHelper();
+            helper = new SelectLessonAndLanguageHelper();
             String directory = getIntent().getStringExtra(DIRECTORY);
             helper.lessons = GetLessons(directory);
             if(helper.lessons.length != 0) {
@@ -78,7 +79,7 @@ public class SelectCardsActivity extends Activity implements View.OnClickListene
 
     private void initializeLessonsSpinner(File[] lessons) {
 
-        lessonsAdapter = new LessonsSpinAdapter(SelectCardsActivity.this,
+        lessonsAdapter = new LessonsSpinAdapter(SelectLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
                 lessons);
         spinnerLessons.setAdapter(lessonsAdapter);
@@ -86,7 +87,7 @@ public class SelectCardsActivity extends Activity implements View.OnClickListene
             int position = lessonsAdapter.getPosition(helper.lessonFile);
             spinnerLessons.setSelected(false);  // must
             spinnerLessons.setSelection(position, true);  //must
-            initializeLanguageSpinner(helper.words);
+            initializeLanguageSpinner(helper.lessonItem.getWords());
         }
 
         spinnerLessons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -97,9 +98,8 @@ public class SelectCardsActivity extends Activity implements View.OnClickListene
 
                 File lessonFile = lessonsAdapter.getItem(position);
                 helper.lessonFile = lessonFile;
-                LessonItem lesson = XmlParser.parseLesson(lessonFile);
-                helper.words = lesson.getWords();
-                initializeLanguageSpinner(lesson.getWords());
+                helper.lessonItem = XmlParser.parseLesson(lessonFile);
+                initializeLanguageSpinner(helper.lessonItem.getWords());
             }
 
             @Override
@@ -110,15 +110,15 @@ public class SelectCardsActivity extends Activity implements View.OnClickListene
 
     private void initializeLanguageSpinner(ArrayList<WordItem> words) {
 
-        List<LanguageItem> langs = GetLangs(words.get(0));
+        List<LanguageItem> langs = Utils.getLangs(words.get(0));
 
-        langAdapter = new LangSpinAdapter(SelectCardsActivity.this,
+        langAdapter = new LangSpinAdapter(SelectLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
                 langs);
 
         spinnerLang.setAdapter(langAdapter);
         if (helper.isRestore) {
-            int position = langAdapter.getPosition(helper.language);
+            int position = langAdapter.getPosition(helper.lessonItem.getLanguageItem());
             spinnerLang.setSelected(false);  // must
             spinnerLang.setSelection(position, true);
             helper.isRestore = false;
@@ -130,8 +130,7 @@ public class SelectCardsActivity extends Activity implements View.OnClickListene
                                        int position, long id) {
 
                 LanguageItem language = langAdapter.getItem(position);
-                helper.language = language;
-                helper.currentLanguage = language.getPrimaryLanguage();
+                helper.lessonItem.setLanguageItem(language);
             }
 
             @Override
@@ -144,28 +143,13 @@ public class SelectCardsActivity extends Activity implements View.OnClickListene
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case com.andreaak.cards.R.id.buttonOk:
+            case R.id.buttonOk:
                 onOkClick();
                 break;
-            case com.andreaak.cards.R.id.buttonCancel:
+            case R.id.buttonCancel:
                 onCancel();
                 break;
         }
-    }
-
-    private List<LanguageItem> GetLangs(WordItem word) {
-
-        List<LanguageItem> langItems = new ArrayList<LanguageItem>();
-
-        String[] langs = word.getLangs();
-        for (int i = 0; i < langs.length - 1; i++) {
-            for (int j = i + 1; j < word.getLangs().length; j++) {
-                langItems.add(new LanguageItem(langs[i], langs[j]));
-                langItems.add(new LanguageItem(langs[j], langs[i]));
-            }
-        }
-
-        return langItems;
     }
 
     private File[] GetLessons(String path) {

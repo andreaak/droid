@@ -1,12 +1,12 @@
-package com.andreaak.cards;
+package com.andreaak.cards.utils;
 
 import android.app.Activity;
 
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.logger.Logger;
 
-public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
-    public ExceptionHandler(Activity activity) {
+public class ActivityExceptionHandler implements Thread.UncaughtExceptionHandler {
+    public ActivityExceptionHandler(Activity activity) {
 
     }
 

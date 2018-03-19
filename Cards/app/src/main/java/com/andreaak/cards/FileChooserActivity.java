@@ -11,7 +11,7 @@ import com.andreaak.cards.files.FileItem;
 import com.andreaak.cards.files.FileArrayAdapter;
 import com.andreaak.cards.files.FilesHelper;
 import com.andreaak.cards.utils.Configs;
-import com.andreaak.cards.utils.ItemType;
+import com.andreaak.cards.files.ItemType;
 import com.andreaak.cards.utils.SharedPreferencesHelper;
 
 import java.io.File;

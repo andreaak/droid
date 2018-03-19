@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.andreaak.cards.google.EmailHolder;
 import com.andreaak.cards.google.GoogleDriveHelper;
@@ -24,7 +26,7 @@ import com.google.android.gms.common.AccountPicker;
 
 import static com.andreaak.cards.utils.Utils.showText;
 
-public class MainActivity extends Activity implements IConnectGoogleDrive {
+public class MainActivity extends Activity implements IConnectGoogleDrive, View.OnClickListener {
 
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     private static final int REQUEST_GOOGLE_FILES_CHOOSER = 3;
@@ -36,10 +38,16 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
     private boolean isPrefChanged;
 
+    private ImageButton buttonOpenCards;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.andreaak.cards.R.layout.activity_main);
+
+        buttonOpenCards = (ImageButton) findViewById(R.id.buttonOpenCards);
+        buttonOpenCards.setOnClickListener(this);
+
         onRestoreNonConfigurationInstance();
     }
 
@@ -84,10 +92,6 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case com.andreaak.cards.R.id.menu_open_cards: {
-                openCards();
-                return true;
-            }
             case com.andreaak.cards.R.id.menu_select_account: {
                 try {
                     startActivityForResult(AccountPicker.newChooseAccountIntent(
@@ -114,6 +118,16 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.buttonOpenCards:
+                openCards();
+                break;
+        }
     }
 
     @Override
@@ -156,7 +170,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     }
 
     private void openCards() {
-        Intent intent = new Intent(this, CardActivity.class);
+        Intent intent = new Intent(this, CardChooseActivity.class);
         startActivity(intent);
     }
 

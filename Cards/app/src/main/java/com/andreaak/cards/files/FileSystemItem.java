@@ -1,12 +1,12 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.files;
 
 import com.andreaak.cards.R;
 
-public abstract class Item {
+public abstract class FileSystemItem {
 
     private ItemType type;
 
-    public Item(ItemType type) {
+    public FileSystemItem(ItemType type) {
         this.type = type;
     }
 

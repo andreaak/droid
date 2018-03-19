@@ -3,12 +3,17 @@ package com.andreaak.cards.utils;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.andreaak.cards.domain.LanguageItem;
+import com.andreaak.cards.domain.WordItem;
 import com.andreaak.cards.utils.logger.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Utils {
@@ -77,6 +82,36 @@ public class Utils {
 
     public static String getFileNameWithoutExtensions(String fileName) {
         return fileName.replaceFirst("[.][^.]+$", "");
+    }
+
+    public static File[] getLessons(String path) {
+        File directory = new File(path);
+        File[] files = directory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                return s.startsWith("lesson");
+            }
+        });
+        if(files == null) {
+            files = new File[0];
+        }
+        Arrays.sort(files);
+        return files;
+    }
+
+    public static List<LanguageItem> getLangs(WordItem word) {
+
+        List<LanguageItem> langItems = new ArrayList<LanguageItem>();
+
+        String[] langs = word.getLangs();
+        for (int i = 0; i < langs.length - 1; i++) {
+            for (int j = i + 1; j < word.getLangs().length; j++) {
+                langItems.add(new LanguageItem(langs[i], langs[j]));
+                langItems.add(new LanguageItem(langs[j], langs[i]));
+            }
+        }
+
+        return langItems;
     }
 }
 

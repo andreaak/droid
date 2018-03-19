@@ -79,10 +79,18 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".SelectCardsActivity"
+            android:name=".SelectLessonAndLanguageActivity"
             android:label="Choose Lesson"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.SelectCardsActivity" />
+            <action android:name="com.andreaak.cards.SelectLessonAndLanguageActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
+            android:name=".CardChooseActivity"
+            android:label="Choose one"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.CardChooseActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>

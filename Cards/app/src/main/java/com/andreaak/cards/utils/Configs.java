@@ -20,9 +20,12 @@ public class Configs {
     //
     public static final String SP_TEXT_FONT_SIZE = "SP_TEXT_FONT_SIZE";
     public static final String SP_TRANS_FONT_SIZE = "SP_TRANS_FONT_SIZE";
+    //
+    public static final String SP_LAST_LESSON_PATH = "SP_LAST_LESSON_PATH";
+    public static final String SP_LAST_LESSON_LANGUAGE = "SP_LAST_LESSON_LANGUAGE";
     //Values
     public static String GoogleDir;
-    public static String DatabaseExtension;
+    public static String LessonsExtension;
     public static String LogFile;
     public static boolean IsLoggingActive;
     private static String LogFileDefault = "/log.file";
@@ -44,9 +47,9 @@ public class Configs {
 
         temp = helper.getString(SP_LESSONS_EXTENSION);
         if (!isEmpty(temp)) {
-            DatabaseExtension = temp;
+            LessonsExtension = temp;
         } else {
-            DatabaseExtension = SP_LESSONS_EXTENSION_DEF;
+            LessonsExtension = SP_LESSONS_EXTENSION_DEF;
             helper.save(SP_LESSONS_EXTENSION, SP_LESSONS_EXTENSION_DEF);
         }
 

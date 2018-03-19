@@ -1,4 +1,4 @@
-package com.andreaak.cards.utils.adapters;
+package com.andreaak.cards.adapters;
 
 import android.content.Context;
 import android.view.View;
@@ -6,32 +6,30 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.andreaak.cards.utils.WordItem;
+import com.andreaak.cards.utils.Utils;
 
-import java.util.List;
+import java.io.File;
 
-public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
+public class LessonsSpinAdapter extends ArrayAdapter<File> {
 
     private Context context;
-    private List<WordItem> values;
-    private String language;
+    private File[] values;
 
-    public WordsSpinAdapter(Context context, int textViewResourceId,
-                            List<WordItem> values, String language) {
+    public LessonsSpinAdapter(Context context, int textViewResourceId,
+                              File[] values) {
         super(context, textViewResourceId, values);
         this.context = context;
         this.values = values;
-        this.language = language;
     }
 
     @Override
     public int getCount() {
-        return values.size();
+        return values.length;
     }
 
     @Override
-    public WordItem getItem(int position) {
-        return values.get(position);
+    public File getItem(int position) {
+        return values[position];
     }
 
     @Override
@@ -39,14 +37,12 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
         return position;
     }
 
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         TextView label = new TextView(context);
-        label.setText(values.get(position).getValue(language));
-        label.setTextSize(15);
-        label.setPadding(2, 2, 2, 2);
+        label.setText(Utils.getFileNameWithoutExtensions(values[position].getName()));
+        label.setTextSize(20);
+        label.setPadding(2, 5, 2, 2);
 
         return label;
     }
@@ -55,9 +51,9 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(values.get(position).getValue(language));
-        label.setTextSize(15);
-        label.setPadding(2, 2, 2, 2);
+        label.setText(Utils.getFileNameWithoutExtensions(values[position].getName()));
+        label.setTextSize(20);
+        label.setPadding(2, 5, 2, 2);
 
         return label;
     }

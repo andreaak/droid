@@ -1,4 +1,4 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.domain;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

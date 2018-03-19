@@ -1,10 +1,8 @@
 package com.andreaak.cards;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
@@ -13,29 +11,27 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.andreaak.cards.utils.CardActivityHelper;
+import com.andreaak.cards.helpers.CardActivityHelper;
 import com.andreaak.cards.utils.Configs;
-import com.andreaak.cards.utils.LanguageItem;
-import com.andreaak.cards.utils.SelectCardsActivityHelper;
+import com.andreaak.cards.domain.LanguageItem;
+import com.andreaak.cards.helpers.SelectLessonAndLanguageHelper;
+import com.andreaak.cards.utils.ActivityExceptionHandler;
 import com.andreaak.cards.utils.SharedPreferencesHelper;
 import com.andreaak.cards.utils.Utils;
-import com.andreaak.cards.utils.WordItem;
-import com.andreaak.cards.utils.adapters.WordsSpinAdapter;
+import com.andreaak.cards.domain.WordItem;
+import com.andreaak.cards.adapters.WordsSpinAdapter;
 
 import java.util.ArrayList;
 
 public class CardActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final int REQUEST_DIRECTORY_CHOOSER = 1;
-    private static final int REQUEST_CARDS_CHOOSER = 2;
-    private static final int REQUEST_PREFERENCES = 4;
+    public static final String HELPER = "Helper";
 
     private ImageButton buttonToggle;
 
@@ -55,7 +51,7 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Thread.setDefaultUncaughtExceptionHandler(new ActivityExceptionHandler(this));
 
         if (savedInstanceState == null) {
             // Set the local night mode to some value
@@ -85,7 +81,10 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
         if (helper != null) {
             helper.isRestore = true;
         } else {
-            helper = new CardActivityHelper();
+            helper = (CardActivityHelper)getIntent()
+                    .getSerializableExtra(CardActivity.HELPER);
+
+            setTitle(helper.lessonItem.getName());
         }
     }
 
@@ -101,10 +100,10 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
         MenuItem item = menu.findItem(R.id.spinner);
         spinnerWords = (android.widget.Spinner) item.getActionView();
         spinnerWords.setVisibility(View.GONE);
-        if (helper.words != null && !helper.words.isEmpty()) {
-            setTitle(helper.lessonName);
-            helper.currentLanguage = helper.language.getPrimaryLanguage();
-            initializeWordsSpinner(helper.words, helper.currentLanguage);
+        if (helper.lessonItem.isContainsWords()) {
+            setTitle(helper.lessonItem.getName());
+            helper.lessonItem.resetLanguage();
+            initializeWordsSpinner(helper.lessonItem.getWords(), helper.lessonItem.getCurrentLanguage());
         }
 
         this.menu = menu;
@@ -114,20 +113,6 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case com.andreaak.cards.R.id.menu_open_folder: {
-                getDirectory();
-                return true;
-            }
-            case com.andreaak.cards.R.id.menu_open_file: {
-
-                return true;
-            }
-            case com.andreaak.cards.R.id.menu_settings: {
-                isPrefChanged = false;
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivityForResult(intent, REQUEST_PREFERENCES);
-                return true;
-            }
 
             case com.andreaak.cards.R.id.menu_plus: {
                 textBigger();
@@ -140,44 +125,6 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_DIRECTORY_CHOOSER:
-                if (resultCode == RESULT_OK) {
-                    String path = data.getStringExtra(DirectoryChooserActivity.PATH);
-                    selectLesson(path);
-                }
-                break;
-            case REQUEST_CARDS_CHOOSER:
-                if (resultCode == RESULT_OK) {
-                    SelectCardsActivityHelper selectHelper = (SelectCardsActivityHelper) data.getSerializableExtra(SelectCardsActivity.HELPER);
-                    if (!selectHelper.words.isEmpty()) {
-                        helper.words = selectHelper.words;
-                        helper.language = selectHelper.language;
-                        helper.currentLanguage = selectHelper.currentLanguage;
-                        helper.lessonName = Utils.getFileNameWithoutExtensions(selectHelper.lessonFile.getName());
-                        helper.currentWord = helper.words.get(0);
-                        setTitle(helper.lessonName);
-                        initializeWordsSpinner(helper.words, helper.currentLanguage);
-                    }
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void getDirectory() {
-        Intent intent1 = new Intent(this, DirectoryChooserActivity.class);
-        startActivityForResult(intent1, REQUEST_DIRECTORY_CHOOSER);
-    }
-
-    private void selectLesson(String path) {
-        Intent intent = new Intent(this, SelectCardsActivity.class);
-        intent.putExtra(SelectCardsActivity.DIRECTORY, path);
-        startActivityForResult(intent, REQUEST_CARDS_CHOOSER);
     }
 
     private void setFontSize() {
@@ -251,7 +198,8 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
 
                 WordItem word = wordsAdapter.getItem(position);
                 helper.currentWord = word;
-                helper.currentLanguage = helper.language.getPrimaryLanguage();
+                helper.lessonItem.resetLanguage();
+
                 activateWord(word);
             }
 
@@ -291,9 +239,9 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
 
     private void activateWord(WordItem word) {
 
-        textViewWord.setText(word.getValue(helper.currentLanguage));
+        textViewWord.setText(word.getValue(helper.lessonItem.getCurrentLanguage()));
 
-        String transcription = word.getTranscription(helper.currentLanguage);
+        String transcription = word.getTranscription(helper.lessonItem.getCurrentLanguage());
         if (transcription == null) {
             textViewTrans.setVisibility(View.INVISIBLE);
         } else {
@@ -303,10 +251,8 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void Toggle() {
-        LanguageItem lang = helper.language;
-        helper.currentLanguage = helper.currentLanguage.equals(lang.getPrimaryLanguage()) ?
-                lang.getSecondaryLanguage() :
-                lang.getPrimaryLanguage();
+
+        helper.lessonItem.ToggleLanguage();
 
         activateWord(helper.currentWord);
     }

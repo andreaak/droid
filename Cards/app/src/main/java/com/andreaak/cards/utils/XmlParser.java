@@ -1,5 +1,7 @@
 package com.andreaak.cards.utils;
 
+import com.andreaak.cards.domain.LessonItem;
+import com.andreaak.cards.domain.WordItem;
 import com.andreaak.cards.utils.logger.Logger;
 
 import org.w3c.dom.Document;
@@ -18,10 +20,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 public class XmlParser {
 
+    public static LessonItem parseLesson(String path){
+
+        return parseLesson(new File(path));
+    }
+
     public static LessonItem parseLesson(File lessonFile){
-        LessonItem lesson = new LessonItem(lessonFile.getName());
+
+        String name = Utils.getFileNameWithoutExtensions(lessonFile.getName());
+        LessonItem lesson = new LessonItem(name, lessonFile.getAbsolutePath());
             try {
-                InputSource input = new InputSource(new FileReader(lessonFile.getPath()));
+                InputSource input = new InputSource(new FileReader(lessonFile));
                 Document doc  = parseXML(input);
                 NodeList words = doc.getElementsByTagName("word");
                 for(int i = 0; i < words.getLength(); i++){
@@ -48,12 +57,13 @@ public class XmlParser {
             }
         });
 
-        for (File file : files) {
+        for (File lessonFile : files) {
             try {
 
-                LessonItem lesson = new LessonItem(file.getName());
+                String name = Utils.getFileNameWithoutExtensions(lessonFile.getName());
+                LessonItem lesson = new LessonItem(name, lessonFile.getAbsolutePath());
 
-                InputSource input = new InputSource(new FileReader(file));
+                InputSource input = new InputSource(new FileReader(lessonFile));
                 Document doc  = parseXML(input);
                 NodeList words = doc.getElementsByTagName("word");
                 for(int i = 0; i < words.getLength(); i++){

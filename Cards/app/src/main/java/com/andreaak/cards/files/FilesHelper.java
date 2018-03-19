@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.andreaak.cards.utils.Configs;
 import com.andreaak.cards.utils.Constants;
-import com.andreaak.cards.utils.ItemType;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.Logger;
 import com.andreaak.cards.R;
@@ -51,7 +50,7 @@ public class FilesHelper {
                     if (file.isDirectory()) {
                         FileItem fileItem = getDirectoryItem(file, dateModify);
                         directories.add(fileItem);
-                    } else if (addFiles && file.getName().endsWith(Configs.DatabaseExtension)) {
+                    } else if (addFiles && file.getName().endsWith(Configs.LessonsExtension)) {
                         FileItem fileItem = getFileItem(file, dateModify);
                         files.add(fileItem);
                     }

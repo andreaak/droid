@@ -1,4 +1,4 @@
-package com.andreaak.cards.utils.adapters;
+package com.andreaak.cards.adapters;
 
 import android.content.Context;
 import android.view.View;
@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.andreaak.cards.utils.LanguageItem;
+import com.andreaak.cards.domain.LanguageItem;
 
 import java.util.List;
 

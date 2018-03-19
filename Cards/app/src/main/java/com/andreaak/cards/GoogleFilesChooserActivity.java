@@ -70,7 +70,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
                     if (directory != null && directory.size() == 1) {
                         ArrayList<GoogleItem> findFiles = helper.search(directory.get(0).getId(), null, null);
                         for (GoogleItem file : findFiles) {
-                            if (!helper.isFolder(file) && file.getTitle().endsWith(Configs.DatabaseExtension)) {
+                            if (!helper.isFolder(file) && file.getTitle().endsWith(Configs.LessonsExtension)) {
                                 databaseFiles.add(file);
                             }
                         }

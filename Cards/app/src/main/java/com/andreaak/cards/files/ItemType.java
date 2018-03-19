@@ -1,4 +1,4 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.files;
 
 public enum ItemType {
     Directory,
