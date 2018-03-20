@@ -27,8 +27,9 @@
     <string name="open_lesson">Open lesson</string>
     <string name="open_last_lesson">Open last lesson</string>
     <string name="open_lesson_s_folder">Open lesson\'s folder</string>
-    <string name="lessons_folder">"Select lesson's folder. "</string>
+    <string name="select_lessons_folder">"Select lesson's folder"</string>
     <string name="select_language">Select language</string>
     <string name="cards">Cards</string>
     <string name="choose_directory">Choose directory</string>
+    <string name="select_log">Select log file folder</string>
 </resources>

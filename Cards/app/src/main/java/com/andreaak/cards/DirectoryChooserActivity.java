@@ -15,7 +15,7 @@ import com.andreaak.cards.files.DirectoryArrayAdapter;
 import com.andreaak.cards.files.FilesHelper;
 import com.andreaak.cards.utils.Configs;
 import com.andreaak.cards.files.ItemType;
-import com.andreaak.cards.utils.DirectoryPredicate;
+import com.andreaak.cards.predicates.DirectoryPredicate;
 import com.andreaak.cards.utils.SharedPreferencesHelper;
 
 import java.io.File;

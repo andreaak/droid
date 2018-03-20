@@ -12,9 +12,8 @@ import com.andreaak.cards.domain.LanguageItem;
 import com.andreaak.cards.domain.LessonItem;
 import com.andreaak.cards.helpers.CardActivityHelper;
 import com.andreaak.cards.helpers.SelectLessonAndLanguageHelper;
-import com.andreaak.cards.utils.ActivityExceptionHandler;
 import com.andreaak.cards.utils.Configs;
-import com.andreaak.cards.utils.LessonXmlFolderPredicate;
+import com.andreaak.cards.predicates.LessonXmlDirectoryPredicate;
 import com.andreaak.cards.utils.SharedPreferencesHelper;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
@@ -27,8 +26,7 @@ public class CardChooseActivity extends Activity implements View.OnClickListener
 
     private Menu menu;
 
-    //private CardActivityHelper helper;
-    private boolean isPrefChanged;
+     private boolean isPrefChanged;
     ImageButton buttonOpenLastLesson;
     ImageButton buttonOpenLesson;
     ImageButton buttonOpenLessonsFolder;
@@ -53,23 +51,7 @@ public class CardChooseActivity extends Activity implements View.OnClickListener
 
         buttonOpenLessonsFolder = (ImageButton) findViewById(R.id.buttonOpenLessonsFolder);
         buttonOpenLessonsFolder.setOnClickListener(this);
-
-        onRestoreNonConfigurationInstance();
     }
-
-    private void onRestoreNonConfigurationInstance() {
-//        helper = (CardActivityHelper) getLastNonConfigurationInstance();
-//        if (helper != null) {
-//            helper.isRestore = true;
-//        } else {
-//            helper = new CardActivityHelper();
-//        }
-    }
-
-//    @Override
-//    public Object onRetainNonConfigurationInstance() {
-//        return helper;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -141,8 +123,8 @@ public class CardChooseActivity extends Activity implements View.OnClickListener
 
     private void getLessonsDirectory() {
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
-        intent.putExtra(DirectoryChooserActivity.PREDICATE, new LessonXmlFolderPredicate());
-        intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.lessons_folder));
+        intent.putExtra(DirectoryChooserActivity.PREDICATE, new LessonXmlDirectoryPredicate());
+        intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
         startActivityForResult(intent, REQUEST_LESSONS_DIRECTORY_CHOOSER);
     }
 

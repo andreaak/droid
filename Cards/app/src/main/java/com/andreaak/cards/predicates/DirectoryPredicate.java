@@ -1,4 +1,4 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.predicates;
 
 import java.io.File;
 
