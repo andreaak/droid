@@ -1,7 +1,7 @@
 package com.andreaak.cards.utils;
 
-import com.andreaak.cards.domain.LessonItem;
-import com.andreaak.cards.domain.WordItem;
+import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.logger.Logger;
 
 import org.w3c.dom.Document;

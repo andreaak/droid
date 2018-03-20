@@ -1,4 +1,4 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activitiesShared;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,22 +10,28 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.andreaak.cards.files.FileItem;
-import com.andreaak.cards.files.DirectoryArrayAdapter;
-import com.andreaak.cards.files.FilesHelper;
-import com.andreaak.cards.utils.Configs;
-import com.andreaak.cards.files.ItemType;
+import com.andreaak.cards.R;
+import com.andreaak.cards.fileSystemItems.FileItem;
+import com.andreaak.cards.fileSystemItems.DirectoryArrayAdapter;
+import com.andreaak.cards.fileSystemItems.FilesHelper;
+import com.andreaak.cards.configs.Configs;
+import com.andreaak.cards.fileSystemItems.ItemType;
+import com.andreaak.cards.predicates.AlwaysTruePredicate;
 import com.andreaak.cards.predicates.DirectoryPredicate;
-import com.andreaak.cards.utils.SharedPreferencesHelper;
+import com.andreaak.cards.configs.SharedPreferencesHelper;
+import com.andreaak.cards.utils.Utils;
 
 import java.io.File;
 import java.util.List;
 
 public class DirectoryChooserActivity extends Activity implements View.OnClickListener, ListView.OnItemClickListener {
 
-    public static final String PATH = "Path";
+    //in
     public static final String PREDICATE = "Predicate";
-    public static final String TITLE = "TITLE";
+    public static final String TITLE = "Title";
+    public static final String INITIAL_PATH = "InitialPath";
+    //out
+    public static final String DIRECTORY_PATH = "DirectoryPath";
 
     private DirectoryPredicate predicate;
     private String title;
@@ -37,6 +43,7 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     private Button buttonOk;
     private Button buttonCancel;
     private TextView textViewPath;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +66,17 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     private void onRestoreNonConfigurationInstance() {
         currentDir = (File) getLastNonConfigurationInstance();
         if (currentDir == null) {
-            String savedPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DOWNLOAD_DIR_PATH);
-            currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
-                    Environment.getDataDirectory() :
-                    new File(savedPath);
-            predicate = (DirectoryPredicate)getIntent().getSerializableExtra(PREDICATE);
-            title = getIntent().getStringExtra(TITLE);
+            RestoreInParameters();
         }
+    }
+
+    private void RestoreInParameters() {
+        String savedPath = getIntent().getStringExtra(INITIAL_PATH);
+        currentDir = Utils.isEmpty(savedPath) || !new File(savedPath).exists() ?
+                Environment.getDataDirectory() :
+                new File(savedPath);
+        predicate = (DirectoryPredicate) getIntent().getSerializableExtra(PREDICATE);
+        title = getIntent().getStringExtra(TITLE);
     }
 
     @Override
@@ -75,7 +86,7 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
 
     private void fill(File file) {
         setCustomTitle(file);
-        List<FileItem> dir = helper.getDirectory(file);
+        List<FileItem> dir = helper.getDirectory(file, new AlwaysTruePredicate());
         adapter = new DirectoryArrayAdapter(this, com.andreaak.cards.R.layout.list_item_dir_chooser, dir);
         listView.setAdapter(adapter);
         setOkButtonState(file);
@@ -105,10 +116,8 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
 
     private void onOkClick(FileItem item) {
 
-        SharedPreferencesHelper.getInstance().save(Configs.SP_DOWNLOAD_DIR_PATH, item.getPath());
-
         Intent intent = new Intent();
-        intent.putExtra(PATH, item.getPath());
+        intent.putExtra(DIRECTORY_PATH, item.getPath());
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -125,9 +134,9 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     }
 
     private void setCustomTitle(File directory) {
-        if(title != null) {
+        if (title != null) {
             this.setTitle(title);
-        } else{
+        } else {
             this.setTitle(getString(R.string.choose_directory));
         }
 

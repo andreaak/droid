@@ -1,7 +1,6 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activities;
 
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,12 +9,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.andreaak.cards.R;
+import com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity;
+import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
+import com.andreaak.cards.configs.Configs;
+import com.andreaak.cards.configs.SharedPreferencesHelper;
 import com.andreaak.cards.google.EmailHolder;
 import com.andreaak.cards.google.GoogleDriveHelper;
 import com.andreaak.cards.google.IConnectGoogleDrive;
-import com.andreaak.cards.utils.Configs;
 import com.andreaak.cards.utils.Constants;
-import com.andreaak.cards.utils.SharedPreferencesHelper;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.FileLogger;
 import com.andreaak.cards.utils.logger.ILogger;
@@ -26,7 +28,7 @@ import com.google.android.gms.common.AccountPicker;
 
 import static com.andreaak.cards.utils.Utils.showText;
 
-public class MainActivity extends Activity implements IConnectGoogleDrive, View.OnClickListener {
+public class MainActivity extends HandleExceptionActivity implements IConnectGoogleDrive, View.OnClickListener {
 
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     private static final int REQUEST_GOOGLE_FILES_CHOOSER = 3;

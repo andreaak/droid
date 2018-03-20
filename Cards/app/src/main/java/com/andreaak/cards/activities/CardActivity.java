@@ -1,9 +1,7 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -11,25 +9,24 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.andreaak.cards.helpers.CardActivityHelper;
-import com.andreaak.cards.utils.Configs;
-import com.andreaak.cards.domain.LanguageItem;
-import com.andreaak.cards.helpers.SelectLessonAndLanguageHelper;
-import com.andreaak.cards.utils.ActivityExceptionHandler;
-import com.andreaak.cards.utils.SharedPreferencesHelper;
-import com.andreaak.cards.utils.Utils;
-import com.andreaak.cards.domain.WordItem;
+import com.andreaak.cards.R;
+import com.andreaak.cards.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.cards.adapters.WordsSpinAdapter;
+import com.andreaak.cards.configs.Configs;
+import com.andreaak.cards.configs.SharedPreferencesHelper;
+import com.andreaak.cards.helpers.CardActivityHelper;
+import com.andreaak.cards.model.WordItem;
 
 import java.util.ArrayList;
 
-public class CardActivity extends AppCompatActivity implements View.OnClickListener {
+public class CardActivity extends HandleExceptionAppCompatActivity implements View.OnClickListener {
 
     public static final String HELPER = "Helper";
 
@@ -45,13 +42,10 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
 
     private CardActivityHelper helper;
     private WordsSpinAdapter wordsAdapter;
-    private boolean isPrefChanged;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Thread.setDefaultUncaughtExceptionHandler(new ActivityExceptionHandler(this));
 
         if (savedInstanceState == null) {
             // Set the local night mode to some value
@@ -70,7 +64,7 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
         textViewTrans = (TextView) findViewById(R.id.textViewTrans);
         texts = (LinearLayout) findViewById(R.id.texts);
 
-        //setFontSize();
+        setFontSize();
         setInitialCardVisibility(false);
 
         onRestoreNonConfigurationInstance();
@@ -81,7 +75,7 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
         if (helper != null) {
             helper.isRestore = true;
         } else {
-            helper = (CardActivityHelper)getIntent()
+            helper = (CardActivityHelper) getIntent()
                     .getSerializableExtra(CardActivity.HELPER);
 
             setTitle(helper.lessonItem.getName());
@@ -139,37 +133,43 @@ public class CardActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void saveFontSize() {
-        SharedPreferencesHelper.getInstance().save(Configs.SP_TEXT_FONT_SIZE, (int) textViewWord.getTextSize());
-        SharedPreferencesHelper.getInstance().save(Configs.SP_TRANS_FONT_SIZE, (int) textViewTrans.getTextSize());
+//        SharedPreferencesHelper.getInstance().save(Configs.SP_TEXT_FONT_SIZE, (int) textViewWord.getTextSize());
+//        SharedPreferencesHelper.getInstance().save(Configs.SP_TRANS_FONT_SIZE, (int) textViewTrans.getTextSize());
     }
 
     private void textSmaller() {
 
-        float size = textViewWord.getTextSize();
-        float newSize = size * 0.95f;
-        textViewWord.setTextSize(TypedValue.COMPLEX_UNIT_PX, newSize);
-        textViewWord.setHeight((int)(newSize + 10));
-
-        size = textViewTrans.getTextSize();
-        newSize = size * 0.95f;
-        textViewTrans.setTextSize(TypedValue.COMPLEX_UNIT_PX, newSize);
-        textViewTrans.setHeight((int)(newSize + 10));
-        saveFontSize();
+        float factor = 0.95f;
+        setTextSize(factor);
     }
 
     private void textBigger() {
+        float factor = 1.05f;
+        setTextSize(factor);
+    }
+
+    private void setTextSize(float factor) {
 
         float size = textViewWord.getTextSize();
-        float newSize = size * 1.05f;
-        textViewWord.setTextSize(TypedValue.COMPLEX_UNIT_PX, newSize);
-        textViewWord.setHeight((int)(newSize + 10));
+        float newSize = size * factor;
+        setTextSize(textViewWord, newSize);
 
         size = textViewTrans.getTextSize();
-        newSize = size * 1.05f;
-        textViewTrans.setTextSize(TypedValue.COMPLEX_UNIT_PX, newSize);
-        textViewTrans.setHeight((int)(newSize + 10));
+        newSize = size * factor;
+        setTextSize(textViewTrans, newSize);
 
         saveFontSize();
+    }
+
+    private void setTextSize(TextView textView, float size) {
+        android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams( android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(Math.round(0), Math.round(0), Math.round(0), Math.round(0));
+
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+        textView.setLayoutParams(params);
+        textView.setPadding(0, 0, 0, 0);
+        textView.setHeight((int)size + 20);
     }
 
     private void initializeWordsSpinner(ArrayList<WordItem> words, String language) {

@@ -1,14 +1,16 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
+import com.andreaak.cards.R;
 import com.andreaak.cards.predicates.AlwaysTruePredicate;
-import com.andreaak.cards.utils.Configs;
-import com.andreaak.cards.predicates.LessonXmlDirectoryPredicate;
-import com.andreaak.cards.utils.SharedPreferencesHelper;
+import com.andreaak.cards.activitiesShared.DirectoryChooserActivity;
+import com.andreaak.cards.configs.Configs;
+import com.andreaak.cards.configs.SharedPreferencesHelper;
 
 import java.io.File;
 
@@ -16,18 +18,20 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     private final static String RESET_BUTTON = "RESET_BUTTON";
     private final static String OPEN_FOLDER_BUTTON = "OPEN_FOLDER_BUTTON";
+    private final static String SP_LOG_FILE = "SP_LOG_FILE";
 
     private static final int REQUEST_LOG_DIRECTORY_CHOOSER = 2;
 
     private Preference resetButton;
     private Preference openFolderButton;
+    private EditTextPreference logFilePref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(com.andreaak.cards.R.xml.settings);
 
-        initButtons();
+        initPreferences();
     }
 
     @Override
@@ -37,7 +41,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             Configs.clear();
             getPreferenceScreen().removeAll();
             addPreferencesFromResource(com.andreaak.cards.R.xml.settings);
-            initButtons();
+            initPreferences();
             return true;
         } else if(preference == openFolderButton) {
             setLogDirectory();
@@ -52,24 +56,27 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         switch (requestCode) {
             case REQUEST_LOG_DIRECTORY_CHOOSER:
                 if (resultCode == RESULT_OK) {
-                    String path = data.getStringExtra(DirectoryChooserActivity.PATH);
+                    String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
 
                     String logFilePath = SharedPreferencesHelper.getInstance().getString(Configs.SP_LOG_FILE);
                     File file = new File(logFilePath);
                     String newFile = path + "/" + file.getName();
                     SharedPreferencesHelper.getInstance().save(Configs.SP_LOG_FILE, newFile);
+                    logFilePref.setText(newFile);
                 }
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void initButtons() {
+    private void initPreferences() {
         resetButton = findPreference(RESET_BUTTON);
         resetButton.setOnPreferenceClickListener(this);
 
         openFolderButton = findPreference(OPEN_FOLDER_BUTTON);
         openFolderButton.setOnPreferenceClickListener(this);
+
+        logFilePref = (EditTextPreference)findPreference(SP_LOG_FILE);
     }
 
     private void setLogDirectory() {

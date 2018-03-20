@@ -9,16 +9,16 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
 
     <application
+        android:name="com.andreaak.cards.CardsApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="com.andreaak.cards.CardsApplication">
+        android:theme="@style/AppTheme">
 
         <!--Notebook-->
         <!--<meta-data-->
-            <!--android:name="com.google.android.geo.API_KEY"-->
-            <!--android:value="650768443623-d9vhv3hpitf0tvenlubc2740m1vcmkgp.apps.googleusercontent.com" />-->
+        <!--android:name="com.google.android.geo.API_KEY"-->
+        <!--android:value="650768443623-d9vhv3hpitf0tvenlubc2740m1vcmkgp.apps.googleusercontent.com" />-->
 
         <!--Home-->
         <meta-data
@@ -30,7 +30,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:theme="@android:style/Theme.Holo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,58 +39,68 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FileChooserActivity"
-            android:label="Choose Database File"
+            android:name=".activities.CardChooseActivity"
+            android:label="Choose lesson"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.FileChooserActivity" />
+            <action android:name="com.andreaak.cards.activities.CardChooseActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".DirectoryChooserActivity"
-            android:label="Choose Download Directory"
-            android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.DirectoryChooserActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-        </activity>
-        <activity
-            android:name=".GoogleFilesChooserActivity"
-            android:label="Choose Database Files"
-            android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.GoogleFilesChooserActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-        </activity>
-        <activity
-            android:name=".SettingsActivity"
-            android:label="Preferences"
-            android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.SettingsActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-        </activity>
-        <activity
-            android:name=".CardActivity"
+            android:name=".activities.CardActivity"
             android:label="Cards"
             android:theme="@style/Theme.AppCompat.DayNight">
-            <action android:name="com.andreaak.cards.CardActivity" />
+            <action android:name="com.andreaak.cards.activities.CardActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".SelectLessonAndLanguageActivity"
-            android:label="Choose Lesson"
+            android:name=".activities.SelectLessonAndLanguageActivity"
+            android:label="Cards"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.SelectLessonAndLanguageActivity" />
+            <action android:name="com.andreaak.cards.activities.SelectLessonAndLanguageActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".CardChooseActivity"
-            android:label="Choose one"
+            android:name=".activities.SelectLanguageActivity"
+            android:label="Cards"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.CardChooseActivity" />
+            <action android:name="com.andreaak.cards.activities.SelectLanguageActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="Preferences"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activities.SettingsActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+
+        <!-- Shared -->
+        <activity
+            android:name=".activitiesShared.FileChooserActivity"
+            android:label="Select file"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activitiesShared.FileChooserActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
+            android:name=".activitiesShared.DirectoryChooserActivity"
+            android:label="Select directory"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activitiesShared.DirectoryChooserActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
+            android:name=".activitiesShared.GoogleFilesChooserActivity"
+            android:label="Select Google file"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>

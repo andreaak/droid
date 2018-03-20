@@ -1,8 +1,9 @@
-package com.andreaak.cards.files;
+package com.andreaak.cards.fileSystemItems;
 
 import android.content.Context;
 
-import com.andreaak.cards.utils.Configs;
+import com.andreaak.cards.configs.Configs;
+import com.andreaak.cards.predicates.DirectoryPredicate;
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.Logger;
@@ -34,7 +35,7 @@ public class FilesHelper {
         return currentDirectory;
     }
 
-    public List<FileItem> getDirectory(File current) {
+    public List<FileItem> getDirectory(File current, DirectoryPredicate predicate) {
         List<FileItem> directories = new ArrayList<FileItem>();
         List<FileItem> files = new ArrayList<FileItem>();
 
@@ -50,7 +51,7 @@ public class FilesHelper {
                     if (file.isDirectory()) {
                         FileItem fileItem = getDirectoryItem(file, dateModify);
                         directories.add(fileItem);
-                    } else if (addFiles && file.getName().endsWith(Configs.LessonsExtension)) {
+                    } else if (addFiles && predicate.isValid(file)) {
                         FileItem fileItem = getFileItem(file, dateModify);
                         files.add(fileItem);
                     }

@@ -13,12 +13,12 @@
         android:id="@+id/menu_plus"
         android:gravity="right"
         android:icon="@drawable/plus"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="@string/plus"></item>
     <item
         android:id="@+id/menu_minus"
         android:gravity="right"
         android:icon="@drawable/minus"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="@string/minus"></item>
 </menu>

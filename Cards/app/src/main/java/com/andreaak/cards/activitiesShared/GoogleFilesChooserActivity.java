@@ -1,4 +1,4 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activitiesShared;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,7 +12,7 @@ import android.widget.ListView;
 import com.andreaak.cards.google.GoogleArrayAdapter;
 import com.andreaak.cards.google.GoogleDriveHelper;
 import com.andreaak.cards.google.GoogleItem;
-import com.andreaak.cards.utils.Configs;
+import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.Logger;
@@ -152,7 +152,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         switch (requestCode) {
             case REQUEST_DIRECTORY_CHOOSER:
                 if (resultCode == RESULT_OK) {
-                    String path = data.getStringExtra(DirectoryChooserActivity.PATH);
+                    String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
                     onFolderSelected(path);
                 }
                 break;

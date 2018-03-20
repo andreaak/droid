@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.andreaak.cards.domain.LanguageItem;
+import com.andreaak.cards.model.LanguageItem;
 
 import java.util.List;
 

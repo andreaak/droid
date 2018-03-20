@@ -2,10 +2,9 @@ package com.andreaak.cards.utils.logger;
 
 import android.util.Log;
 
-import com.andreaak.cards.utils.Configs;
+import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.utils.Constants;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

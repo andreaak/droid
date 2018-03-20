@@ -1,4 +1,4 @@
-package com.andreaak.cards.domain;
+package com.andreaak.cards.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,10 +45,6 @@ public class LessonItem implements Serializable {
 
     public String getCurrentLanguage() {
         return currentLanguage;
-    }
-
-    public void setCurrentLanguage(String currentLanguage) {
-        this.currentLanguage = currentLanguage;
     }
 
     public boolean isContainsWords() {

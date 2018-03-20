@@ -1,4 +1,4 @@
-package com.andreaak.cards.files;
+package com.andreaak.cards.fileSystemItems;
 
 public class FileItem extends FileSystemItem implements Comparable<FileItem> {
     private String name;

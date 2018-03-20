@@ -1,6 +1,5 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,25 +7,23 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
-import com.andreaak.cards.domain.LanguageItem;
-import com.andreaak.cards.domain.LessonItem;
-import com.andreaak.cards.helpers.SelectLessonAndLanguageHelper;
-import com.andreaak.cards.domain.WordItem;
-import com.andreaak.cards.utils.Utils;
-import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.cards.R;
+import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
 import com.andreaak.cards.adapters.LangSpinAdapter;
 import com.andreaak.cards.adapters.LessonsSpinAdapter;
+import com.andreaak.cards.helpers.SelectLessonAndLanguageHelper;
+import com.andreaak.cards.model.LanguageItem;
+import com.andreaak.cards.model.WordItem;
+import com.andreaak.cards.utils.Utils;
+import com.andreaak.cards.utils.XmlParser;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class SelectLanguageActivity extends Activity implements View.OnClickListener {
+public class SelectLessonAndLanguageActivity extends HandleExceptionActivity implements View.OnClickListener {
 
-    public static final String DIRECTORY = "Path";
+    public static final String DIRECTORY = "Directory";
     public static final String HELPER = "Helper";
 
     private Spinner spinnerLessons;
@@ -70,7 +67,7 @@ public class SelectLanguageActivity extends Activity implements View.OnClickList
         } else {
             helper = new SelectLessonAndLanguageHelper();
             String directory = getIntent().getStringExtra(DIRECTORY);
-            helper.lessons = GetLessons(directory);
+            helper.lessons = Utils.getLessons(directory);
             if(helper.lessons.length != 0) {
                 initializeLessonsSpinner(helper.lessons);
             }
@@ -79,7 +76,7 @@ public class SelectLanguageActivity extends Activity implements View.OnClickList
 
     private void initializeLessonsSpinner(File[] lessons) {
 
-        lessonsAdapter = new LessonsSpinAdapter(SelectLanguageActivity.this,
+        lessonsAdapter = new LessonsSpinAdapter(SelectLessonAndLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
                 lessons);
         spinnerLessons.setAdapter(lessonsAdapter);
@@ -110,9 +107,9 @@ public class SelectLanguageActivity extends Activity implements View.OnClickList
 
     private void initializeLanguageSpinner(ArrayList<WordItem> words) {
 
-        List<LanguageItem> langs = Utils.getLangs(words.get(0));
+        List<LanguageItem> langs = Utils.getLangs(words.get(0));;
 
-        langAdapter = new LangSpinAdapter(SelectLanguageActivity.this,
+        langAdapter = new LangSpinAdapter(SelectLessonAndLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
                 langs);
 
@@ -143,30 +140,18 @@ public class SelectLanguageActivity extends Activity implements View.OnClickList
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.buttonOk:
+            case com.andreaak.cards.R.id.buttonOk:
                 onOkClick();
                 break;
-            case R.id.buttonCancel:
+            case com.andreaak.cards.R.id.buttonCancel:
                 onCancel();
                 break;
         }
     }
 
-    private File[] GetLessons(String path) {
-        File directory = new File(path);
-        File[] files = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.startsWith("lesson");
-            }
-        });
-        Arrays.sort(files);
-        return files;
-    }
-
     private void onOkClick() {
         Intent intent = new Intent();
-        intent.putExtra(HELPER, (Serializable) helper);
+        intent.putExtra(HELPER, helper);
         setResult(RESULT_OK, intent);
         finish();
     }

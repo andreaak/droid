@@ -1,7 +1,7 @@
 package com.andreaak.cards.helpers;
 
-import com.andreaak.cards.domain.LessonItem;
-import com.andreaak.cards.domain.WordItem;
+import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.WordItem;
 
 import java.io.Serializable;
 

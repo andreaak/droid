@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.andreaak.cards.domain.WordItem;
+import com.andreaak.cards.model.WordItem;
 
 import java.util.List;
 

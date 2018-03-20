@@ -1,11 +1,12 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activitiesShared;
 
-import android.app.Application;
+import android.app.Activity;
+import android.os.Bundle;
 
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.logger.Logger;
 
-public class CardsApplication extends Application {
+public class HandleExceptionActivity extends Activity {
 
     private Thread.UncaughtExceptionHandler androidDefaultUEH;
 
@@ -16,8 +17,9 @@ public class CardsApplication extends Application {
         }
     };
 
-    public void onCreate() {
-        super.onCreate();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         androidDefaultUEH = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(handler);
     }

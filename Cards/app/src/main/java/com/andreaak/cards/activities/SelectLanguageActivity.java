@@ -1,6 +1,5 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,48 +7,45 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.andreaak.cards.R;
+import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
 import com.andreaak.cards.adapters.LangSpinAdapter;
-import com.andreaak.cards.adapters.LessonsSpinAdapter;
-import com.andreaak.cards.domain.LanguageItem;
-import com.andreaak.cards.domain.WordItem;
-import com.andreaak.cards.helpers.SelectLessonAndLanguageHelper;
+import com.andreaak.cards.helpers.SelectLanguageHelper;
+import com.andreaak.cards.model.LanguageItem;
+import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectLessonAndLanguageActivity extends Activity implements View.OnClickListener {
+public class SelectLanguageActivity extends HandleExceptionActivity implements View.OnClickListener {
 
-    public static final String DIRECTORY = "Path";
+    public static final String FILE = "File";
     public static final String HELPER = "Helper";
 
-    private Spinner spinnerLessons;
     private Spinner spinnerLang;
 
     private Button buttonOk;
     private Button buttonCancel;
 
-    private SelectLessonAndLanguageHelper helper;
-    private LessonsSpinAdapter lessonsAdapter;
+    private SelectLanguageHelper helper;
     private LangSpinAdapter langAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_lesson_and_language);
+        setContentView(R.layout.activity_select_language);
 
         buttonOk = (Button) findViewById(R.id.buttonOk);
         buttonOk.setOnClickListener(this);
         buttonCancel = (Button) findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(this);
 
-        spinnerLessons = (Spinner) findViewById(R.id.spinnerLessons);
         spinnerLang = (Spinner) findViewById(R.id.spinnerLang);
 
-        setTitle(getString(R.string.select_lesson));
+        setTitle(getString(R.string.select_language));
 
         onRestoreNonConfigurationInstance();
     }
@@ -60,56 +56,26 @@ public class SelectLessonAndLanguageActivity extends Activity implements View.On
     }
 
     private void onRestoreNonConfigurationInstance() {
-        helper = (SelectLessonAndLanguageHelper) getLastNonConfigurationInstance();
+        helper = (SelectLanguageHelper) getLastNonConfigurationInstance();
         if (helper != null) {
-            helper.isRestore = true;
-            initializeLessonsSpinner(helper.lessons);
-        } else {
-            helper = new SelectLessonAndLanguageHelper();
-            String directory = getIntent().getStringExtra(DIRECTORY);
-            helper.lessons = Utils.getLessons(directory);
-            if(helper.lessons.length != 0) {
-                initializeLessonsSpinner(helper.lessons);
-            }
-        }
-    }
-
-    private void initializeLessonsSpinner(File[] lessons) {
-
-        lessonsAdapter = new LessonsSpinAdapter(SelectLessonAndLanguageActivity.this,
-                android.R.layout.simple_spinner_dropdown_item,
-                lessons);
-        spinnerLessons.setAdapter(lessonsAdapter);
-        if (helper.isRestore) {
-            int position = lessonsAdapter.getPosition(helper.lessonFile);
-            spinnerLessons.setSelected(false);  // must
-            spinnerLessons.setSelection(position, true);  //must
-            initializeLanguageSpinner(helper.lessonItem.getWords());
-        }
-
-        spinnerLessons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
-
-                File lessonFile = lessonsAdapter.getItem(position);
-                helper.lessonFile = lessonFile;
-                helper.lessonItem = XmlParser.parseLesson(lessonFile);
+            if(helper.lessonItem.isContainsWords()) {
                 initializeLanguageSpinner(helper.lessonItem.getWords());
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
+        } else {
+            helper = new SelectLanguageHelper();
+            String file = getIntent().getStringExtra(FILE);
+            helper.lessonItem = XmlParser.parseLesson(new File(file));
+            if(helper.lessonItem.isContainsWords()) {
+                initializeLanguageSpinner(helper.lessonItem.getWords());
             }
-        });
+        }
     }
 
     private void initializeLanguageSpinner(ArrayList<WordItem> words) {
 
-        List<LanguageItem> langs = Utils.getLangs(words.get(0));;
+        List<LanguageItem> langs = Utils.getLangs(words.get(0));
 
-        langAdapter = new LangSpinAdapter(SelectLessonAndLanguageActivity.this,
+        langAdapter = new LangSpinAdapter(SelectLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
                 langs);
 
@@ -140,10 +106,10 @@ public class SelectLessonAndLanguageActivity extends Activity implements View.On
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case com.andreaak.cards.R.id.buttonOk:
+            case R.id.buttonOk:
                 onOkClick();
                 break;
-            case com.andreaak.cards.R.id.buttonCancel:
+            case R.id.buttonCancel:
                 onCancel();
                 break;
         }
@@ -151,7 +117,7 @@ public class SelectLessonAndLanguageActivity extends Activity implements View.On
 
     private void onOkClick() {
         Intent intent = new Intent();
-        intent.putExtra(HELPER, (Serializable) helper);
+        intent.putExtra(HELPER, helper);
         setResult(RESULT_OK, intent);
         finish();
     }

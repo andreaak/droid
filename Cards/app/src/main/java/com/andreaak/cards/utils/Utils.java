@@ -3,8 +3,8 @@ package com.andreaak.cards.utils;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.andreaak.cards.domain.LanguageItem;
-import com.andreaak.cards.domain.WordItem;
+import com.andreaak.cards.model.LanguageItem;
+import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.logger.Logger;
 
 import java.io.BufferedInputStream;
@@ -92,7 +92,7 @@ public class Utils {
                 return s.startsWith("lesson");
             }
         });
-        if(files == null) {
+        if (files == null) {
             files = new File[0];
         }
         Arrays.sort(files);

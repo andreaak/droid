@@ -1,4 +1,4 @@
-package com.andreaak.cards;
+package com.andreaak.cards.activitiesShared;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -7,19 +7,28 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.ListView;
 
-import com.andreaak.cards.files.FileItem;
-import com.andreaak.cards.files.FileArrayAdapter;
-import com.andreaak.cards.files.FilesHelper;
-import com.andreaak.cards.utils.Configs;
-import com.andreaak.cards.files.ItemType;
-import com.andreaak.cards.utils.SharedPreferencesHelper;
+import com.andreaak.cards.fileSystemItems.FileItem;
+import com.andreaak.cards.fileSystemItems.FileArrayAdapter;
+import com.andreaak.cards.fileSystemItems.FilesHelper;
+import com.andreaak.cards.fileSystemItems.ItemType;
+import com.andreaak.cards.predicates.DirectoryPredicate;
+import com.andreaak.cards.utils.Utils;
 
 import java.io.File;
 import java.util.List;
 
 public class FileChooserActivity extends ListActivity {
+
+    //in
+    public static final String PREDICATE = "Predicate";
+    public static final String TITLE = "Title";
+    public static final String INITIAL_PATH = "InitialPath";
+    //out
     public static final String FILE_NAME = "FileName";
-    public static final String PATH = "Path";
+    public static final String FILE_PATH = "FilePath";
+
+    private DirectoryPredicate predicate;
+    private String title;
 
     private FileArrayAdapter adapter;
     private FilesHelper helper;
@@ -36,11 +45,18 @@ public class FileChooserActivity extends ListActivity {
     private void onRestoreNonConfigurationInstance() {
         currentDir = (File) getLastNonConfigurationInstance();
         if (currentDir == null) {
-            String savedPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_DB_PATH);
-            currentDir = savedPath.equals("") || !new File(savedPath).exists() ?
-                    Environment.getDataDirectory() :
-                    new File(savedPath);
+            RestoreInParameters();
         }
+    }
+
+    private void RestoreInParameters() {
+        String savedPath = getIntent().getStringExtra(INITIAL_PATH);
+        predicate = (DirectoryPredicate)getIntent().getSerializableExtra(PREDICATE);
+        title = getIntent().getStringExtra(TITLE);
+
+        currentDir = Utils.isEmpty(savedPath) || !new File(savedPath).exists() ?
+                Environment.getDataDirectory() :
+                new File(savedPath);
     }
 
     @Override
@@ -50,7 +66,7 @@ public class FileChooserActivity extends ListActivity {
 
     private void fill(File file) {
         this.setTitle(file.getAbsolutePath());
-        List<FileItem> dir = helper.getDirectory(file);
+        List<FileItem> dir = helper.getDirectory(file, predicate);
         adapter = new FileArrayAdapter(FileChooserActivity.this, com.andreaak.cards.R.layout.activity_file_chooser, dir);
         this.setListAdapter(adapter);
     }
@@ -69,7 +85,7 @@ public class FileChooserActivity extends ListActivity {
 
     private void onFileClick(FileItem item) {
         Intent intent = new Intent();
-        intent.putExtra(PATH, item.getPath());
+        intent.putExtra(FILE_PATH, item.getPath());
         intent.putExtra(FILE_NAME, item.getName());
         setResult(RESULT_OK, intent);
         finish();

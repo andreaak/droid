@@ -1,6 +1,7 @@
-package com.andreaak.cards.domain;
+package com.andreaak.cards.model;
 
 public class LanguageItem implements java.io.Serializable {
+
     public static final String SEPARATOR = "__";
 
     private String primaryLanguage;

@@ -17,8 +17,8 @@
             android:title="Log File" />
 
         <Preference
-            android:key="OPEN_FOLDER_BUTTON"
             android:dependency="SP_IS_LOGGING_ACTIVE"
+            android:key="OPEN_FOLDER_BUTTON"
             android:summary=""
             android:title="..." />
 
@@ -26,10 +26,12 @@
 
     <EditTextPreference
         android:key="SP_GOOGLE_DIR"
+        android:defaultValue="SP_GOOGLE_CARD_DIR_DEF"
         android:summary="Set google directory"
         android:title="Google Directory" />
     <EditTextPreference
         android:key="SP_LESSONS_EXTENSION"
+        android:defaultValue="SP_LESSONS_EXTENSION_DEF"
         android:summary="Set lessons extension"
         android:title="Lessons Extension" />
     <Preference

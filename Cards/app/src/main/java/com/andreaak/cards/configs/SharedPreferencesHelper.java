@@ -1,4 +1,4 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.configs;
 
 import android.content.Context;
 import android.content.SharedPreferences;

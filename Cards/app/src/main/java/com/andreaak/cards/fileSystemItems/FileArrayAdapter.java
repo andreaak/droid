@@ -1,4 +1,4 @@
-package com.andreaak.cards.files;
+package com.andreaak.cards.fileSystemItems;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

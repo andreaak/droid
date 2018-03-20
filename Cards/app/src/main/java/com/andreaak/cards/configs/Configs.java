@@ -1,4 +1,4 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.configs;
 
 import android.content.Context;
 
@@ -6,9 +6,7 @@ import static com.andreaak.cards.utils.Utils.isEmpty;
 
 public class Configs {
     //Keys
-    public static final String SP_DOWNLOAD_DIR_PATH = "SP_DOWNLOAD_DIR_PATH";
-    public static final String SP_DIRECTORY_WITH_DB_PATH = "SP_DIRECTORY_WITH_DB_PATH";
-    public static final String SP_TEXT_ZOOM = "SP_TEXT_ZOOM";
+    public static final String SP_DIRECTORY_WITH_LESSONS_PATH = "SP_DIRECTORY_WITH_LESSONS_PATH";
     //
     public static final String SP_GOOGLE_CARD_DIR = "SP_GOOGLE_CARD_DIR";
     public static final String SP_LESSONS_EXTENSION = "SP_LESSONS_EXTENSION";
