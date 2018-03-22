@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttons"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewPrimaryLang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="5dp"
+            android:gravity="left|center_vertical"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="25dp" />
+
+        <EditText
+            android:id="@+id/editTextPrimaryLang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/textViewPrimaryTranscription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left|center_vertical"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="25dp" />
+
+        <EditText
+            android:id="@+id/editTextPrimaryTranscription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/textViewSecondaryLang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="5dp"
+            android:gravity="left|center_vertical"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="25dp" />
+
+        <EditText
+            android:id="@+id/editTextSecondaryLang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/textViewSecondaryTranscription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left|center_vertical"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="25dp" />
+
+        <EditText
+            android:id="@+id/editTextSecondaryTranscription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="20dp" />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:text="Save"
+            tools:text="Save" />
+
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:text="Cancel"
+            tools:text="Cancel" />
+    </LinearLayout>
+
+</RelativeLayout>

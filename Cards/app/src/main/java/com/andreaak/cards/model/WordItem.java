@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class WordItem implements java.io.Serializable {
 
-    private final String TranscriptionSuffix = "_tr";
+    public static final String TranscriptionSuffix = "_tr";
 
     private Map<String, String> words = new LinkedHashMap<String, String>();
     private Map<String, String> transcriptions = new HashMap<String, String>();
@@ -17,6 +17,10 @@ public class WordItem implements java.io.Serializable {
 
     public String getValue(String language) {
         return words.get(language);
+    }
+
+    public void setValue(String language, String value) {
+        words.put(language, value);
     }
 
     public String getTranscription(String language) {

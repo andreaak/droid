@@ -32,4 +32,5 @@
     <string name="cards">Cards</string>
     <string name="choose_directory">Choose directory</string>
     <string name="select_log">Select log file folder</string>
+    <string name="edit_word">Edit word</string>
 </resources>

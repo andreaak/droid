@@ -1,5 +1,6 @@
 package com.andreaak.cards.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.AppCompatDelegate;
@@ -9,7 +10,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -28,6 +28,8 @@ import java.util.ArrayList;
 
 public class CardActivity extends HandleExceptionAppCompatActivity implements View.OnClickListener {
 
+    private static final int REQUEST_UPDATE_WORD = 1;
+    //in
     public static final String HELPER = "Helper";
 
     private ImageButton buttonToggle;
@@ -42,6 +44,8 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
     private CardActivityHelper helper;
     private WordsSpinAdapter wordsAdapter;
+    private VelocityTracker mVelocityTracker = null;
+    private float x;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,6 +109,24 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_UPDATE_WORD:
+                if (resultCode == RESULT_OK) {
+                    Boolean res = data.getBooleanExtra(EditWordActivity.CHANGED, false);
+                    if(res) {
+                        helper.currentWord = (WordItem) data.getSerializableExtra(EditWordActivity.NEWWORD);
+                        activateWord(helper.currentWord);
+                    }
+                }
+                break;
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
@@ -112,9 +134,16 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                 textBigger();
                 return true;
             }
-
             case com.andreaak.cards.R.id.menu_minus: {
                 textSmaller();
+                return true;
+            }
+            case com.andreaak.cards.R.id.menu_edit_word: {
+                editWord();
+                return true;
+            }
+            case com.andreaak.cards.R.id.menu_settings: {
+                setSettings();
                 return true;
             }
         }
@@ -172,6 +201,16 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         textView.setHeight((int)size + 20);
     }
 
+    private void editWord() {
+        Intent intent = new Intent(this, EditWordActivity.class);
+        intent.putExtra(EditWordActivity.LESSON, helper.lessonItem);
+        intent.putExtra(EditWordActivity.WORD, helper.currentWord);
+        startActivityForResult(intent, REQUEST_UPDATE_WORD);
+    }
+
+    private void setSettings() {
+    }
+
     private void initializeWordsSpinner(ArrayList<WordItem> words, String language) {
 
         wordsAdapter = new WordsSpinAdapter(CardActivity.this,
@@ -227,6 +266,8 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         texts.setVisibility(flag);
     }
 
+
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -266,10 +307,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         int position = wordsAdapter.getPosition(helper.currentWord);
         spinnerWords.setSelection(position + 1);
     }
-
-    private VelocityTracker mVelocityTracker = null;
-
-    float x;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

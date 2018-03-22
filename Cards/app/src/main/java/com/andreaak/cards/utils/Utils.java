@@ -50,7 +50,7 @@ public class Utils {
     }
 
     public static boolean isEmpty(String str) {
-        return str == null || str == "";
+        return str == null || "".equals(str);
     }
 
     public static boolean saveToFile(InputStream is, File file) {

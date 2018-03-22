@@ -1,5 +1,8 @@
 package com.andreaak.cards.utils;
 
+import android.os.Environment;
+import android.util.Log;
+
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.logger.Logger;
@@ -14,9 +17,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 public class XmlParser {
 
@@ -29,20 +41,20 @@ public class XmlParser {
 
         String name = Utils.getFileNameWithoutExtensions(lessonFile.getName());
         LessonItem lesson = new LessonItem(name, lessonFile.getAbsolutePath());
-            try {
-                InputSource input = new InputSource(new FileReader(lessonFile));
-                Document doc  = parseXML(input);
-                NodeList words = doc.getElementsByTagName("word");
-                for(int i = 0; i < words.getLength(); i++){
-                    Node node = words.item(i);
-                    WordItem word = parseWord(node);
-                    lesson.add(word);
-                }
-
-            } catch (FileNotFoundException e) {
-                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
+        try {
+            InputSource input = new InputSource(new FileReader(lessonFile));
+            Document doc  = getXMLDocument(input);
+            NodeList words = doc.getElementsByTagName("word");
+            for(int i = 0; i < words.getLength(); i++){
+                Node node = words.item(i);
+                WordItem word = parseWord(node);
+                lesson.add(word);
             }
+
+        } catch (FileNotFoundException e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
         return lesson;
     }
 
@@ -64,7 +76,7 @@ public class XmlParser {
                 LessonItem lesson = new LessonItem(name, lessonFile.getAbsolutePath());
 
                 InputSource input = new InputSource(new FileReader(lessonFile));
-                Document doc  = parseXML(input);
+                Document doc  = getXMLDocument(input);
                 NodeList words = doc.getElementsByTagName("word");
                 for(int i = 0; i < words.getLength(); i++){
                     Node node = words.item(i);
@@ -99,7 +111,7 @@ public class XmlParser {
         return word;
     }
 
-    private static Document parseXML(InputSource source) {
+    private static Document getXMLDocument(InputSource source) {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(false);
@@ -111,5 +123,83 @@ public class XmlParser {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static boolean updateXML(String lessonFile, String lang1, String value1,
+                                 String lang2, String value2, HashMap<String, String> map) {
+        try {
+            InputSource input = new InputSource(new FileReader(lessonFile));
+            Document doc  = getXMLDocument(input);
+            NodeList words = doc.getElementsByTagName("word");
+            for(int i = 0; i < words.getLength(); i++){
+                Node word = words.item(i);
+                if(!isEditWord(word, lang1, value1, lang2, value2)) {
+                    continue;
+                }
+                NodeList items = word.getChildNodes();
+                for(int j = 0; j < items.getLength(); j++){
+                    Node item = items.item(j);
+                    short type = item.getNodeType();
+                    if(type == 1) {
+                        String language = item.getNodeName();
+                        if(map.containsKey(language)) {
+                            item.getFirstChild().setNodeValue(map.get(language));
+                        }
+                    }
+                }
+                break;
+            }
+
+            return writeXmlFile(doc, lessonFile);
+        } catch (FileNotFoundException e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static boolean isEditWord(Node word, String lang1, String value1,
+                               String lang2, String value2)  {
+
+        boolean isValue1 = false;
+        boolean isValue2 = false;
+
+        NodeList items = word.getChildNodes();
+        for(int j = 0; j < items.getLength(); j++){
+            Node item = items.item(j);
+            short type = item.getNodeType();
+            if(type == 1) {
+                String language = item.getNodeName();
+                String value = item.getFirstChild().getNodeValue();
+                if(language.equals(lang1) && value.equals(value1)){
+                    isValue1 = true;
+                }
+                if(language.equals(lang2) && value.equals(value2)){
+                    isValue2 = true;
+                }
+            }
+        }
+        return isValue1 && isValue2;
+    }
+
+    public static boolean writeXmlFile(Document doc, String lessonFile) {
+        try {
+            // Prepare the DOM document for writing
+            Source source = new DOMSource(doc);
+
+            File file = new File(lessonFile);
+
+            Result result = new StreamResult(file);
+
+            // Write the DOM document to the file
+            Transformer xformer = TransformerFactory.newInstance().newTransformer();
+            xformer.transform(source, result);
+            return true;
+        } catch (TransformerConfigurationException e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+        } catch (TransformerException e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+        }
+        return false;
     }
 }

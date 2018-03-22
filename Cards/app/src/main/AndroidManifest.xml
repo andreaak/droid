@@ -78,6 +78,14 @@
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
+        <activity
+            android:name=".activities.EditWordActivity"
+            android:label="Preferences"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activities.EditWordActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
 
         <!-- Shared -->
         <activity
