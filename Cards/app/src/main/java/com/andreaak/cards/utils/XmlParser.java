@@ -47,7 +47,7 @@ public class XmlParser {
             NodeList words = doc.getElementsByTagName("word");
             for(int i = 0; i < words.getLength(); i++){
                 Node node = words.item(i);
-                WordItem word = parseWord(node);
+                WordItem word = parseWord(node, i);
                 lesson.add(word);
             }
 
@@ -78,9 +78,10 @@ public class XmlParser {
                 InputSource input = new InputSource(new FileReader(lessonFile));
                 Document doc  = getXMLDocument(input);
                 NodeList words = doc.getElementsByTagName("word");
+
                 for(int i = 0; i < words.getLength(); i++){
                     Node node = words.item(i);
-                    WordItem word = parseWord(node);
+                    WordItem word = parseWord(node, i);
                     lesson.add(word);
                 }
                 if(!lesson.getWords().isEmpty()) {
@@ -94,9 +95,9 @@ public class XmlParser {
         return lessons;
     }
 
-    private static WordItem parseWord(Node node) {
+    private static WordItem parseWord(Node node, int id) {
 
-        WordItem word = new WordItem();
+        WordItem word = new WordItem(id);
 
         NodeList items = node.getChildNodes();
         for(int i = 0; i < items.getLength(); i++){

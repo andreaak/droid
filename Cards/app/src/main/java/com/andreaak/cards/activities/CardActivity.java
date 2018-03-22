@@ -116,6 +116,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                     Boolean res = data.getBooleanExtra(EditWordActivity.CHANGED, false);
                     if(res) {
                         helper.currentWord = (WordItem) data.getSerializableExtra(EditWordActivity.NEWWORD);
+                        helper.lessonItem.changeWord(helper.currentWord);
                         activateWord(helper.currentWord);
                     }
                 }

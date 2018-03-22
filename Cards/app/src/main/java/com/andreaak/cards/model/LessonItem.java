@@ -60,4 +60,15 @@ public class LessonItem implements Serializable {
     public void resetLanguage() {
         currentLanguage = languageItem.getPrimaryLanguage();
     }
+
+    public void changeWord(WordItem word) {
+
+        for (int i = 0; i < words.size(); i++){
+            WordItem existWord = words.get(i);
+            if(existWord.getId() == word.getId()){
+                words.set(i, word);
+                break;
+            }
+        }
+    }
 }
