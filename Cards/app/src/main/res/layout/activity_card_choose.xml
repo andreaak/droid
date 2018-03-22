@@ -21,15 +21,16 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginRight="20dp"
-                android:title="@string/open_last_lesson"
-                android:background="@drawable/file" />
+                android:background="@drawable/file"
+                android:title="@string/open_last_lesson" />
 
             <TextView
+                android:id="@+id/textViewLastLesson"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="left|center_vertical"
                 android:text="@string/open_last_lesson"
-                android:textColor="@color/colorWhite"
+                android:textColor="@drawable/disable_selector"
                 android:textSize="20dp" />
 
         </LinearLayout>
@@ -45,8 +46,8 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginRight="20dp"
-                android:title="@string/open_lesson"
-                android:background="@drawable/file" />
+                android:background="@drawable/file"
+                android:title="@string/open_lesson" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -69,8 +70,8 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginRight="20dp"
-                android:title="@string/open_lesson_s_folder"
-                android:background="@drawable/folder" />
+                android:background="@drawable/folder"
+                android:title="@string/open_lesson_s_folder" />
 
             <TextView
                 android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.andreaak.cards.helpers;
+package com.andreaak.cards.activities.helpers;
 
 import com.andreaak.cards.model.LessonItem;
 

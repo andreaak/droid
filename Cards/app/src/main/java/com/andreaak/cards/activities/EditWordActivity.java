@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.andreaak.cards.R;
+import com.andreaak.cards.activities.helpers.EditWordActivityHelper;
 import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.WordItem;
@@ -15,11 +16,6 @@ import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
 
 import java.util.HashMap;
-
-class EditWordActivityHelper{
-    public LessonItem lessonItem;
-    public WordItem wordItem;
-}
 
 public class EditWordActivity extends HandleExceptionActivity implements View.OnClickListener {
 

@@ -67,7 +67,7 @@ public class FileChooserActivity extends ListActivity {
     private void fill(File file) {
         this.setTitle(file.getAbsolutePath());
         List<FileItem> dir = helper.getDirectory(file, predicate);
-        adapter = new FileArrayAdapter(FileChooserActivity.this, com.andreaak.cards.R.layout.activity_file_chooser, dir);
+        adapter = new FileArrayAdapter(FileChooserActivity.this, com.andreaak.cards.R.layout.shared_list_item_file_chooser, dir);
         this.setListAdapter(adapter);
     }
 

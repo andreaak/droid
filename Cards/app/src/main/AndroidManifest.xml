@@ -97,6 +97,14 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
+            android:name=".activitiesShared.FileChooserWithButtonsActivity"
+            android:label="Select file"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activitiesShared.FileChooserWithButtonsActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
             android:name=".activitiesShared.DirectoryChooserActivity"
             android:label="Select directory"
             android:theme="@android:style/Theme.Holo">

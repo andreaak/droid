@@ -104,7 +104,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
 
     @Override
     public void onSearchOk() {
-        adapter = new GoogleArrayAdapter(this, com.andreaak.cards.R.layout.list_item_google_files_chooser, databaseFiles);
+        adapter = new GoogleArrayAdapter(this, com.andreaak.cards.R.layout.shared_list_item_google_files_chooser, databaseFiles);
         listView.setAdapter(adapter);
         setTitle(com.andreaak.cards.R.string.app_name);
     }

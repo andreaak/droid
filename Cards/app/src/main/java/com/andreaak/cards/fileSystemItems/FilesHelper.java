@@ -87,8 +87,31 @@ public class FilesHelper {
     }
 
     private FileItem getFileItem(File file, String dateModify) {
-        float length = file.length() / 1000000f;
-        DecimalFormat df = new DecimalFormat("#.00");
-        return new FileItem(file.getName(), df.format(length) + context.getString(R.string.bytes), dateModify, file.getAbsolutePath(), ItemType.File);
+        FileSizeView view = new FileSizeView(file.length());
+        return new FileItem(file.getName(), view.toString(), dateModify, file.getAbsolutePath(), ItemType.File);
+    }
+}
+
+class FileSizeView
+{
+    private float value;
+    private String suffix;
+    private DecimalFormat df = new DecimalFormat("#.00");
+
+    public String toString() {
+        return  df.format(value) + " " + suffix;
+    }
+
+    public FileSizeView(long length){
+        if(length < 1000) {
+            value = length;
+            suffix = "bytes";
+        } else if(length < 1000000) {
+            value = ((float) length) / 1000;
+            suffix = "KB";
+        } else {
+            value = ((float) length) / 1000000;
+            suffix = "MB";
+        }
     }
 }

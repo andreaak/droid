@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Cards</string>
-    <string name="bytes">MB</string>
     <string name="connect">Connect</string>
     <string name="connecting">Connecting...</string>
     <string name="db_fault">Database fault</string>

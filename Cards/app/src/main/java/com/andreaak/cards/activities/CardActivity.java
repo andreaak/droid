@@ -21,7 +21,7 @@ import com.andreaak.cards.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.cards.adapters.WordsSpinAdapter;
 import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.configs.SharedPreferencesHelper;
-import com.andreaak.cards.helpers.CardActivityHelper;
+import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.model.WordItem;
 
 import java.util.ArrayList;

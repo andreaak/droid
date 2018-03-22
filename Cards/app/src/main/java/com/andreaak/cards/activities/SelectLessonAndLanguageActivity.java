@@ -11,7 +11,7 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
 import com.andreaak.cards.adapters.LangSpinAdapter;
 import com.andreaak.cards.adapters.LessonsSpinAdapter;
-import com.andreaak.cards.helpers.SelectLessonAndLanguageHelper;
+import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.Utils;

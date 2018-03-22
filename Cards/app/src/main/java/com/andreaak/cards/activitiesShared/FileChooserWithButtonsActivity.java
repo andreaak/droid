@@ -11,82 +11,87 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.andreaak.cards.R;
+import com.andreaak.cards.activitiesShared.helpers.FileChooserActivityHelper;
+import com.andreaak.cards.fileSystemItems.FileArrayAdapter;
 import com.andreaak.cards.fileSystemItems.FileItem;
-import com.andreaak.cards.fileSystemItems.DirectoryArrayAdapter;
 import com.andreaak.cards.fileSystemItems.FilesHelper;
 import com.andreaak.cards.fileSystemItems.ItemType;
-import com.andreaak.cards.predicates.AlwaysTruePredicate;
 import com.andreaak.cards.predicates.DirectoryPredicate;
 import com.andreaak.cards.utils.Utils;
 
 import java.io.File;
 import java.util.List;
 
-public class DirectoryChooserActivity extends Activity implements View.OnClickListener, ListView.OnItemClickListener {
+public class FileChooserWithButtonsActivity extends Activity implements View.OnClickListener, ListView.OnItemClickListener {
 
     //in
     public static final String PREDICATE = "Predicate";
     public static final String TITLE = "Title";
     public static final String INITIAL_PATH = "InitialPath";
     //out
-    public static final String DIRECTORY_PATH = "DirectoryPath";
+    public static final String FILE_NAME = "FileName";
+    public static final String FILE_PATH = "FilePath";
 
-    private DirectoryPredicate predicate;
-    private String title;
-
-    private DirectoryArrayAdapter adapter;
+    private FileArrayAdapter adapter;
     private FilesHelper helper;
-    private File currentDir;
+
     private ListView listView;
     private Button buttonOk;
     private Button buttonCancel;
     private TextView textViewPath;
 
+    FileChooserActivityHelper activityHelper;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.andreaak.cards.R.layout.shared_activity_dir_chooser);
+        setContentView(R.layout.shared_activity_file_chooser);
 
-        listView = (ListView) findViewById(com.andreaak.cards.R.id.lvMain);
+        listView = (ListView) findViewById(R.id.lvMain);
         listView.setOnItemClickListener(this);
-        buttonOk = (Button) findViewById(com.andreaak.cards.R.id.buttonOk);
+        buttonOk = (Button) findViewById(R.id.buttonOk);
         buttonOk.setOnClickListener(this);
-        buttonCancel = (Button) findViewById(com.andreaak.cards.R.id.buttonCancel);
+        buttonCancel = (Button) findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(this);
-        textViewPath = (TextView) findViewById(com.andreaak.cards.R.id.textViewPath);
+        textViewPath = (TextView) findViewById(R.id.textViewPath);
 
 
         onRestoreNonConfigurationInstance();
-        helper = new FilesHelper(this, false);
-        fill(currentDir);
+        helper = new FilesHelper(this, true);
+        fill(activityHelper.currentDir);
     }
 
     private void onRestoreNonConfigurationInstance() {
-        currentDir = (File) getLastNonConfigurationInstance();
-        if (currentDir == null) {
+        activityHelper = (FileChooserActivityHelper) getLastNonConfigurationInstance();
+        if (activityHelper == null) {
+            activityHelper = new FileChooserActivityHelper();
             RestoreInParameters();
         }
     }
 
     private void RestoreInParameters() {
         String savedPath = getIntent().getStringExtra(INITIAL_PATH);
-        currentDir = Utils.isEmpty(savedPath) || !new File(savedPath).exists() ?
+        activityHelper.predicate = (DirectoryPredicate)getIntent().getSerializableExtra(PREDICATE);
+        activityHelper.title = getIntent().getStringExtra(TITLE);
+
+        activityHelper.currentDir = Utils.isEmpty(savedPath) || !new File(savedPath).exists() ?
                 Environment.getDataDirectory() :
                 new File(savedPath);
-        predicate = (DirectoryPredicate) getIntent().getSerializableExtra(PREDICATE);
-        title = getIntent().getStringExtra(TITLE);
     }
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return currentDir;
+        return activityHelper;
     }
 
     private void fill(File file) {
+
         setCustomTitle(file);
-        List<FileItem> dir = helper.getDirectory(file, new AlwaysTruePredicate());
-        adapter = new DirectoryArrayAdapter(this, com.andreaak.cards.R.layout.shared_list_item_dir_chooser, dir);
+
+        List<FileItem> dir = helper.getDirectory(file, activityHelper.predicate);
+        adapter = new FileArrayAdapter(this, com.andreaak.cards.R.layout.shared_list_item_file_chooser, dir);
         listView.setAdapter(adapter);
+
         setOkButtonState(file);
     }
 
@@ -94,8 +99,12 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FileItem item = adapter.getItem(position);
         if (item.getType() == ItemType.Directory || item.getType() == ItemType.ParentDirectory) {
-            currentDir = new File(item.getPath());
-            fill(currentDir);
+            activityHelper.currentDir = new File(item.getPath());
+            fill(activityHelper.currentDir);
+        } else {
+            setOkButtonState(item);
+            view.setSelected(true);
+            activityHelper.currentPosition = position;
         }
     }
 
@@ -103,10 +112,13 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case com.andreaak.cards.R.id.buttonOk:
-                onOkClick(helper.getCurrentDirectory());
+            case R.id.buttonOk:
+                FileItem item = adapter.getItem(activityHelper.currentPosition);
+                if(item != null) {
+                    onOkClick(item);
+                }
                 break;
-            case com.andreaak.cards.R.id.buttonCancel:
+            case R.id.buttonCancel:
                 onCancel();
                 break;
         }
@@ -115,7 +127,8 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     private void onOkClick(FileItem item) {
 
         Intent intent = new Intent();
-        intent.putExtra(DIRECTORY_PATH, item.getPath());
+        intent.putExtra(FILE_PATH, item.getPath());
+        intent.putExtra(FILE_NAME, item.getName());
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -127,13 +140,17 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     }
 
     private void setOkButtonState(File directory) {
-        boolean isEnabled = (predicate == null || predicate.isValid(directory));
+        boolean isEnabled = (activityHelper.predicate == null || activityHelper.predicate.isValid(directory));
         buttonOk.setEnabled(isEnabled);
     }
 
+    private void setOkButtonState(FileItem file) {
+        setOkButtonState(new File(file.getPath()));
+    }
+
     private void setCustomTitle(File directory) {
-        if (title != null) {
-            this.setTitle(title);
+        if (activityHelper.title != null) {
+            this.setTitle(activityHelper.title);
         } else {
             this.setTitle(getString(R.string.choose_directory));
         }
