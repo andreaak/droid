@@ -13,20 +13,20 @@
         android:id="@+id/menu_plus"
         android:gravity="right"
         android:icon="@drawable/plus"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/plus"></item>
     <item
         android:id="@+id/menu_minus"
         android:gravity="right"
         android:icon="@drawable/minus"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/minus"></item>
 
     <item
         android:id="@+id/menu_edit_word"
         android:gravity="right"
         android:icon="@drawable/edit"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/edit_word"></item>
 
     <item

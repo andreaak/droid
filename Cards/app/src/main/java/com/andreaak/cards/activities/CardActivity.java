@@ -87,7 +87,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         texts = (LinearLayout) findViewById(R.id.texts);
 
         setFontSize();
-        setInitialCardVisibility(false);
+        setInitialCardVisibility();
 
         googleDriveHelper = GoogleDriveHelper.getInstance();
         googleDriveHelper.setActivity(this);
@@ -115,6 +115,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_card, menu);
+        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, googleDriveHelper.isConnected());
 
         MenuItem item = menu.findItem(R.id.spinner);
         spinnerWords = (android.widget.Spinner) item.getActionView();
@@ -299,9 +300,9 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         });
     }
 
-    private void setInitialCardVisibility(boolean isVisible) {
+    private void setInitialCardVisibility() {
 
-        int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
+        int flag = View.INVISIBLE;
         textViewWord.setVisibility(flag);
         textViewTrans.setVisibility(flag);
         buttonToggle.setVisibility(flag);
