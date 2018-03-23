@@ -99,9 +99,10 @@ public class Utils {
         return files;
     }
 
-    public static List<LanguageItem> getLangs(WordItem word) {
+    public static List<LanguageItem> getLangs(ArrayList<WordItem> words) {
 
         List<LanguageItem> langItems = new ArrayList<LanguageItem>();
+        WordItem word = words.get(words.size() - 1);
 
         String[] langs = word.getLangs();
         for (int i = 0; i < langs.length - 1; i++) {

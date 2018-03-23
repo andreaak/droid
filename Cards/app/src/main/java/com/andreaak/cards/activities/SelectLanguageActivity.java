@@ -8,9 +8,9 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.andreaak.cards.R;
+import com.andreaak.cards.activities.helpers.SelectLanguageHelper;
 import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
 import com.andreaak.cards.adapters.LangSpinAdapter;
-import com.andreaak.cards.activities.helpers.SelectLanguageHelper;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.Utils;
@@ -58,14 +58,14 @@ public class SelectLanguageActivity extends HandleExceptionActivity implements V
     private void onRestoreNonConfigurationInstance() {
         helper = (SelectLanguageHelper) getLastNonConfigurationInstance();
         if (helper != null) {
-            if(helper.lessonItem.isContainsWords()) {
+            if (helper.lessonItem.isContainsWords()) {
                 initializeLanguageSpinner(helper.lessonItem.getWords());
             }
         } else {
             helper = new SelectLanguageHelper();
             String file = getIntent().getStringExtra(FILE);
             helper.lessonItem = XmlParser.parseLesson(new File(file));
-            if(helper.lessonItem.isContainsWords()) {
+            if (helper.lessonItem.isContainsWords()) {
                 initializeLanguageSpinner(helper.lessonItem.getWords());
             }
         }
@@ -73,7 +73,7 @@ public class SelectLanguageActivity extends HandleExceptionActivity implements V
 
     private void initializeLanguageSpinner(ArrayList<WordItem> words) {
 
-        List<LanguageItem> langs = Utils.getLangs(words.get(0));
+        List<LanguageItem> langs = Utils.getLangs(words);
 
         langAdapter = new LangSpinAdapter(SelectLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,

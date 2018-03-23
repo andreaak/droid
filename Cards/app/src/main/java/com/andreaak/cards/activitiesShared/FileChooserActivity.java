@@ -7,8 +7,8 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.ListView;
 
-import com.andreaak.cards.fileSystemItems.FileItem;
 import com.andreaak.cards.fileSystemItems.FileArrayAdapter;
+import com.andreaak.cards.fileSystemItems.FileItem;
 import com.andreaak.cards.fileSystemItems.FilesHelper;
 import com.andreaak.cards.fileSystemItems.ItemType;
 import com.andreaak.cards.predicates.DirectoryPredicate;
@@ -51,7 +51,7 @@ public class FileChooserActivity extends ListActivity {
 
     private void RestoreInParameters() {
         String savedPath = getIntent().getStringExtra(INITIAL_PATH);
-        predicate = (DirectoryPredicate)getIntent().getSerializableExtra(PREDICATE);
+        predicate = (DirectoryPredicate) getIntent().getSerializableExtra(PREDICATE);
         title = getIntent().getStringExtra(TITLE);
 
         currentDir = Utils.isEmpty(savedPath) || !new File(savedPath).exists() ?

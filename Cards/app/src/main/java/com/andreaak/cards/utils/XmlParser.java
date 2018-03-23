@@ -1,8 +1,5 @@
 package com.andreaak.cards.utils;
 
-import android.os.Environment;
-import android.util.Log;
-
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.logger.Logger;
@@ -32,20 +29,20 @@ import javax.xml.transform.stream.StreamResult;
 
 public class XmlParser {
 
-    public static LessonItem parseLesson(String path){
+    public static LessonItem parseLesson(String path) {
 
         return parseLesson(new File(path));
     }
 
-    public static LessonItem parseLesson(File lessonFile){
+    public static LessonItem parseLesson(File lessonFile) {
 
         String name = Utils.getFileNameWithoutExtensions(lessonFile.getName());
         LessonItem lesson = new LessonItem(name, lessonFile.getAbsolutePath());
         try {
             InputSource input = new InputSource(new FileReader(lessonFile));
-            Document doc  = getXMLDocument(input);
+            Document doc = getXMLDocument(input);
             NodeList words = doc.getElementsByTagName("word");
-            for(int i = 0; i < words.getLength(); i++){
+            for (int i = 0; i < words.getLength(); i++) {
                 Node node = words.item(i);
                 WordItem word = parseWord(node, i);
                 lesson.add(word);
@@ -58,10 +55,10 @@ public class XmlParser {
         return lesson;
     }
 
-    public static ArrayList<LessonItem> parseLessons(String path){
+    public static ArrayList<LessonItem> parseLessons(String path) {
 
         ArrayList<LessonItem> lessons = new ArrayList<>();
-        File directory =  new File(path);
+        File directory = new File(path);
         File[] files = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
@@ -76,15 +73,15 @@ public class XmlParser {
                 LessonItem lesson = new LessonItem(name, lessonFile.getAbsolutePath());
 
                 InputSource input = new InputSource(new FileReader(lessonFile));
-                Document doc  = getXMLDocument(input);
+                Document doc = getXMLDocument(input);
                 NodeList words = doc.getElementsByTagName("word");
 
-                for(int i = 0; i < words.getLength(); i++){
+                for (int i = 0; i < words.getLength(); i++) {
                     Node node = words.item(i);
                     WordItem word = parseWord(node, i);
                     lesson.add(word);
                 }
-                if(!lesson.getWords().isEmpty()) {
+                if (!lesson.getWords().isEmpty()) {
                     lessons.add(lesson);
                 }
             } catch (FileNotFoundException e) {
@@ -100,10 +97,10 @@ public class XmlParser {
         WordItem word = new WordItem(id);
 
         NodeList items = node.getChildNodes();
-        for(int i = 0; i < items.getLength(); i++){
+        for (int i = 0; i < items.getLength(); i++) {
             Node item = items.item(i);
             short type = item.getNodeType();
-            if(type == 1) {
+            if (type == 1) {
                 String language = item.getNodeName();
                 String value = item.getFirstChild().getNodeValue();
                 word.addItem(language, value);
@@ -127,23 +124,23 @@ public class XmlParser {
     }
 
     public static boolean updateXML(String lessonFile, String lang1, String value1,
-                                 String lang2, String value2, HashMap<String, String> map) {
+                                    String lang2, String value2, HashMap<String, String> map) {
         try {
             InputSource input = new InputSource(new FileReader(lessonFile));
-            Document doc  = getXMLDocument(input);
+            Document doc = getXMLDocument(input);
             NodeList words = doc.getElementsByTagName("word");
-            for(int i = 0; i < words.getLength(); i++){
+            for (int i = 0; i < words.getLength(); i++) {
                 Node word = words.item(i);
-                if(!isEditWord(word, lang1, value1, lang2, value2)) {
+                if (!isEditWord(word, lang1, value1, lang2, value2)) {
                     continue;
                 }
                 NodeList items = word.getChildNodes();
-                for(int j = 0; j < items.getLength(); j++){
+                for (int j = 0; j < items.getLength(); j++) {
                     Node item = items.item(j);
                     short type = item.getNodeType();
-                    if(type == 1) {
+                    if (type == 1) {
                         String language = item.getNodeName();
-                        if(map.containsKey(language)) {
+                        if (map.containsKey(language)) {
                             item.getFirstChild().setNodeValue(map.get(language));
                         }
                     }
@@ -160,22 +157,22 @@ public class XmlParser {
     }
 
     private static boolean isEditWord(Node word, String lang1, String value1,
-                               String lang2, String value2)  {
+                                      String lang2, String value2) {
 
         boolean isValue1 = false;
         boolean isValue2 = false;
 
         NodeList items = word.getChildNodes();
-        for(int j = 0; j < items.getLength(); j++){
+        for (int j = 0; j < items.getLength(); j++) {
             Node item = items.item(j);
             short type = item.getNodeType();
-            if(type == 1) {
+            if (type == 1) {
                 String language = item.getNodeName();
                 String value = item.getFirstChild().getNodeValue();
-                if(language.equals(lang1) && value.equals(value1)){
+                if (language.equals(lang1) && value.equals(value1)) {
                     isValue1 = true;
                 }
-                if(language.equals(lang2) && value.equals(value2)){
+                if (language.equals(lang2) && value.equals(value2)) {
                     isValue2 = true;
                 }
             }

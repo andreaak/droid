@@ -71,7 +71,7 @@ public class FileChooserWithButtonsActivity extends Activity implements View.OnC
 
     private void RestoreInParameters() {
         String savedPath = getIntent().getStringExtra(INITIAL_PATH);
-        activityHelper.predicate = (DirectoryPredicate)getIntent().getSerializableExtra(PREDICATE);
+        activityHelper.predicate = (DirectoryPredicate) getIntent().getSerializableExtra(PREDICATE);
         activityHelper.title = getIntent().getStringExtra(TITLE);
 
         activityHelper.currentDir = Utils.isEmpty(savedPath) || !new File(savedPath).exists() ?
@@ -114,7 +114,7 @@ public class FileChooserWithButtonsActivity extends Activity implements View.OnC
         switch (id) {
             case R.id.buttonOk:
                 FileItem item = adapter.getItem(activityHelper.currentPosition);
-                if(item != null) {
+                if (item != null) {
                     onOkClick(item);
                 }
                 break;

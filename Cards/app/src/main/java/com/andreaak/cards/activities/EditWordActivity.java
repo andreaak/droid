@@ -126,7 +126,7 @@ public class EditWordActivity extends HandleExceptionActivity implements View.On
         Intent intent = new Intent();
         boolean res = setData();
         intent.putExtra(CHANGED, res);
-        if(res) {
+        if (res) {
             intent.putExtra(NEWWORD, helper.wordItem);
         }
         setResult(RESULT_OK, intent);
@@ -179,8 +179,8 @@ public class EditWordActivity extends HandleExceptionActivity implements View.On
     }
 
     private boolean isEqual(String value1, String value2) {
-        if(Utils.isEmpty(value1)){
-            return Utils.isEmpty(value2) ;
+        if (Utils.isEmpty(value1)) {
+            return Utils.isEmpty(value2);
         }
         return value1.equals(value2);
     }

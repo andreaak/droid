@@ -20,6 +20,7 @@
         android:title="@string/menu_settings" />
     <item
         android:id="@+id/menu_exit"
+        android:icon="@drawable/exit"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         android:title="@string/menu_exit" />

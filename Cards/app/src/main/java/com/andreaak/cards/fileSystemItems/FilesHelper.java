@@ -2,12 +2,11 @@ package com.andreaak.cards.fileSystemItems;
 
 import android.content.Context;
 
-import com.andreaak.cards.configs.Configs;
+import com.andreaak.cards.R;
 import com.andreaak.cards.predicates.DirectoryPredicate;
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.Logger;
-import com.andreaak.cards.R;
 
 import java.io.File;
 import java.sql.Date;
@@ -92,21 +91,20 @@ public class FilesHelper {
     }
 }
 
-class FileSizeView
-{
+class FileSizeView {
     private float value;
     private String suffix;
     private DecimalFormat df = new DecimalFormat("#.00");
 
     public String toString() {
-        return  df.format(value) + " " + suffix;
+        return df.format(value) + " " + suffix;
     }
 
-    public FileSizeView(long length){
-        if(length < 1000) {
+    public FileSizeView(long length) {
+        if (length < 1000) {
             value = length;
             suffix = "bytes";
-        } else if(length < 1000000) {
+        } else if (length < 1000000) {
             value = ((float) length) / 1000;
             suffix = "KB";
         } else {

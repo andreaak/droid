@@ -11,8 +11,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.andreaak.cards.R;
-import com.andreaak.cards.fileSystemItems.FileItem;
 import com.andreaak.cards.fileSystemItems.DirectoryArrayAdapter;
+import com.andreaak.cards.fileSystemItems.FileItem;
 import com.andreaak.cards.fileSystemItems.FilesHelper;
 import com.andreaak.cards.fileSystemItems.ItemType;
 import com.andreaak.cards.predicates.AlwaysTruePredicate;

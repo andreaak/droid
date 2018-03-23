@@ -8,10 +8,10 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.andreaak.cards.R;
+import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
 import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
 import com.andreaak.cards.adapters.LangSpinAdapter;
 import com.andreaak.cards.adapters.LessonsSpinAdapter;
-import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.Utils;
@@ -68,7 +68,7 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
             helper = new SelectLessonAndLanguageHelper();
             String directory = getIntent().getStringExtra(DIRECTORY);
             helper.lessons = Utils.getLessons(directory);
-            if(helper.lessons.length != 0) {
+            if (helper.lessons.length != 0) {
                 initializeLessonsSpinner(helper.lessons);
             }
         }
@@ -107,7 +107,8 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
 
     private void initializeLanguageSpinner(ArrayList<WordItem> words) {
 
-        List<LanguageItem> langs = Utils.getLangs(words.get(0));;
+        List<LanguageItem> langs = Utils.getLangs(words);
+        ;
 
         langAdapter = new LangSpinAdapter(SelectLessonAndLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,

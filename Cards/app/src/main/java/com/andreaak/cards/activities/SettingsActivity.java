@@ -7,10 +7,10 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
 import com.andreaak.cards.R;
-import com.andreaak.cards.predicates.AlwaysTruePredicate;
 import com.andreaak.cards.activitiesShared.DirectoryChooserActivity;
 import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.configs.SharedPreferencesHelper;
+import com.andreaak.cards.predicates.AlwaysTruePredicate;
 
 import java.io.File;
 
@@ -37,13 +37,13 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     @Override
     public boolean onPreferenceClick(Preference preference) {
 
-        if(preference == resetButton) {
+        if (preference == resetButton) {
             Configs.clear();
             getPreferenceScreen().removeAll();
             addPreferencesFromResource(com.andreaak.cards.R.xml.settings);
             initPreferences();
             return true;
-        } else if(preference == openFolderButton) {
+        } else if (preference == openFolderButton) {
             setLogDirectory();
         }
         return true;
@@ -76,7 +76,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         openFolderButton = findPreference(OPEN_FOLDER_BUTTON);
         openFolderButton.setOnPreferenceClickListener(this);
 
-        logFilePref = (EditTextPreference)findPreference(SP_LOG_FILE);
+        logFilePref = (EditTextPreference) findPreference(SP_LOG_FILE);
     }
 
     private void setLogDirectory() {

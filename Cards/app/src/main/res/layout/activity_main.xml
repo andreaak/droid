@@ -18,7 +18,7 @@
 
             <ImageButton
                 android:id="@+id/buttonOpenCards"
-                android:layout_width="50dp"
+                android:layout_width="75dp"
                 android:layout_height="50dp"
                 android:layout_marginRight="20dp"
                 android:title="@string/cards"

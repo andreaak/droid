@@ -17,11 +17,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.andreaak.cards.R;
+import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.cards.adapters.WordsSpinAdapter;
 import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.configs.SharedPreferencesHelper;
-import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.model.WordItem;
 
 import java.util.ArrayList;
@@ -114,7 +114,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
             case REQUEST_UPDATE_WORD:
                 if (resultCode == RESULT_OK) {
                     Boolean res = data.getBooleanExtra(EditWordActivity.CHANGED, false);
-                    if(res) {
+                    if (res) {
                         helper.currentWord = (WordItem) data.getSerializableExtra(EditWordActivity.NEWWORD);
                         helper.lessonItem.changeWord(helper.currentWord);
                         activateWord(helper.currentWord);
@@ -192,14 +192,14 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
     }
 
     private void setTextSize(TextView textView, float size) {
-        android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams( android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+        android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(Math.round(0), Math.round(0), Math.round(0), Math.round(0));
 
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
         textView.setLayoutParams(params);
         textView.setPadding(0, 0, 0, 0);
-        textView.setHeight((int)size + 20);
+        textView.setHeight((int) size + 20);
     }
 
     private void editWord() {
@@ -266,7 +266,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         buttonToggle.setVisibility(flag);
         texts.setVisibility(flag);
     }
-
 
 
     @Override
