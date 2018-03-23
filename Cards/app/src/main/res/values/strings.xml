@@ -7,6 +7,7 @@
     <string name="download_file">Download file:</string>
     <string name="download_success">Download success</string>
     <string name="download_fault">Download fault</string>
+    <string name="upload_success">Upload success</string>
     <string name="google_error">Google Error</string>
     <string name="html_read_fault">Html read fault</string>
     <string name="item">item</string>
@@ -20,6 +21,7 @@
     <string name="search">Search</string>
     <string name="select_account">Select Google Account…</string>
     <string name="search_fault">Search fault</string>
+    <string name="upload_fault">Upload fault</string>
     <string name="open_folder">Open folder</string>
     <string name="open_file">Open file</string>
     <string name="select_lesson">Select lesson</string>

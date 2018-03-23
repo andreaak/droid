@@ -33,7 +33,7 @@ public class GoogleDriveHelper {
     public final String MIME_TEXT = "text/plain";
     public final String MIME_FLDR = "application/vnd.google-apps.folder";
     private Drive service;
-    private IConnectGoogleDrive connectInstance;
+    private IOperationGoogleDrive connectInstance;
     private boolean isConnected;
     private EmailHolder emailHolder;
 
@@ -41,7 +41,7 @@ public class GoogleDriveHelper {
 
     public void setActivity(Activity act) {
         this.act = act;
-        connectInstance = (IConnectGoogleDrive) act;
+        connectInstance = (IOperationGoogleDrive) act;
     }
 
     private GoogleDriveHelper(EmailHolder emailHolder) {
@@ -356,17 +356,17 @@ public class GoogleDriveHelper {
             protected void onProgressUpdate(String... strings) {
                 super.onProgressUpdate(strings);
                 Logger.d(LOG_TAG, strings[0]);
-                connectInstance.onDownloadProgress(strings[0]);
+                connectInstance.onOperationProgress(strings[0]);
             }
 
             @Override
             protected void onPostExecute(Exception ex) {
                 super.onPostExecute(ex);
                 if (isDownload[0]) {
-                    connectInstance.onDownloadFinished(null);
+                    connectInstance.onOperationFinished(null);
                 } else {
                     Exception e = ex != null ? ex : new Exception(act.getString(R.string.download_fault));
-                    connectInstance.onDownloadFinished(e);
+                    connectInstance.onOperationFinished(e);
                 }
             }
         }.execute();

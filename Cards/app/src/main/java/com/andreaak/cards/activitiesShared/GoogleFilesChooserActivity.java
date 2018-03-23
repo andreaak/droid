@@ -94,24 +94,22 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
             protected void onPostExecute(Exception ex) {
                 super.onPostExecute(ex);
                 if (isDownload[0]) {
-                    act.onSearchOk();
+                    act.onSearchFinished(null);
                 } else {
-                    act.onSearchFail(ex);
+                    act.onSearchFinished(ex);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void onSearchOk() {
-        adapter = new GoogleArrayAdapter(this, com.andreaak.cards.R.layout.shared_list_item_google_files_chooser, databaseFiles);
-        listView.setAdapter(adapter);
-        setTitle(com.andreaak.cards.R.string.app_name);
-    }
-
-    @Override
-    public void onSearchFail(Exception ex) {
-        Utils.showText(this, com.andreaak.cards.R.string.search_fault);
+    public void onSearchFinished(Exception ex) {
+        if (ex == null) {
+            adapter = new GoogleArrayAdapter(this, com.andreaak.cards.R.layout.shared_list_item_google_files_chooser, databaseFiles);
+            listView.setAdapter(adapter);
+        } else {
+            Utils.showText(this, com.andreaak.cards.R.string.search_fault);
+        }
         setTitle(com.andreaak.cards.R.string.app_name);
     }
 

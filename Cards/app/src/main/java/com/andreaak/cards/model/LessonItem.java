@@ -1,19 +1,23 @@
 package com.andreaak.cards.model;
 
+import com.andreaak.cards.utils.Utils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class LessonItem implements Serializable {
 
     private String name;
+    private String fileName;
     private String path;
 
     private LanguageItem languageItem;
     private String currentLanguage;
     private ArrayList<WordItem> words = new ArrayList<>();
 
-    public LessonItem(String name, String path) {
-        this.name = name;
+    public LessonItem(String fileName, String path) {
+        this.fileName = fileName;
+        this.name = Utils.getFileNameWithoutExtensions(fileName);
         this.path = path;
     }
 
@@ -37,6 +41,10 @@ public class LessonItem implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public String getPath() {

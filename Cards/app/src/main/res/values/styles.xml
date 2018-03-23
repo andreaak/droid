@@ -1,13 +1,12 @@
 <resources>
 
-    <style name="AppBaseTheme" parent="android:Theme.Holo">
-    </style>
+    <style name="AppBaseTheme" parent="android:Theme.Holo"></style>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
 
 
     </style>
-    <style name="CompatTheme" parent="Theme.AppCompat.DayNight">
-    </style>
+
+    <style name="CompatTheme" parent="Theme.AppCompat.DayNight"></style>
 </resources>

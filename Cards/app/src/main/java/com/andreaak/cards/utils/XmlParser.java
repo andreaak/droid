@@ -36,8 +36,7 @@ public class XmlParser {
 
     public static LessonItem parseLesson(File lessonFile) {
 
-        String name = Utils.getFileNameWithoutExtensions(lessonFile.getName());
-        LessonItem lesson = new LessonItem(name, lessonFile.getAbsolutePath());
+        LessonItem lesson = new LessonItem(lessonFile.getName(), lessonFile.getAbsolutePath());
         try {
             InputSource input = new InputSource(new FileReader(lessonFile));
             Document doc = getXMLDocument(input);
@@ -69,8 +68,7 @@ public class XmlParser {
         for (File lessonFile : files) {
             try {
 
-                String name = Utils.getFileNameWithoutExtensions(lessonFile.getName());
-                LessonItem lesson = new LessonItem(name, lessonFile.getAbsolutePath());
+                LessonItem lesson = new LessonItem(lessonFile.getName(), lessonFile.getAbsolutePath());
 
                 InputSource input = new InputSource(new FileReader(lessonFile));
                 Document doc = getXMLDocument(input);

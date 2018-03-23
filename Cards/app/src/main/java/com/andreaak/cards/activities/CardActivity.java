@@ -1,6 +1,8 @@
 package com.andreaak.cards.activities;
 
+import android.accounts.AccountManager;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.AppCompatDelegate;
@@ -22,13 +24,27 @@ import com.andreaak.cards.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.cards.adapters.WordsSpinAdapter;
 import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.configs.SharedPreferencesHelper;
+import com.andreaak.cards.google.GoogleDriveHelper;
+import com.andreaak.cards.google.GoogleItem;
+import com.andreaak.cards.google.IConnectGoogleDrive;
+import com.andreaak.cards.google.IOperationGoogleDrive;
 import com.andreaak.cards.model.WordItem;
+import com.andreaak.cards.utils.Constants;
+import com.andreaak.cards.utils.Utils;
+import com.andreaak.cards.utils.logger.Logger;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.AccountPicker;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
-public class CardActivity extends HandleExceptionAppCompatActivity implements View.OnClickListener {
+import static com.andreaak.cards.utils.Utils.showText;
+
+public class CardActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive, IOperationGoogleDrive, View.OnClickListener {
 
     private static final int REQUEST_UPDATE_WORD = 1;
+    private static final int REQUEST_GOOGLE_CONNECT = 2;
     //in
     public static final String HELPER = "Helper";
 
@@ -41,6 +57,8 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
     private Spinner spinnerWords;
 
     private Menu menu;
+
+    GoogleDriveHelper googleDriveHelper;
 
     private CardActivityHelper helper;
     private WordsSpinAdapter wordsAdapter;
@@ -70,6 +88,9 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
         setFontSize();
         setInitialCardVisibility(false);
+
+        googleDriveHelper = GoogleDriveHelper.getInstance();
+        googleDriveHelper.setActivity(this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -121,6 +142,19 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                     }
                 }
                 break;
+            case REQUEST_GOOGLE_CONNECT:
+                setTitle(com.andreaak.cards.R.string.connecting);
+                if (data != null && data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) != null) {
+                    googleDriveHelper.getEmailHolder().setEmail(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
+                    if (!googleDriveHelper.init()) {
+                        showText(this, com.andreaak.cards.R.string.no_google_account);
+                        setTitle(helper.lessonItem.getName());
+                        Logger.d(Constants.LOG_TAG, getString(com.andreaak.cards.R.string.no_google_account));
+                    } else {
+                        googleDriveHelper.connect();
+                    }
+                }
+                break;
 
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -141,6 +175,22 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
             }
             case com.andreaak.cards.R.id.menu_edit_word: {
                 editWord();
+                return true;
+            }
+            case com.andreaak.cards.R.id.menu_select_account: {
+                try {
+                    startActivityForResult(AccountPicker.newChooseAccountIntent(
+                            null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true,
+                            null, null, null, null),
+                            REQUEST_GOOGLE_CONNECT);
+                } catch (Exception e) {
+                    Logger.d(Constants.LOG_TAG, "Google services problem");
+                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                }
+                return true;
+            }
+            case com.andreaak.cards.R.id.menu_download: {
+                uploadLesson();
                 return true;
             }
             case com.andreaak.cards.R.id.menu_settings: {
@@ -267,7 +317,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         texts.setVisibility(flag);
     }
 
-
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -361,5 +410,80 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onConnectionOK() {
+        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, true);
+        setTitle(helper.lessonItem.getName());
+    }
+
+    @Override
+    public void onConnectionFail(Exception ex) {
+        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false);
+        showText(this, com.andreaak.cards.R.string.google_error);
+        setTitle(helper.lessonItem.getName());
+        Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+    }
+
+    private void uploadLesson() {
+        final boolean[] isDownload = {false};
+        final IOperationGoogleDrive act = this;
+        setTitle(com.andreaak.cards.R.string.search);
+
+        new AsyncTask<Void, String, Exception>() {
+
+            @Override
+            protected Exception doInBackground(Void... params) {
+                try {
+                    List<GoogleItem> directory = googleDriveHelper.search("root", Configs.GoogleDir, null);
+                    if (directory != null && directory.size() == 1) {
+                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.get(0).getId(),
+                                helper.lessonItem.getFileName(), null);
+                        for (GoogleItem file : findFiles) {
+                            googleDriveHelper.update(file.getId(), null, null, null, new File(helper.lessonItem.getPath()));
+                            break;
+                        }
+                    }
+                    publishProgress("Upload Completed");
+                    isDownload[0] = true;
+                } catch (Exception ex) {
+                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                    return ex;
+                }
+                return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(String... strings) {
+                super.onProgressUpdate(strings);
+                Logger.d(Constants.LOG_TAG, strings[0]);
+            }
+
+            @Override
+            protected void onPostExecute(Exception ex) {
+                super.onPostExecute(ex);
+                if (isDownload[0]) {
+                    act.onOperationFinished(null);
+                } else {
+                    act.onOperationFinished(ex);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void onOperationProgress(String message) {
+        setTitle(message);
+    }
+
+    @Override
+    public void onOperationFinished(Exception ex) {
+
+
+        Utils.showText(this, (ex == null) ?
+                R.string.upload_success :
+                R.string.upload_fault);
+        setTitle(helper.lessonItem.getName());
     }
 }

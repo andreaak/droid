@@ -16,7 +16,7 @@ import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.configs.SharedPreferencesHelper;
 import com.andreaak.cards.google.EmailHolder;
 import com.andreaak.cards.google.GoogleDriveHelper;
-import com.andreaak.cards.google.IConnectGoogleDrive;
+import com.andreaak.cards.google.IOperationGoogleDrive;
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.FileLogger;
@@ -28,7 +28,7 @@ import com.google.android.gms.common.AccountPicker;
 
 import static com.andreaak.cards.utils.Utils.showText;
 
-public class MainActivity extends HandleExceptionActivity implements IConnectGoogleDrive, View.OnClickListener {
+public class MainActivity extends HandleExceptionActivity implements IOperationGoogleDrive, View.OnClickListener {
 
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     private static final int REQUEST_GOOGLE_FILES_CHOOSER = 3;
@@ -206,12 +206,12 @@ public class MainActivity extends HandleExceptionActivity implements IConnectGoo
     }
 
     @Override
-    public void onDownloadProgress(String message) {
+    public void onOperationProgress(String message) {
         setTitle(message);
     }
 
     @Override
-    public void onDownloadFinished(Exception ex) {
+    public void onOperationFinished(Exception ex) {
         menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, true);
         if (ex == null) {
             showText(this, com.andreaak.cards.R.string.download_success);
