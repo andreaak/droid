@@ -146,25 +146,25 @@ public class EditWordActivity extends HandleExceptionActivity implements View.On
         String temp = editTextPrimaryLanguage.getText().toString();
         if (!isEqual(primaryLanguageValue, temp)) {
             map.put(primaryLanguage, temp);
-            helper.wordItem.setValue(primaryLanguage, temp);
+            helper.wordItem.addItem(primaryLanguage, temp);
         }
 
         temp = editTextPrimaryTranscription.getText().toString();
         if (!isEqual(primaryLanguageTrans, temp)) {
             map.put(primaryLanguage + WordItem.TranscriptionSuffix, temp);
-            helper.wordItem.setValue(primaryLanguage + WordItem.TranscriptionSuffix, temp);
+            helper.wordItem.addItem(primaryLanguage + WordItem.TranscriptionSuffix, temp);
         }
 
         temp = editTextSecondaryLanguage.getText().toString();
         if (!isEqual(secondaryLanguageValue, temp)) {
             map.put(secondaryLanguage, temp);
-            helper.wordItem.setValue(secondaryLanguage, temp);
+            helper.wordItem.addItem(secondaryLanguage, temp);
         }
 
         temp = editTextSecondaryTranscription.getText().toString();
         if (!isEqual(secondaryLanguageTrans, temp)) {
             map.put(secondaryLanguage + WordItem.TranscriptionSuffix, temp);
-            helper.wordItem.setValue(secondaryLanguage + WordItem.TranscriptionSuffix, temp);
+            helper.wordItem.addItem(secondaryLanguage + WordItem.TranscriptionSuffix, temp);
         }
 
         if (map.isEmpty()) {

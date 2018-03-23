@@ -145,7 +145,6 @@ public class XmlParser {
                         }
                     }
                 }
-                break;
             }
 
             return writeXmlFile(doc, lessonFile);

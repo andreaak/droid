@@ -25,11 +25,6 @@ public class WordItem implements java.io.Serializable {
         return words.get(language);
     }
 
-
-    public void setValue(String language, String value) {
-        words.put(language, value);
-    }
-
     public String getTranscription(String language) {
         return transcriptions.get(language + TranscriptionSuffix);
     }
