@@ -25,12 +25,13 @@
 
     <EditTextPreference
         android:key="SP_GOOGLE_DIR"
-        android:defaultValue="SP_GOOGLE_CARD_DIR_DEF"
+        android:defaultValue="SP_GOOGLE_DIR_DEFAULT"
         android:summary="Set google directory"
         android:title="Google Directory" />
+
     <EditTextPreference
         android:key="SP_LESSONS_EXTENSION"
-        android:defaultValue="SP_LESSONS_EXTENSION_DEF"
+        android:defaultValue="SP_LESSONS_EXTENSION_DEFAULT"
         android:summary="Set lessons extension"
         android:title="Lessons Extension" />
     <Preference

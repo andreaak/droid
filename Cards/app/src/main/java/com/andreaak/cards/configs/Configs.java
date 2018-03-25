@@ -8,13 +8,14 @@ public class Configs {
     //Keys
     public static final String SP_DIRECTORY_WITH_LESSONS_PATH = "SP_DIRECTORY_WITH_LESSONS_PATH";
     //
-    public static final String SP_GOOGLE_CARD_DIR = "SP_GOOGLE_CARD_DIR";
+    public static final String SP_GOOGLE_DIR = "SP_GOOGLE_DIR";
+    private static final String SP_GOOGLE_DIR_DEFAULT = "Eng";
+    //
     public static final String SP_LESSONS_EXTENSION = "SP_LESSONS_EXTENSION";
+    private static final String SP_LESSONS_EXTENSION_DEFAULT = ".xml";
+    //
     public static final String SP_LOG_FILE = "SP_LOG_FILE";
     public static final String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";
-    //
-    private static final String SP_GOOGLE_CARD_DIR_DEF = "Eng";
-    private static final String SP_LESSONS_EXTENSION_DEF = ".xml";
     //
     public static final String SP_TEXT_FONT_SIZE = "SP_TEXT_FONT_SIZE";
     public static final String SP_TRANS_FONT_SIZE = "SP_TRANS_FONT_SIZE";
@@ -35,20 +36,20 @@ public class Configs {
     public static void read() {
         SharedPreferencesHelper helper = SharedPreferencesHelper.getInstance();
 
-        String temp = helper.getString(SP_GOOGLE_CARD_DIR);
+        String temp = helper.getString(SP_GOOGLE_DIR);
         if (!isEmpty(temp)) {
             GoogleDir = temp;
         } else {
-            GoogleDir = SP_GOOGLE_CARD_DIR_DEF;
-            helper.save(SP_GOOGLE_CARD_DIR, SP_GOOGLE_CARD_DIR_DEF);
+            GoogleDir = SP_GOOGLE_DIR_DEFAULT;
+            helper.save(SP_GOOGLE_DIR, SP_GOOGLE_DIR_DEFAULT);
         }
 
         temp = helper.getString(SP_LESSONS_EXTENSION);
         if (!isEmpty(temp)) {
             LessonsExtension = temp;
         } else {
-            LessonsExtension = SP_LESSONS_EXTENSION_DEF;
-            helper.save(SP_LESSONS_EXTENSION, SP_LESSONS_EXTENSION_DEF);
+            LessonsExtension = SP_LESSONS_EXTENSION_DEFAULT;
+            helper.save(SP_LESSONS_EXTENSION, SP_LESSONS_EXTENSION_DEFAULT);
         }
 
         temp = helper.getString(SP_LOG_FILE);

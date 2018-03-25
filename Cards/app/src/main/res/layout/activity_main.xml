@@ -21,14 +21,14 @@
                 android:layout_width="75dp"
                 android:layout_height="50dp"
                 android:layout_marginRight="20dp"
-                android:title="@string/cards"
+                android:title="@string/app_name"
                 android:background="@drawable/cards" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="left|center_vertical"
-                android:text="@string/cards"
+                android:text="@string/app_name"
                 android:textColor="@color/colorWhite"
                 android:textSize="20dp" />
 

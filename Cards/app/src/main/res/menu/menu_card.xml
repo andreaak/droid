@@ -36,10 +36,10 @@
         android:title="@string/select_account" />
     <group android:id="@+id/groupGoogle">
         <item
-            android:id="@+id/menu_download"
+            android:id="@+id/menu_upload"
             android:icon="@drawable/ic_action_upload"
             android:showAsAction="ifRoom"
-            android:title="@string/download" />
+            android:title="@string/upload" />
     </group>
 
     <item

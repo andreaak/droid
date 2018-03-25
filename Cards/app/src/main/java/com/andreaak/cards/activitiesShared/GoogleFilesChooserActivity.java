@@ -9,11 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.andreaak.cards.R;
 import com.andreaak.cards.configs.Configs;
+import com.andreaak.cards.configs.SharedPreferencesHelper;
 import com.andreaak.cards.google.GoogleArrayAdapter;
 import com.andreaak.cards.google.GoogleDriveHelper;
 import com.andreaak.cards.google.GoogleItem;
 import com.andreaak.cards.google.IGoogleSearch;
+import com.andreaak.cards.predicates.AlwaysTruePredicate;
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.Logger;
@@ -141,8 +144,17 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     }
 
     private void getDirectory() {
-        Intent intent1 = new Intent(this, DirectoryChooserActivity.class);
-        startActivityForResult(intent1, REQUEST_DIRECTORY_CHOOSER);
+
+        String initialPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
+        if(Utils.isEmpty(initialPath)) {
+            Intent intent = new Intent(this, DirectoryChooserActivity.class);
+            intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
+            intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
+            intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, initialPath);
+            startActivityForResult(intent, REQUEST_DIRECTORY_CHOOSER);
+        } else {
+            onFolderSelected(initialPath);
+        }
     }
 
     @Override

@@ -45,8 +45,6 @@ public class SelectLanguageActivity extends HandleExceptionActivity implements V
 
         spinnerLang = (Spinner) findViewById(R.id.spinnerLang);
 
-        setTitle(getString(R.string.select_language));
-
         onRestoreNonConfigurationInstance();
     }
 

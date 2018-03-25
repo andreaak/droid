@@ -146,6 +146,8 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
                     } else {
                         helper.connect();
                     }
+                } else {
+                    setTitle(com.andreaak.cards.R.string.app_name);
                 }
                 break;
             case REQUEST_GOOGLE_FILES_CHOOSER:
