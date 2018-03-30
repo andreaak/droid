@@ -18,13 +18,18 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     private final static String RESET_BUTTON = "RESET_BUTTON";
     private final static String OPEN_FOLDER_BUTTON = "OPEN_FOLDER_BUTTON";
+    private final static String OPEN_LESSONS_FOLDER_BUTTON = "OPEN_LESSONS_FOLDER_BUTTON";
     private final static String SP_LOG_FILE = "SP_LOG_FILE";
+    private final static String SP_DIRECTORY_WITH_LESSONS_PATH = "SP_DIRECTORY_WITH_LESSONS_PATH";
 
+    private static final int REQUEST_LESSONS_DIRECTORY_CHOOSER = 1;
     private static final int REQUEST_LOG_DIRECTORY_CHOOSER = 2;
 
     private Preference resetButton;
     private Preference openFolderButton;
+    private Preference openLessonsFolderButton;
     private EditTextPreference logFilePref;
+    private EditTextPreference lessonsFolderPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +50,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             return true;
         } else if (preference == openFolderButton) {
             setLogDirectory();
+        } else if (preference == openFolderButton) {
+            setLessonsDirectory();
         }
         return true;
-
-
     }
 
     @Override
@@ -65,6 +70,13 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     logFilePref.setText(newFile);
                 }
                 break;
+            case REQUEST_LESSONS_DIRECTORY_CHOOSER:
+                if (resultCode == RESULT_OK) {
+                    String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
+                    SharedPreferencesHelper.getInstance().save(Configs.SP_DIRECTORY_WITH_LESSONS_PATH, path);
+                    lessonsFolderPref.setText(path);
+                }
+                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -76,7 +88,11 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         openFolderButton = findPreference(OPEN_FOLDER_BUTTON);
         openFolderButton.setOnPreferenceClickListener(this);
 
+        openLessonsFolderButton = findPreference(OPEN_LESSONS_FOLDER_BUTTON);
+        openLessonsFolderButton.setOnPreferenceClickListener(this);
+
         logFilePref = (EditTextPreference) findPreference(SP_LOG_FILE);
+        lessonsFolderPref = (EditTextPreference) findPreference(SP_DIRECTORY_WITH_LESSONS_PATH);
     }
 
     private void setLogDirectory() {
@@ -84,5 +100,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
         intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_log));
         startActivityForResult(intent, REQUEST_LOG_DIRECTORY_CHOOSER);
+    }
+
+    private void setLessonsDirectory() {
+        Intent intent = new Intent(this, DirectoryChooserActivity.class);
+        intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
+        intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
+        startActivityForResult(intent, REQUEST_LESSONS_DIRECTORY_CHOOSER);
     }
 }

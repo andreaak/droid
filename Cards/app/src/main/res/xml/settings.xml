@@ -2,6 +2,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <PreferenceCategory android:title="Lesson's folder">
+
+        <EditTextPreference
+            android:key="SP_DIRECTORY_WITH_LESSONS_PATH"
+            android:summary="Set lesson's folder"
+            android:title="Lesson's folder" />
+
+        <Preference
+            android:key="OPEN_LESSONS_FOLDER_BUTTON"
+            android:summary=""
+            android:title="..." />
+
+    </PreferenceCategory>
+
     <CheckBoxPreference
         android:key="SP_IS_LOGGING_ACTIVE"
         android:summary="Enable logging"
