@@ -37,4 +37,5 @@
     <string name="select_file">Select file</string>
     <string name="select_directory">Select directory</string>
     <string name="select_google_file">Select Google file</string>
+    <string name="irregular_verbs_en">English irregular verbs</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.andreaak.cards.utils;
 
 import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.VerbItem;
+import com.andreaak.cards.model.VerbLessonItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.logger.Logger;
 
@@ -196,5 +198,71 @@ public class XmlParser {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
         }
         return false;
+    }
+
+
+    public static VerbLessonItem parseVerbLesson(String path) {
+
+        return parseVerbLesson(new File(path));
+    }
+
+    public static VerbLessonItem parseVerbLesson(File lessonFile) {
+
+        VerbLessonItem lesson = new VerbLessonItem(lessonFile.getName(), lessonFile.getAbsolutePath());
+        try {
+            InputSource input = new InputSource(new FileReader(lessonFile));
+            Document doc = getXMLDocument(input);
+            NodeList words = doc.getElementsByTagName("verb");
+            for (int i = 0; i < words.getLength(); i++) {
+                Node node = words.item(i);
+                VerbItem word = parseVerb(node, i);
+                lesson.add(word);
+            }
+
+        } catch (FileNotFoundException e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return lesson;
+    }
+
+    private static VerbItem parseVerb(Node node, int id) {
+
+        VerbItem verb = new VerbItem(id);
+
+        NodeList items = node.getChildNodes();
+        for (int i = 0; i < items.getLength(); i++) {
+            Node item = items.item(i);
+            short type = item.getNodeType();
+            if (type == 1) {
+                String tag = item.getNodeName();
+                String value = item.getFirstChild().getNodeValue();
+
+                switch (tag) {
+                    case "infinitive":
+                        verb.infinitive = value;
+                        break;
+                    case "infinitive_tr":
+                        verb.infinitiveTrans = value;
+                        break;
+                    case "pastSimple":
+                        verb.pastSimple = value;
+                        break;
+                    case "pastSimple_tr":
+                        verb.pastSimpleTrans = value;
+                        break;
+                    case "pastParticiple":
+                        verb.pastParticiple = value;
+                        break;
+                    case "pastParticiple_tr":
+                        verb.pastParticipleTrans = value;
+                        break;
+                    case "translation":
+                        verb.translation = value;
+                        break;
+                }
+            }
+        }
+        return verb;
     }
 }

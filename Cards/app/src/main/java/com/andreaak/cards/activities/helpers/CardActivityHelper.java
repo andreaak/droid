@@ -10,3 +10,4 @@ public class CardActivityHelper implements Serializable {
     public WordItem currentWord;
     public boolean isRestore;
 }
+

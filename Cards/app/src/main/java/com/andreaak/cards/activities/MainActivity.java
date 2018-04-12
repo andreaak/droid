@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.andreaak.cards.R;
+import com.andreaak.cards.activities.helpers.VerbActivityHelper;
+import com.andreaak.cards.activitiesShared.FileChooserWithButtonsActivity;
 import com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity;
 import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
 import com.andreaak.cards.configs.Configs;
@@ -17,8 +19,11 @@ import com.andreaak.cards.configs.SharedPreferencesHelper;
 import com.andreaak.cards.google.EmailHolder;
 import com.andreaak.cards.google.GoogleDriveHelper;
 import com.andreaak.cards.google.IOperationGoogleDrive;
+import com.andreaak.cards.model.VerbLessonItem;
+import com.andreaak.cards.predicates.LessonXmlPredicate;
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.Utils;
+import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.cards.utils.logger.FileLogger;
 import com.andreaak.cards.utils.logger.ILogger;
 import com.andreaak.cards.utils.logger.Logger;
@@ -33,6 +38,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     private static final int REQUEST_GOOGLE_FILES_CHOOSER = 3;
     private static final int REQUEST_PREFERENCES = 4;
+    private static final int REQUEST_VERB_CHOOSER = 5;
 
     private EmailHolder emailHolder;
     private Menu menu;
@@ -41,6 +47,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
     private boolean isPrefChanged;
 
     private ImageButton buttonOpenCards;
+    private ImageButton buttonOpenVerbCards;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,9 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
 
         buttonOpenCards = (ImageButton) findViewById(R.id.buttonOpenCards);
         buttonOpenCards.setOnClickListener(this);
+
+        buttonOpenVerbCards = (ImageButton) findViewById(R.id.buttonOpenVerbCards);
+        buttonOpenVerbCards.setOnClickListener(this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -129,6 +139,9 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
             case R.id.buttonOpenCards:
                 openCards();
                 break;
+            case R.id.buttonOpenVerbCards:
+                getVerbFile();
+                break;
         }
     }
 
@@ -164,6 +177,12 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
                     setLogger();
                 }
                 break;
+            case REQUEST_VERB_CHOOSER:
+                if (resultCode == RESULT_OK) {
+                    String filePath = data.getStringExtra(FileChooserWithButtonsActivity.FILE_PATH);
+                    openVerbCards(filePath);
+                }
+                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -175,6 +194,26 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
 
     private void openCards() {
         Intent intent = new Intent(this, CardChooseActivity.class);
+        startActivity(intent);
+    }
+
+    private void getVerbFile() {
+        Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
+        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new LessonXmlPredicate());
+        intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
+        String initialPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
+        intent.putExtra(FileChooserWithButtonsActivity.INITIAL_PATH, initialPath);
+        startActivityForResult(intent, REQUEST_VERB_CHOOSER);
+    }
+
+    private void openVerbCards(String filePath) {
+        VerbLessonItem lessonItem = XmlParser.parseVerbLesson(filePath);
+        VerbActivityHelper helper = new VerbActivityHelper();
+        helper.lessonItem = lessonItem;
+        helper.currentWord = helper.lessonItem.getWords().get(0);
+
+        Intent intent = new Intent(this, VerbActivity.class);
+        intent.putExtra(CardActivity.HELPER, helper);
         startActivity(intent);
     }
 

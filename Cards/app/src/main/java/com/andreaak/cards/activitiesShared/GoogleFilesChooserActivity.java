@@ -146,7 +146,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     private void getDirectory() {
 
         String initialPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
-        if(Utils.isEmpty(initialPath)) {
+        if (Utils.isEmpty(initialPath)) {
             Intent intent = new Intent(this, DirectoryChooserActivity.class);
             intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
             intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
