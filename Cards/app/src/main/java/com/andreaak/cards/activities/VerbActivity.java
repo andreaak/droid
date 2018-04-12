@@ -237,9 +237,8 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
     }
 
     private void setTextSize(TextView textView, float size) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(Math.round(0), Math.round(0), Math.round(0), Math.round(0));
 
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
         textView.setLayoutParams(params);

@@ -86,6 +86,14 @@
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
+        <activity
+            android:name=".activities.VerbActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.DayNight">
+            <action android:name="com.andreaak.cards.activities.VerbActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
 
         <!-- Shared -->
         <activity
