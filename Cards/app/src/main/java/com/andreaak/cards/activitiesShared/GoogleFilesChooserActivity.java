@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Button;
@@ -17,14 +18,20 @@ import com.andreaak.cards.google.GoogleDriveHelper;
 import com.andreaak.cards.google.GoogleItem;
 import com.andreaak.cards.google.IGoogleSearch;
 import com.andreaak.cards.predicates.AlwaysTruePredicate;
+import com.andreaak.cards.predicates.DirectoryNamePredicate;
+import com.andreaak.cards.predicates.DirectoryPredicate;
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.Logger;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GoogleFilesChooserActivity extends Activity implements View.OnClickListener, IGoogleSearch {
+
+    //in
+    public static final String PREDICATE = "Predicate";
 
     public static final String IDS = "ids";
     public static final String NAMES = "names";
@@ -41,6 +48,8 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     private List<GoogleItem> databaseFiles;
     private List<GoogleItem> selectedFiles;
 
+    private DirectoryNamePredicate predicate;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +64,12 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         buttonCancel.setOnClickListener(this);
 
         helper = GoogleDriveHelper.getInstance();
+        RestoreInParameters();
         fill();
+    }
+
+    private void RestoreInParameters() {
+        predicate = (DirectoryNamePredicate) getIntent().getSerializableExtra(PREDICATE);
     }
 
     private void fill() {
@@ -73,7 +87,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
                     if (directory != null && directory.size() == 1) {
                         ArrayList<GoogleItem> findFiles = helper.search(directory.get(0).getId(), null, null);
                         for (GoogleItem file : findFiles) {
-                            if (!helper.isFolder(file) && file.getTitle().endsWith(Configs.LessonsExtension)) {
+                            if (!helper.isFolder(file) && predicate.isValid(file.getTitle())) {
                                 databaseFiles.add(file);
                             }
                         }

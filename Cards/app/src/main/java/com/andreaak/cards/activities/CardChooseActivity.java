@@ -18,7 +18,7 @@ import com.andreaak.cards.configs.SharedPreferencesHelper;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.predicates.LessonXmlDirectoryPredicate;
-import com.andreaak.cards.predicates.LessonXmlPredicate;
+import com.andreaak.cards.predicates.LessonFilePredicate;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
 
@@ -125,7 +125,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
 
     private void getLessonFile() {
         Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
-        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new LessonXmlPredicate());
+        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new LessonFilePredicate());
         intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
         String initialPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
         intent.putExtra(FileChooserWithButtonsActivity.INITIAL_PATH, initialPath);

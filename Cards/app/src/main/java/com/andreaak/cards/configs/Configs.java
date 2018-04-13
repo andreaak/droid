@@ -13,6 +13,10 @@ public class Configs {
     //
     public static final String SP_LESSONS_EXTENSION = "SP_LESSONS_EXTENSION";
     private static final String SP_LESSONS_EXTENSION_DEFAULT = ".xml";
+    public static final String SP_LESSONS_PREFFIX = "SP_LESSONS_PREFFIX";
+    private static final String SP_LESSONS_PREFFIX_DEFAULT = "lesson_";
+    //
+    public static final String SP_IRR_VERB_EN_DEFAULT = "irregular_en.xml";
     //
     public static final String SP_LOG_FILE = "SP_LOG_FILE";
     public static final String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";
@@ -28,6 +32,7 @@ public class Configs {
     public static String LessonDir;
     public static String GoogleDir;
     public static String LessonsExtension;
+    public static String LessonsPreffix;
     public static String LogFile;
     public static boolean IsLoggingActive;
     private static String FilesDefaultLocation;
@@ -61,6 +66,14 @@ public class Configs {
         } else {
             LessonsExtension = SP_LESSONS_EXTENSION_DEFAULT;
             helper.save(SP_LESSONS_EXTENSION, LessonsExtension);
+        }
+
+        temp = helper.getString(SP_LESSONS_PREFFIX);
+        if (!isEmpty(temp)) {
+            LessonsPreffix = temp;
+        } else {
+            LessonsPreffix = SP_LESSONS_PREFFIX_DEFAULT;
+            helper.save(SP_LESSONS_PREFFIX, LessonsPreffix);
         }
 
         temp = helper.getString(SP_LOG_FILE);

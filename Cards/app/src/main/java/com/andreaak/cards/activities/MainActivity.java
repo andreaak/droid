@@ -20,7 +20,10 @@ import com.andreaak.cards.google.EmailHolder;
 import com.andreaak.cards.google.GoogleDriveHelper;
 import com.andreaak.cards.google.IOperationGoogleDrive;
 import com.andreaak.cards.model.VerbLessonItem;
-import com.andreaak.cards.predicates.LessonXmlPredicate;
+import com.andreaak.cards.predicates.CompositeFileNamePredicate;
+import com.andreaak.cards.predicates.IrregularVerbEnFileNamePredicate;
+import com.andreaak.cards.predicates.IrregularVerbEnFilePredicate;
+import com.andreaak.cards.predicates.LessonFileNamePredicate;
 import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
@@ -115,7 +118,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
                 return true;
             }
             case com.andreaak.cards.R.id.menu_download: {
-                getGoogleFiles();
+                getGoogleLessonsFiles();
                 return true;
             }
             case com.andreaak.cards.R.id.menu_exit: {
@@ -140,7 +143,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
                 openCards();
                 break;
             case R.id.buttonOpenVerbCards:
-                getVerbFile();
+                getIrregularVerbEnFile();
                 break;
         }
     }
@@ -180,7 +183,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
             case REQUEST_VERB_CHOOSER:
                 if (resultCode == RESULT_OK) {
                     String filePath = data.getStringExtra(FileChooserWithButtonsActivity.FILE_PATH);
-                    openVerbCards(filePath);
+                    openIrregularVerbEnCards(filePath);
                 }
                 break;
         }
@@ -197,16 +200,16 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
         startActivity(intent);
     }
 
-    private void getVerbFile() {
+    private void getIrregularVerbEnFile() {
         Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
-        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new LessonXmlPredicate());
+        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new IrregularVerbEnFilePredicate());
         intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
         String initialPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
         intent.putExtra(FileChooserWithButtonsActivity.INITIAL_PATH, initialPath);
         startActivityForResult(intent, REQUEST_VERB_CHOOSER);
     }
 
-    private void openVerbCards(String filePath) {
+    private void openIrregularVerbEnCards(String filePath) {
         VerbLessonItem lessonItem = XmlParser.parseVerbLesson(filePath);
         VerbActivityHelper helper = new VerbActivityHelper();
         helper.lessonItem = lessonItem;
@@ -217,8 +220,11 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
         startActivity(intent);
     }
 
-    private void getGoogleFiles() {
+    private void getGoogleLessonsFiles() {
         Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
+        CompositeFileNamePredicate predicate = new CompositeFileNamePredicate(
+                new LessonFileNamePredicate(), new IrregularVerbEnFileNamePredicate());
+        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, predicate);
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);
     }
 

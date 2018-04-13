@@ -50,7 +50,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             return true;
         } else if (preference == openFolderButton) {
             setLogDirectory();
-        } else if (preference == openFolderButton) {
+        } else if (preference == openLessonsFolderButton) {
             setLessonsDirectory();
         }
         return true;
