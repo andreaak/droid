@@ -16,7 +16,7 @@ public class Configs {
     public static final String SP_LESSONS_PREFFIX = "SP_LESSONS_PREFFIX";
     private static final String SP_LESSONS_PREFFIX_DEFAULT = "lesson_";
     //
-    public static final String SP_IRR_VERB_EN_DEFAULT = "irregular_en.xml";
+    public static final String SP_IRR_VERB_EN_DEFAULT = "irregular_en";
     //
     public static final String SP_LOG_FILE = "SP_LOG_FILE";
     public static final String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";

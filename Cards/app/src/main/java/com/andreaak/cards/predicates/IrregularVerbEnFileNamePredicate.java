@@ -7,6 +7,6 @@ import java.io.Serializable;
 public class IrregularVerbEnFileNamePredicate implements DirectoryNamePredicate, Serializable {
     @Override
     public boolean isValid(String name) {
-        return Configs.SP_IRR_VERB_EN_DEFAULT.equals(name);
+        return name.startsWith(Configs.SP_IRR_VERB_EN_DEFAULT);
     }
 }

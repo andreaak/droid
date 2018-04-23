@@ -10,6 +10,6 @@ public class IrregularVerbEnFilePredicate implements DirectoryPredicate, Seriali
     @Override
     public boolean isValid(File lesson) {
         String name = lesson.getName();
-        return Configs.SP_IRR_VERB_EN_DEFAULT.equals(name);
+        return name.startsWith(Configs.SP_IRR_VERB_EN_DEFAULT);
     }
 }
