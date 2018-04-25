@@ -204,7 +204,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
         Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
         intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new IrregularVerbEnFilePredicate());
         intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
-        String initialPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
+        String initialPath = Configs.LessonDir;
         intent.putExtra(FileChooserWithButtonsActivity.INITIAL_PATH, initialPath);
         startActivityForResult(intent, REQUEST_VERB_CHOOSER);
     }

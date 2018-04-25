@@ -81,7 +81,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
                     selectLessonAndLanguage(path);
-                    SharedPreferencesHelper.getInstance().save(Configs.SP_DIRECTORY_WITH_LESSONS_PATH, path);
+                    Configs.saveLessonsDirectory(path);;
                 }
                 break;
             case REQUEST_LESSON_AND_LANGUAGE_CHOOSER:
@@ -96,7 +96,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
                 if (resultCode == RESULT_OK) {
                     String filePath = data.getStringExtra(FileChooserWithButtonsActivity.FILE_PATH);
                     String path = new File(filePath).getParent();
-                    SharedPreferencesHelper.getInstance().save(Configs.SP_DIRECTORY_WITH_LESSONS_PATH, path);
+                    Configs.saveLessonsDirectory(path);
                     selectLanguage(filePath);
                 }
                 break;
@@ -127,7 +127,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
         Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
         intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new LessonFilePredicate());
         intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
-        String initialPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
+        String initialPath = Configs.LessonDir;
         intent.putExtra(FileChooserWithButtonsActivity.INITIAL_PATH, initialPath);
         startActivityForResult(intent, REQUEST_LESSON_FILE_CHOOSER);
     }
@@ -142,7 +142,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new LessonXmlDirectoryPredicate());
         intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
-        String initialPath = SharedPreferencesHelper.getInstance().getString(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
+        String initialPath = Configs.LessonDir;
         intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, initialPath);
         startActivityForResult(intent, REQUEST_LESSONS_DIRECTORY_CHOOSER);
     }

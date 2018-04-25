@@ -3,6 +3,7 @@ package com.andreaak.cards.utils;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.logger.Logger;
@@ -113,6 +114,56 @@ public class Utils {
         }
 
         return langItems;
+    }
+
+    public static List<String> getWords(String item) {
+        ArrayList<String> result = new ArrayList<String>();
+        String[] words = item.trim().split(" ");
+        boolean isBracket = false;
+
+        for(String word : words) {
+            String normalized = word.trim();
+            if("/".equals(normalized)) {
+                continue;
+            }
+            if(normalized.startsWith("(")) {
+                isBracket = true;
+            }
+            if(isBracket) {
+                if(normalized.endsWith(")")) {
+                    isBracket = false;
+                }
+                continue;
+            }
+            result.add(normalized);
+        }
+        return result;
+    }
+
+    public static String getSoundFile(String language, String word) {
+
+        String region;
+        if("en".equals(language.toLowerCase())) {
+            region = "uk";
+        } else {
+            region = language;
+        }
+
+        return Configs.SoundsDir + String.format("/%1$s/%2$s_%3$s/%4$s_%2$s.mp3",
+                region.toUpperCase(), region.toLowerCase(), word.charAt(0), word);
+    }
+
+    public static String getVerbSoundFile(String language, String word) {
+
+        String region;
+        if("en".equals(language.toLowerCase())) {
+            region = "uk";
+        } else {
+            region = language;
+        }
+
+        return Configs.SoundsDir + String.format("/Irregular/%1$s/%2$s_%1$s.mp3",
+                region.toLowerCase(), word);
     }
 }
 

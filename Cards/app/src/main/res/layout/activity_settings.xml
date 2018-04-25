@@ -17,6 +17,20 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Sounds's folder">
+
+        <EditTextPreference
+            android:key="SP_DIRECTORY_WITH_SOUNDS_PATH"
+            android:summary="Set sounds's folder"
+            android:title="Sounds's folder" />
+
+        <Preference
+            android:key="OPEN_SOUNDS_FOLDER_BUTTON"
+            android:summary=""
+            android:title="..." />
+
+    </PreferenceCategory>
+
     <CheckBoxPreference
         android:key="SP_IS_LOGGING_ACTIVE"
         android:summary="Enable logging"
@@ -32,7 +46,7 @@
 
         <Preference
             android:dependency="SP_IS_LOGGING_ACTIVE"
-            android:key="OPEN_FOLDER_BUTTON"
+            android:key="OPEN_LOG_FOLDER_BUTTON"
             android:summary=""
             android:title="..." />
 

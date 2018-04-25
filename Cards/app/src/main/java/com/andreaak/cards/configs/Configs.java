@@ -5,34 +5,37 @@ import android.content.Context;
 import static com.andreaak.cards.utils.Utils.isEmpty;
 
 public class Configs {
-    //Keys
+    //Lessons
     public static final String SP_DIRECTORY_WITH_LESSONS_PATH = "SP_DIRECTORY_WITH_LESSONS_PATH";
+    public static final String SP_DIRECTORY_WITH_SOUNDS_PATH = "SP_DIRECTORY_WITH_SOUNDS_PATH";
+    //Lessons
+    public static final String SP_LAST_LESSON_PATH = "SP_LAST_LESSON_PATH";
+    public static final String SP_LAST_LESSON_LANGUAGE = "SP_LAST_LESSON_LANGUAGE";
     //
+    private static final String SP_LESSONS_EXTENSION = "SP_LESSONS_EXTENSION";
+    private static final String SP_LESSONS_EXTENSION_DEFAULT = ".xml";
+    private static final String SP_LESSONS_PREFFIX = "SP_LESSONS_PREFFIX";
+    private static final String SP_LESSONS_PREFFIX_DEFAULT = "lesson_";
+    // Google
     public static final String SP_GOOGLE_DIR = "SP_GOOGLE_DIR";
     private static final String SP_GOOGLE_DIR_DEFAULT = "Eng";
-    //
-    public static final String SP_LESSONS_EXTENSION = "SP_LESSONS_EXTENSION";
-    private static final String SP_LESSONS_EXTENSION_DEFAULT = ".xml";
-    public static final String SP_LESSONS_PREFFIX = "SP_LESSONS_PREFFIX";
-    private static final String SP_LESSONS_PREFFIX_DEFAULT = "lesson_";
-    //
+    //irregular
     public static final String SP_IRR_VERB_EN_DEFAULT = "irregular_en";
-    //
+    //Log
     public static final String SP_LOG_FILE = "SP_LOG_FILE";
     public static final String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";
-    public static final String SP_LOG_FILE_DEFAULT = "/log.file";
+    private static final String SP_LOG_FILE_DEFAULT = "/log.file";
 
     //
     public static final String SP_TEXT_FONT_SIZE = "SP_TEXT_FONT_SIZE";
     public static final String SP_TRANS_FONT_SIZE = "SP_TRANS_FONT_SIZE";
-    //
-    public static final String SP_LAST_LESSON_PATH = "SP_LAST_LESSON_PATH";
-    public static final String SP_LAST_LESSON_LANGUAGE = "SP_LAST_LESSON_LANGUAGE";
+
     //Values
     public static String LessonDir;
+    public static String SoundsDir;
     public static String GoogleDir;
     public static String LessonsExtension;
-    public static String LessonsPreffix;
+    public static String LessonsPrefix;
     public static String LogFile;
     public static boolean IsLoggingActive;
     private static String FilesDefaultLocation;
@@ -44,47 +47,45 @@ public class Configs {
     public static void read() {
         SharedPreferencesHelper helper = SharedPreferencesHelper.getInstance();
 
-        String temp = helper.getString(SP_DIRECTORY_WITH_LESSONS_PATH);
-        if (!isEmpty(temp)) {
-            LessonDir = temp;
-        } else {
-            LessonDir = FilesDefaultLocation;
-            helper.save(SP_DIRECTORY_WITH_LESSONS_PATH, LessonDir);
-        }
+        LessonDir = getConfig(helper, SP_DIRECTORY_WITH_LESSONS_PATH,
+                FilesDefaultLocation);
 
-        temp = helper.getString(SP_GOOGLE_DIR);
-        if (!isEmpty(temp)) {
-            GoogleDir = temp;
-        } else {
-            GoogleDir = SP_GOOGLE_DIR_DEFAULT;
-            helper.save(SP_GOOGLE_DIR, GoogleDir);
-        }
+        SoundsDir = getConfig(helper, SP_DIRECTORY_WITH_SOUNDS_PATH,
+                FilesDefaultLocation);
 
-        temp = helper.getString(SP_LESSONS_EXTENSION);
-        if (!isEmpty(temp)) {
-            LessonsExtension = temp;
-        } else {
-            LessonsExtension = SP_LESSONS_EXTENSION_DEFAULT;
-            helper.save(SP_LESSONS_EXTENSION, LessonsExtension);
-        }
+        LessonsExtension = getConfig(helper, SP_LESSONS_EXTENSION,
+                SP_LESSONS_EXTENSION_DEFAULT);
 
-        temp = helper.getString(SP_LESSONS_PREFFIX);
-        if (!isEmpty(temp)) {
-            LessonsPreffix = temp;
-        } else {
-            LessonsPreffix = SP_LESSONS_PREFFIX_DEFAULT;
-            helper.save(SP_LESSONS_PREFFIX, LessonsPreffix);
-        }
+        LessonsPrefix = getConfig(helper, SP_LESSONS_PREFFIX,
+                SP_LESSONS_PREFFIX_DEFAULT);
 
-        temp = helper.getString(SP_LOG_FILE);
-        if (!isEmpty(temp)) {
-            LogFile = temp;
-        } else {
-            LogFile = FilesDefaultLocation + SP_LOG_FILE_DEFAULT;
-            helper.save(SP_LOG_FILE, LogFile);
-        }
+        LogFile = getConfig(helper, SP_LOG_FILE,
+                FilesDefaultLocation + SP_LOG_FILE_DEFAULT);
+
+        GoogleDir = getConfig(helper, SP_GOOGLE_DIR,
+                SP_GOOGLE_DIR_DEFAULT);
 
         IsLoggingActive = helper.getBoolean(SP_IS_LOGGING_ACTIVE);
+    }
+
+    private static String getConfig(SharedPreferencesHelper helper, String key, String defaultValue) {
+        String value = helper.getString(key);
+        if (!isEmpty(value)) {
+            return value;
+        } else {
+            helper.save(key, defaultValue);
+            return defaultValue;
+        }
+    }
+
+    public static boolean saveLessonsDirectory(String path) {
+        LessonDir = path;
+        return SharedPreferencesHelper.getInstance().save(SP_DIRECTORY_WITH_LESSONS_PATH, path);
+    }
+
+    public static boolean saveSoundsDirectory(String path) {
+        SoundsDir = path;
+        return SharedPreferencesHelper.getInstance().save(SP_DIRECTORY_WITH_SOUNDS_PATH, path);
     }
 
     public static void clear() {

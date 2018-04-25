@@ -30,14 +30,17 @@ import com.andreaak.cards.google.IConnectGoogleDrive;
 import com.andreaak.cards.google.IOperationGoogleDrive;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.Constants;
+import com.andreaak.cards.utils.MediaPlayerHelper;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.Logger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
 import java.io.File;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 import static com.andreaak.cards.utils.Utils.showText;
 
@@ -49,6 +52,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     public static final String HELPER = "Helper";
 
     private ImageButton buttonToggle;
+    private ImageButton buttonSound;
 
     private TextView textViewWord;
     private TextView textViewTrans;
@@ -81,6 +85,9 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
         buttonToggle = (ImageButton) findViewById(R.id.buttonToggle);
         buttonToggle.setOnClickListener(this);
+
+        buttonSound = (ImageButton) findViewById(R.id.buttonSound);
+        buttonSound.setOnClickListener(this);
 
         textViewWord = (TextView) findViewById(R.id.textViewWord);
         textViewTrans = (TextView) findViewById(R.id.textViewTrans);
@@ -306,6 +313,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         textViewWord.setVisibility(flag);
         textViewTrans.setVisibility(flag);
         buttonToggle.setVisibility(flag);
+        buttonSound.setVisibility(flag);
         texts.setVisibility(flag);
     }
 
@@ -315,6 +323,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         spinnerWords.setVisibility(flag);
         textViewWord.setVisibility(flag);
         buttonToggle.setVisibility(flag);
+        buttonSound.setVisibility(flag);
         texts.setVisibility(flag);
     }
 
@@ -323,7 +332,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         int id = v.getId();
         switch (id) {
             case R.id.buttonToggle:
-                Toggle();
+                toggle();
+                break;
+            case R.id.buttonSound:
+                playSound();
                 break;
         }
     }
@@ -339,13 +351,51 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             textViewTrans.setVisibility(View.VISIBLE);
             textViewTrans.setText(transcription);
         }
+
+        Queue<String> files = getSoundFiles();
+        boolean isVisible = !files.isEmpty();
+        int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
+        buttonSound.setVisibility(flag);
     }
 
-    private void Toggle() {
-
+    private void toggle() {
         helper.lessonItem.ToggleLanguage();
-
         activateWord(helper.currentWord);
+    }
+
+    MediaPlayerHelper mediaHelper;
+
+    private void playSound() {
+
+        if(mediaHelper != null && mediaHelper.IsActive) {
+            return;
+        }
+
+        Queue<String> files = getSoundFiles();
+        if(files.isEmpty()) {
+            return;
+        }
+        if(mediaHelper == null) {
+            mediaHelper = new MediaPlayerHelper();
+        }
+        mediaHelper.playSound(this, files);
+    }
+
+    private Queue<String> getSoundFiles() {
+
+        Queue<String> files = new ArrayDeque<String>();
+
+        String language = helper.lessonItem.getCurrentLanguage();
+        List<String> words = Utils.getWords(helper.currentWord.getValue(language));
+
+        for(String word : words) {
+            String filePath = Utils.getSoundFile(language, word);
+            File file = new File(filePath);
+            if(file.exists()) {
+                files.add(filePath);
+            }
+        }
+        return files;
     }
 
     private void previousWord() {

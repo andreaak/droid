@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,16 +29,20 @@ import com.andreaak.cards.google.IConnectGoogleDrive;
 import com.andreaak.cards.google.IOperationGoogleDrive;
 import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.utils.Constants;
+import com.andreaak.cards.utils.MediaPlayerHelper;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.logger.Logger;
 
 import java.io.File;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 import static com.andreaak.cards.utils.Utils.showText;
 
-public class VerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive, IOperationGoogleDrive {
+public class VerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
+        IOperationGoogleDrive, View.OnClickListener {
 
     private static final int REQUEST_UPDATE_WORD = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
@@ -51,6 +56,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
     private TextView textViewPastParticiple;
     private TextView textViewPastParticipleTrans;
     private TextView textViewTranslation;
+    private ImageButton buttonSound;
 
     private LinearLayout texts;
 
@@ -85,6 +91,8 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
         textViewPastParticiple = (TextView) findViewById(R.id.textViewPastParticiple);
         textViewPastParticipleTrans = (TextView) findViewById(R.id.textViewPastParticipleTrans);
         textViewTranslation = (TextView) findViewById(R.id.textViewTranslation);
+        buttonSound = (ImageButton) findViewById(R.id.buttonSound);
+        buttonSound.setOnClickListener(this);
 
         texts = (LinearLayout) findViewById(R.id.texts);
 
@@ -194,6 +202,16 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.buttonSound:
+                playSound();
+                break;
+        }
     }
 
     private void textSmaller() {
@@ -439,5 +457,41 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
                 R.string.upload_success :
                 R.string.upload_fault);
         //setTitle(helper.lessonItem.getName());
+    }
+
+    MediaPlayerHelper mediaHelper;
+
+    private void playSound() {
+
+        if(mediaHelper != null && mediaHelper.IsActive) {
+            return;
+        }
+
+        Queue<String> files = getSoundFiles();
+        if(files.isEmpty()) {
+            return;
+        }
+        if(mediaHelper == null) {
+            mediaHelper = new MediaPlayerHelper();
+        }
+        mediaHelper.playSound(this, files);
+    }
+
+    private Queue<String> getSoundFiles() {
+
+        Queue<String> files = new ArrayDeque<String>();
+
+        List<String> words = Utils.getWords(helper.currentWord.infinitive);
+        words.addAll(Utils.getWords(helper.currentWord.pastSimple));
+        words.addAll(Utils.getWords(helper.currentWord.pastParticiple));
+
+        for(String word : words) {
+            String filePath = Utils.getVerbSoundFile("en", word);
+            File file = new File(filePath);
+            if(file.exists()) {
+                files.add(filePath);
+            }
+        }
+        return files;
     }
 }
