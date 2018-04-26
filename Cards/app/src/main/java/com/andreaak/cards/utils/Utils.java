@@ -118,6 +118,9 @@ public class Utils {
 
     public static List<String> getWords(String item) {
         ArrayList<String> result = new ArrayList<String>();
+        if(isEmpty(item)) {
+            return result;
+        }
         String[] words = item.trim().split(" ");
         boolean isBracket = false;
 
