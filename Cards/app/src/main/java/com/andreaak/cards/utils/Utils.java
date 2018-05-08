@@ -143,7 +143,7 @@ public class Utils {
         return result;
     }
 
-    public static String getSoundFile(String language, String word) {
+    public static String getSoundFile(String language, String word, String soundFormat) {
 
         String region;
         if("en".equals(language.toLowerCase())) {
@@ -152,11 +152,11 @@ public class Utils {
             region = language;
         }
 
-        return Configs.SoundsDir + String.format("/%1$s/%2$s_%3$s/%4$s_%2$s.mp3",
-                region.toUpperCase(), region.toLowerCase(), word.charAt(0), word);
+        return Configs.SoundsDir + String.format("/%1$s_%5$s/%3$s_%2$s/%4$s_%2$s.%5$s",
+                region.toLowerCase(), region.toLowerCase(), word.charAt(0), word, soundFormat);
     }
 
-    public static String getVerbSoundFile(String language, String word) {
+    public static String getVerbSoundFile(String language, String word, String soundFormat) {
 
         String region;
         if("en".equals(language.toLowerCase())) {
@@ -165,8 +165,8 @@ public class Utils {
             region = language;
         }
 
-        return Configs.SoundsDir + String.format("/Irregular/%1$s/%2$s_%1$s.mp3",
-                region.toLowerCase(), word);
+        return Configs.SoundsDir + String.format("/Irregular/%1$s/%2$s_%1$s.%3$s",
+                region.toLowerCase(), word, soundFormat);
     }
 }
 

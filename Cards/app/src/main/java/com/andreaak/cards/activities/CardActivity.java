@@ -46,6 +46,8 @@ import static com.andreaak.cards.utils.Utils.showText;
 
 public class CardActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive, IOperationGoogleDrive, View.OnClickListener {
 
+    private static final String SOUND_FORMAT = "mp3";
+
     private static final int REQUEST_UPDATE_WORD = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     //in
@@ -389,7 +391,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         List<String> words = Utils.getWords(helper.currentWord.getValue(language));
 
         for(String word : words) {
-            String filePath = Utils.getSoundFile(language, word);
+            String filePath = Utils.getSoundFile(language, word, SOUND_FORMAT);
             File file = new File(filePath);
             if(file.exists()) {
                 files.add(filePath);

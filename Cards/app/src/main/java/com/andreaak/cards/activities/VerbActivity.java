@@ -44,6 +44,9 @@ import static com.andreaak.cards.utils.Utils.showText;
 public class VerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
         IOperationGoogleDrive, View.OnClickListener {
 
+    private static final String SOUND_FORMAT = "mp3";
+    private static final String LANGUAGE = "en";
+
     private static final int REQUEST_UPDATE_WORD = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     //in
@@ -452,11 +455,9 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
     @Override
     public void onOperationFinished(Exception ex) {
 
-
         Utils.showText(this, (ex == null) ?
                 R.string.upload_success :
                 R.string.upload_fault);
-        //setTitle(helper.lessonItem.getName());
     }
 
     MediaPlayerHelper mediaHelper;
@@ -486,7 +487,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
         words.addAll(Utils.getWords(helper.currentWord.pastParticiple));
 
         for(String word : words) {
-            String filePath = Utils.getVerbSoundFile("en", word);
+            String filePath = Utils.getVerbSoundFile(LANGUAGE, word, SOUND_FORMAT);
             File file = new File(filePath);
             if(file.exists()) {
                 files.add(filePath);
