@@ -1,4 +1,4 @@
-package com.andreaak.note;
+package com.andreaak.note.activities;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import com.andreaak.note.R;
 import com.andreaak.note.dataBase.EntityHelper;
 import com.andreaak.note.dataBase.EntityItem;
 import com.andreaak.note.dataBase.FindNoteArrayAdapter;

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import static com.andreaak.note.utils.Configs.LogFile;
+import static com.andreaak.note.configs.Configs.LogFile;
 import static com.andreaak.note.utils.Constants.LOG_TAG;
 
 public class FileLogger implements ILogger {

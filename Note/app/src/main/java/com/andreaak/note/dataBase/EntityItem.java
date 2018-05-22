@@ -1,9 +1,9 @@
 package com.andreaak.note.dataBase;
 
-import com.andreaak.note.utils.Item;
-import com.andreaak.note.utils.ItemType;
+import com.andreaak.note.fileSystemItems.FileSystemItem;
+import com.andreaak.note.fileSystemItems.ItemType;
 
-public class EntityItem extends Item {
+public class EntityItem extends FileSystemItem {
     private int id;
     private String description;
 

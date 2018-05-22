@@ -21,4 +21,7 @@
     <string name="search">Search</string>
     <string name="select_account">Select Google Account…</string>
     <string name="search_fault">Search fault</string>
+    <string name="select_file">Select file</string>
+    <string name="select_directory">Select directory</string>
+    <string name="select_log">Select log</string>
 </resources>

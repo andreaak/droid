@@ -34,7 +34,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:theme="@android:style/Theme.Holo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,54 +43,54 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FileChooserActivity"
+            android:name=".activitiesShared.FileChooserActivity"
             android:label="Choose Database File"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.FileChooserActivity" />
+            <action android:name="com.andreaak.note.activitiesShared.FileChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".DirectoryChooserActivity"
+            android:name=".activitiesShared.DirectoryChooserActivity"
             android:label="Choose Download Directory"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.DirectoryChooserActivity" />
+            <action android:name="com.andreaak.note.activitiesShared.DirectoryChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".GoogleFilesChooserActivity"
+            android:name=".activitiesShared.GoogleFilesChooserActivity"
             android:label="Choose Database Files"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.GoogleFilesChooserActivity" />
+            <action android:name="com.andreaak.note.activitiesShared.GoogleFilesChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".EntityChooserActivity"
+            android:name=".activities.EntityChooserActivity"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.EntityChooserActivity" />
+            <action android:name="com.andreaak.note.activities.EntityChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".NoteHtmlActivity"
+            android:name=".activities.NoteHtmlActivity"
             android:theme="@android:style/Theme.Holo">
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".NoteFindActivity"
+            android:name=".activities.NoteFindActivity"
             android:label="Note"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.NoteFindActivity" />
+            <action android:name="com.andreaak.note.activities.NoteFindActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="Preferences"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.note.SettingsActivity" />
+            <action android:name="com.andreaak.note.activities.SettingsActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>

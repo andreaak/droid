@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.andreaak.note.R;
+import com.andreaak.note.fileSystemItems.ItemType;
 import com.andreaak.note.utils.Constants;
-import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.Utils;
 import com.andreaak.note.utils.logger.Logger;
 

@@ -1,9 +1,6 @@
-package com.andreaak.note.files;
+package com.andreaak.note.fileSystemItems;
 
-import com.andreaak.note.utils.Item;
-import com.andreaak.note.utils.ItemType;
-
-public class FileItem extends Item implements Comparable<FileItem> {
+public class FileItem extends FileSystemItem implements Comparable<FileItem> {
     private String name;
     private String data;
     private String date;

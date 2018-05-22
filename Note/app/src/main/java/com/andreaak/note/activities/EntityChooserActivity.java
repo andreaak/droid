@@ -1,4 +1,4 @@
-package com.andreaak.note;
+package com.andreaak.note.activities;
 
 import android.app.ListActivity;
 import android.app.SearchManager;
@@ -15,10 +15,12 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.andreaak.note.R;
 import com.andreaak.note.dataBase.EntityArrayAdapter;
 import com.andreaak.note.dataBase.EntityHelper;
 import com.andreaak.note.dataBase.EntityItem;
-import com.andreaak.note.utils.ItemType;
+import com.andreaak.note.fileSystemItems.ItemType;
+import com.andreaak.note.utils.Utils;
 
 import java.util.List;
 
@@ -51,7 +53,7 @@ public class EntityChooserActivity extends ListActivity implements SearchView.On
             helper = new EntityHelper(this);
         }
         if (!helper.openDatabase()) {
-            showText(this, R.string.db_fault);
+            Utils.showText(this, R.string.db_fault);
             finishWithFault();
             return;
         }

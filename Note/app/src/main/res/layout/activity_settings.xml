@@ -6,11 +6,22 @@
         android:key="SP_IS_LOGGING_ACTIVE"
         android:summary="Enable logging"
         android:title="Logging" />
-    <EditTextPreference
-        android:dependency="SP_IS_LOGGING_ACTIVE"
-        android:key="SP_LOG_FILE"
-        android:summary="Set log file"
-        android:title="Log File" />
+
+    <PreferenceCategory android:title="Log file">
+
+        <EditTextPreference
+            android:dependency="SP_IS_LOGGING_ACTIVE"
+            android:key="SP_LOG_FILE"
+            android:summary="Set log file"
+            android:title="Log File" />
+
+        <Preference
+            android:dependency="SP_IS_LOGGING_ACTIVE"
+            android:key="OPEN_LOG_FOLDER_BUTTON"
+            android:summary=""
+            android:title="..." />
+
+    </PreferenceCategory>
     <EditTextPreference
         android:key="SP_GOOGLE_DIR"
         android:summary="Set google directory"

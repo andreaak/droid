@@ -1,4 +1,4 @@
-package com.andreaak.note.utils;
+package com.andreaak.note.fileSystemItems;
 
 public enum ItemType {
     Directory,

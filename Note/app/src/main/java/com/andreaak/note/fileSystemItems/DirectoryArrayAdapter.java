@@ -1,4 +1,4 @@
-package com.andreaak.note.files;
+package com.andreaak.note.fileSystemItems;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

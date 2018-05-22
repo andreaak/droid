@@ -1,4 +1,4 @@
-package com.andreaak.note;
+package com.andreaak.note.activities;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -8,13 +8,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.andreaak.note.R;
+import com.andreaak.note.activitiesShared.FileChooserActivity;
+import com.andreaak.note.activitiesShared.GoogleFilesChooserActivity;
+import com.andreaak.note.configs.Configs;
+import com.andreaak.note.configs.SharedPreferencesHelper;
 import com.andreaak.note.dataBase.DataBaseHelper;
 import com.andreaak.note.google.EmailHolder;
 import com.andreaak.note.google.GoogleDriveHelper;
 import com.andreaak.note.google.IConnectGoogleDrive;
-import com.andreaak.note.utils.Configs;
+import com.andreaak.note.predicates.DatabaseNamePredicate;
+import com.andreaak.note.predicates.DatabasePredicate;
 import com.andreaak.note.utils.Constants;
-import com.andreaak.note.utils.SharedPreferencesHelper;
 import com.andreaak.note.utils.Utils;
 import com.andreaak.note.utils.logger.FileLogger;
 import com.andreaak.note.utils.logger.ILogger;
@@ -125,7 +130,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         switch (requestCode) {
             case REQUEST_FILE_CHOOSER:
                 if (resultCode == RESULT_OK) {
-                    String path = data.getStringExtra(FileChooserActivity.PATH);
+                    String path = data.getStringExtra(FileChooserActivity.FILE_PATH);
                     checkDatabase(path);
                 }
                 break;
@@ -167,11 +172,15 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
 
     private void getFile() {
         Intent intent = new Intent(this, FileChooserActivity.class);
+        intent.putExtra(FileChooserActivity.PREDICATE, new DatabasePredicate());
+        intent.putExtra(FileChooserActivity.TITLE, getString(R.string.select_file));
+        intent.putExtra(FileChooserActivity.INITIAL_PATH, Configs.FilesDir);
         startActivityForResult(intent, REQUEST_FILE_CHOOSER);
     }
 
     private void getGoogleFiles() {
         Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
+        intent.putExtra(GoogleFilesChooserActivity.PREDICATE, new DatabaseNamePredicate());
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);
     }
 
@@ -194,7 +203,7 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
         boolean dbExist = databaseHelper.checkDataBase();
         if (dbExist) {
             String savePath = new File(path).getParent();
-            SharedPreferencesHelper.getInstance().save(Configs.SP_DIRECTORY_WITH_DB_PATH, savePath);
+            Configs.saveFilesDirectory(savePath);
 
             Intent intent = new Intent(this, EntityChooserActivity.class);
             startActivity(intent);

@@ -1,4 +1,4 @@
-package com.andreaak.cards.activitiesShared;
+package com.andreaak.note.activitiesShared;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,14 +10,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.andreaak.cards.R;
-import com.andreaak.cards.activitiesShared.helpers.FileChooserActivityHelper;
-import com.andreaak.cards.fileSystemItems.FileArrayAdapter;
-import com.andreaak.cards.fileSystemItems.FileItem;
-import com.andreaak.cards.fileSystemItems.FilesHelper;
-import com.andreaak.cards.fileSystemItems.ItemType;
-import com.andreaak.cards.predicates.DirectoryPredicate;
-import com.andreaak.cards.utils.Utils;
+import com.andreaak.note.R;
+import com.andreaak.note.activitiesShared.helpers.FileChooserActivityHelper;
+import com.andreaak.note.fileSystemItems.FileArrayAdapter;
+import com.andreaak.note.fileSystemItems.FileItem;
+import com.andreaak.note.fileSystemItems.FilesHelper;
+import com.andreaak.note.fileSystemItems.ItemType;
+import com.andreaak.note.predicates.DirectoryPredicate;
+import com.andreaak.note.utils.Utils;
 
 import java.io.File;
 import java.util.List;
@@ -89,7 +89,7 @@ public class FileChooserWithButtonsActivity extends Activity implements View.OnC
         setCustomTitle(file);
 
         List<FileItem> dir = helper.getDirectory(file, activityHelper.predicate);
-        adapter = new FileArrayAdapter(this, com.andreaak.cards.R.layout.shared_list_item_file_chooser, dir);
+        adapter = new FileArrayAdapter(this, com.andreaak.note.R.layout.shared_list_item_file_chooser, dir);
         listView.setAdapter(adapter);
 
         setOkButtonState(file);

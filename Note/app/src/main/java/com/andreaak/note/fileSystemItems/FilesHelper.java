@@ -1,11 +1,10 @@
-package com.andreaak.note.files;
+package com.andreaak.note.fileSystemItems;
 
 import android.content.Context;
 
 import com.andreaak.note.R;
-import com.andreaak.note.utils.Configs;
+import com.andreaak.note.predicates.DirectoryPredicate;
 import com.andreaak.note.utils.Constants;
-import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.Utils;
 import com.andreaak.note.utils.logger.Logger;
 
@@ -35,7 +34,7 @@ public class FilesHelper {
         return currentDirectory;
     }
 
-    public List<FileItem> getDirectory(File current) {
+    public List<FileItem> getDirectory(File current, DirectoryPredicate predicate) {
         List<FileItem> directories = new ArrayList<FileItem>();
         List<FileItem> files = new ArrayList<FileItem>();
 
@@ -51,7 +50,7 @@ public class FilesHelper {
                     if (file.isDirectory()) {
                         FileItem fileItem = getDirectoryItem(file, dateModify);
                         directories.add(fileItem);
-                    } else if (addFiles && file.getName().endsWith(Configs.DatabaseExtension)) {
+                    } else if (addFiles && predicate.isValid(file)) {
                         FileItem fileItem = getFileItem(file, dateModify);
                         files.add(fileItem);
                     }
@@ -87,8 +86,30 @@ public class FilesHelper {
     }
 
     private FileItem getFileItem(File file, String dateModify) {
-        float length = file.length() / 1000000f;
-        DecimalFormat df = new DecimalFormat("#.00");
-        return new FileItem(file.getName(), df.format(length) + context.getString(R.string.bytes), dateModify, file.getAbsolutePath(), ItemType.File);
+        FileSizeView view = new FileSizeView(file.length());
+        return new FileItem(file.getName(), view.toString(), dateModify, file.getAbsolutePath(), ItemType.File);
+    }
+}
+
+class FileSizeView {
+    private float value;
+    private String suffix;
+    private DecimalFormat df = new DecimalFormat("#.00");
+
+    public String toString() {
+        return df.format(value) + " " + suffix;
+    }
+
+    public FileSizeView(long length) {
+        if (length < 1000) {
+            value = length;
+            suffix = "bytes";
+        } else if (length < 1000000) {
+            value = ((float) length) / 1000;
+            suffix = "KB";
+        } else {
+            value = ((float) length) / 1000000;
+            suffix = "MB";
+        }
     }
 }

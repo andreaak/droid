@@ -1,4 +1,4 @@
-package com.andreaak.note.utils;
+package com.andreaak.note.configs;
 
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -45,7 +45,7 @@ public class Utils {
     }
 
     public static boolean isEmpty(String str) {
-        return str == null || str == "";
+        return str == null || "".equals(str);
     }
 
 //    private static File cchFile(String flNm) {

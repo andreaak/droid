@@ -1,12 +1,12 @@
-package com.andreaak.note.utils;
+package com.andreaak.note.fileSystemItems;
 
 import com.andreaak.note.R;
 
-public abstract class Item {
+public abstract class FileSystemItem {
 
     private ItemType type;
 
-    public Item(ItemType type) {
+    public FileSystemItem(ItemType type) {
         this.type = type;
     }
 

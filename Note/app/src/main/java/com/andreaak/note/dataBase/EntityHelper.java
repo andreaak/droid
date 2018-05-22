@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.SQLException;
 
 import com.andreaak.note.R;
+import com.andreaak.note.fileSystemItems.ItemType;
 import com.andreaak.note.utils.Constants;
-import com.andreaak.note.utils.ItemType;
 import com.andreaak.note.utils.logger.Logger;
 
 import java.util.List;

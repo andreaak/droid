@@ -1,4 +1,4 @@
-package com.andreaak.note;
+package com.andreaak.note.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,9 +7,10 @@ import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.andreaak.note.R;
+import com.andreaak.note.configs.Configs;
+import com.andreaak.note.configs.SharedPreferencesHelper;
 import com.andreaak.note.dataBase.DataBaseHelper;
-import com.andreaak.note.utils.Configs;
-import com.andreaak.note.utils.SharedPreferencesHelper;
 
 public class NoteHtmlActivity extends Activity {
 

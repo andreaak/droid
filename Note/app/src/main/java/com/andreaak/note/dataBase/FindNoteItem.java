@@ -1,6 +1,6 @@
 package com.andreaak.note.dataBase;
 
-import com.andreaak.note.utils.ItemType;
+import com.andreaak.note.fileSystemItems.ItemType;
 
 public class FindNoteItem extends EntityItem implements Comparable<FindNoteItem> {
 

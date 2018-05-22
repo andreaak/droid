@@ -1,4 +1,4 @@
-package com.andreaak.cards.activitiesShared;
+package com.andreaak.note.activitiesShared;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,14 +10,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.andreaak.cards.R;
-import com.andreaak.cards.fileSystemItems.DirectoryArrayAdapter;
-import com.andreaak.cards.fileSystemItems.FileItem;
-import com.andreaak.cards.fileSystemItems.FilesHelper;
-import com.andreaak.cards.fileSystemItems.ItemType;
-import com.andreaak.cards.predicates.AlwaysTruePredicate;
-import com.andreaak.cards.predicates.DirectoryPredicate;
-import com.andreaak.cards.utils.Utils;
+import com.andreaak.note.R;
+import com.andreaak.note.fileSystemItems.DirectoryArrayAdapter;
+import com.andreaak.note.fileSystemItems.FileItem;
+import com.andreaak.note.fileSystemItems.FilesHelper;
+import com.andreaak.note.fileSystemItems.ItemType;
+import com.andreaak.note.predicates.AlwaysTruePredicate;
+import com.andreaak.note.predicates.DirectoryPredicate;
+import com.andreaak.note.utils.Utils;
 
 import java.io.File;
 import java.util.List;
@@ -45,15 +45,15 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.andreaak.cards.R.layout.shared_activity_dir_chooser);
+        setContentView(com.andreaak.note.R.layout.shared_activity_dir_chooser);
 
-        listView = (ListView) findViewById(com.andreaak.cards.R.id.lvMain);
+        listView = (ListView) findViewById(com.andreaak.note.R.id.lvMain);
         listView.setOnItemClickListener(this);
-        buttonOk = (Button) findViewById(com.andreaak.cards.R.id.buttonOk);
+        buttonOk = (Button) findViewById(com.andreaak.note.R.id.buttonOk);
         buttonOk.setOnClickListener(this);
-        buttonCancel = (Button) findViewById(com.andreaak.cards.R.id.buttonCancel);
+        buttonCancel = (Button) findViewById(com.andreaak.note.R.id.buttonCancel);
         buttonCancel.setOnClickListener(this);
-        textViewPath = (TextView) findViewById(com.andreaak.cards.R.id.textViewPath);
+        textViewPath = (TextView) findViewById(com.andreaak.note.R.id.textViewPath);
 
 
         onRestoreNonConfigurationInstance();
@@ -85,7 +85,7 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     private void fill(File file) {
         setCustomTitle(file);
         List<FileItem> dir = helper.getDirectory(file, new AlwaysTruePredicate());
-        adapter = new DirectoryArrayAdapter(this, com.andreaak.cards.R.layout.shared_list_item_dir_chooser, dir);
+        adapter = new DirectoryArrayAdapter(this, com.andreaak.note.R.layout.shared_list_item_dir_chooser, dir);
         listView.setAdapter(adapter);
         setOkButtonState(file);
     }
@@ -103,10 +103,10 @@ public class DirectoryChooserActivity extends Activity implements View.OnClickLi
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case com.andreaak.cards.R.id.buttonOk:
+            case com.andreaak.note.R.id.buttonOk:
                 onOkClick(helper.getCurrentDirectory());
                 break;
-            case com.andreaak.cards.R.id.buttonCancel:
+            case com.andreaak.note.R.id.buttonCancel:
                 onCancel();
                 break;
         }
