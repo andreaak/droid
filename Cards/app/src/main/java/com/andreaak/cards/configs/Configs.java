@@ -23,7 +23,7 @@ public class Configs {
     public static final String SP_IRR_VERB_EN_DEFAULT = "irregular_en";
     //Log
     public static final String SP_LOG_FILE = "SP_LOG_FILE";
-    public static final String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";
+    private static final String SP_IS_LOGGING_ACTIVE = "SP_IS_LOGGING_ACTIVE";
     private static final String SP_LOG_FILE_DEFAULT = "/log.file";
 
     //
@@ -86,6 +86,11 @@ public class Configs {
     public static boolean saveSoundsDirectory(String path) {
         SoundsDir = path;
         return SharedPreferencesHelper.getInstance().save(SP_DIRECTORY_WITH_SOUNDS_PATH, path);
+    }
+
+    public static boolean saveLogFile(String path) {
+        LogFile = path;
+        return SharedPreferencesHelper.getInstance().save(SP_LOG_FILE, path);
     }
 
     public static void clear() {

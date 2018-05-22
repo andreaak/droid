@@ -68,7 +68,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     String logFilePath = SharedPreferencesHelper.getInstance().getString(Configs.SP_LOG_FILE);
                     File file = new File(logFilePath);
                     String newFile = path + "/" + file.getName();
-                    SharedPreferencesHelper.getInstance().save(Configs.SP_LOG_FILE, newFile);
+                    Configs.saveLogFile(newFile);
                     logFilePref.setText(newFile);
                 }
                 break;

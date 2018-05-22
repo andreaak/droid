@@ -84,10 +84,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
 
-                    String logFilePath = SharedPreferencesHelper.getInstance().getString(Configs.SP_LOG_FILE);
+                    String logFilePath = Configs.LogFile;
                     File file = new File(logFilePath);
                     String newFile = path + "/" + file.getName();
-                    SharedPreferencesHelper.getInstance().save(Configs.SP_LOG_FILE, newFile);
+                    Configs.saveLogFile(newFile);
                     logFilePref.setText(newFile);
                 }
                 break;
