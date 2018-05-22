@@ -63,6 +63,7 @@
         android:defaultValue="SP_LESSONS_EXTENSION_DEFAULT"
         android:summary="Set lessons extension"
         android:title="Lessons Extension" />
+
     <Preference
         android:key="RESET_BUTTON"
         android:summary=""

@@ -369,15 +369,15 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
     private void playSound() {
 
-        if(mediaHelper != null && mediaHelper.IsActive) {
+        if (mediaHelper != null && mediaHelper.IsActive) {
             return;
         }
 
         Queue<String> files = getSoundFiles();
-        if(files.isEmpty()) {
+        if (files.isEmpty()) {
             return;
         }
-        if(mediaHelper == null) {
+        if (mediaHelper == null) {
             mediaHelper = new MediaPlayerHelper();
         }
         mediaHelper.playSound(this, files);
@@ -390,10 +390,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         String language = helper.lessonItem.getCurrentLanguage();
         List<String> words = Utils.getWords(helper.currentWord.getValue(language));
 
-        for(String word : words) {
+        for (String word : words) {
             String filePath = Utils.getSoundFile(language, word, SOUND_FORMAT);
             File file = new File(filePath);
-            if(file.exists()) {
+            if (file.exists()) {
                 files.add(filePath);
             }
         }

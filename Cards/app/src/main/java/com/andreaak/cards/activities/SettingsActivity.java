@@ -28,7 +28,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     private Preference openLessonsFolderButton;
     private EditTextPreference lessonsFolderPref;
     private Preference openSoundsFolderButton;
-    private EditTextPreference  soundsFolderPref;
+    private EditTextPreference soundsFolderPref;
     private Preference openLogFolderButton;
     private EditTextPreference logFilePref;
     private Preference resetButton;

@@ -5,7 +5,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
-import com.andreaak.cards.utils.Constants;
 import com.andreaak.cards.utils.logger.Logger;
 
 import java.util.Queue;
@@ -19,7 +18,7 @@ public class MediaPlayerHelper {
 
     public void playSound(Context context, Queue<String> files) {
 
-        if(IsActive) {
+        if (IsActive) {
             return;
         }
         IsActive = true;
@@ -49,27 +48,27 @@ public class MediaPlayerHelper {
     private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
-        if(files.isEmpty()) {
-            clean();
-        } else {
-            reset();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (files.isEmpty()) {
+                clean();
+            } else {
+                reset();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                playSound(files.poll());
             }
-            playSound(files.poll());
-        }
         }
     };
 
-    private void reset(){
+    private void reset() {
         mediaPlayer.release();
         mediaPlayer = null;
     }
 
-    private void clean(){
+    private void clean() {
         reset();
         IsActive = false;
     }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+}

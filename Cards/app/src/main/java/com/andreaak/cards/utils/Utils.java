@@ -118,22 +118,22 @@ public class Utils {
 
     public static List<String> getWords(String item) {
         ArrayList<String> result = new ArrayList<String>();
-        if(isEmpty(item)) {
+        if (isEmpty(item)) {
             return result;
         }
         String[] words = item.trim().split(" ");
         boolean isBracket = false;
 
-        for(String word : words) {
+        for (String word : words) {
             String normalized = word.trim();
-            if("/".equals(normalized)) {
+            if ("/".equals(normalized)) {
                 continue;
             }
-            if(normalized.startsWith("(")) {
+            if (normalized.startsWith("(")) {
                 isBracket = true;
             }
-            if(isBracket) {
-                if(normalized.endsWith(")")) {
+            if (isBracket) {
+                if (normalized.endsWith(")")) {
                     isBracket = false;
                 }
                 continue;
@@ -146,7 +146,7 @@ public class Utils {
     public static String getSoundFile(String language, String word, String soundFormat) {
 
         String region;
-        if("en".equals(language.toLowerCase())) {
+        if ("en".equals(language.toLowerCase())) {
             region = "uk";
         } else {
             region = language;
@@ -159,7 +159,7 @@ public class Utils {
     public static String getVerbSoundFile(String language, String word, String soundFormat) {
 
         String region;
-        if("en".equals(language.toLowerCase())) {
+        if ("en".equals(language.toLowerCase())) {
             region = "uk";
         } else {
             region = language;

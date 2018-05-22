@@ -17,8 +17,8 @@ import com.andreaak.cards.configs.Configs;
 import com.andreaak.cards.configs.SharedPreferencesHelper;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
-import com.andreaak.cards.predicates.LessonXmlDirectoryPredicate;
 import com.andreaak.cards.predicates.LessonFilePredicate;
+import com.andreaak.cards.predicates.LessonXmlDirectoryPredicate;
 import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
 
@@ -81,7 +81,8 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
                     selectLessonAndLanguage(path);
-                    Configs.saveLessonsDirectory(path);;
+                    Configs.saveLessonsDirectory(path);
+                    ;
                 }
                 break;
             case REQUEST_LESSON_AND_LANGUAGE_CHOOSER:

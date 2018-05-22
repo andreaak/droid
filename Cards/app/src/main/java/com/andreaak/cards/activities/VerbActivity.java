@@ -464,15 +464,15 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
 
     private void playSound() {
 
-        if(mediaHelper != null && mediaHelper.IsActive) {
+        if (mediaHelper != null && mediaHelper.IsActive) {
             return;
         }
 
         Queue<String> files = getSoundFiles();
-        if(files.isEmpty()) {
+        if (files.isEmpty()) {
             return;
         }
-        if(mediaHelper == null) {
+        if (mediaHelper == null) {
             mediaHelper = new MediaPlayerHelper();
         }
         mediaHelper.playSound(this, files);
@@ -486,10 +486,10 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
         words.addAll(Utils.getWords(helper.currentWord.pastSimple));
         words.addAll(Utils.getWords(helper.currentWord.pastParticiple));
 
-        for(String word : words) {
+        for (String word : words) {
             String filePath = Utils.getVerbSoundFile(LANGUAGE, word, SOUND_FORMAT);
             File file = new File(filePath);
-            if(file.exists()) {
+            if (file.exists()) {
                 files.add(filePath);
             }
         }
