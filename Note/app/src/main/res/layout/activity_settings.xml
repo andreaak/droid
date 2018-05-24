@@ -2,6 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <CheckBoxPreference
         android:key="SP_IS_LOGGING_ACTIVE"
         android:summary="Enable logging"
@@ -22,14 +23,17 @@
             android:title="..." />
 
     </PreferenceCategory>
+
     <EditTextPreference
         android:key="SP_GOOGLE_DIR"
         android:summary="Set google directory"
         android:title="Google Directory" />
+
     <EditTextPreference
         android:key="SP_DATABASE_EXTENSION"
         android:summary="Set database extension"
         android:title="Database Extension" />
+
     <Preference
         android:key="RESET_BUTTON"
         android:summary=""

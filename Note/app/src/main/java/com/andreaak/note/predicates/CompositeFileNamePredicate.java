@@ -6,16 +6,14 @@ public class CompositeFileNamePredicate implements DirectoryNamePredicate, Seria
 
     private DirectoryNamePredicate[] predicates;
 
-    public CompositeFileNamePredicate(DirectoryNamePredicate ... predicates)
-    {
+    public CompositeFileNamePredicate(DirectoryNamePredicate... predicates) {
         this.predicates = predicates;
     }
 
     @Override
     public boolean isValid(String name) {
-        for(DirectoryNamePredicate predicate : predicates)
-        {
-            if(predicate.isValid(name)) {
+        for (DirectoryNamePredicate predicate : predicates) {
+            if (predicate.isValid(name)) {
                 return true;
             }
         }

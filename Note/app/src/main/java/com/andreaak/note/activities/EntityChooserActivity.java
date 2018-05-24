@@ -25,7 +25,6 @@ import com.andreaak.note.utils.Utils;
 import java.util.List;
 
 import static com.andreaak.note.utils.Utils.getSeparatedText;
-import static com.andreaak.note.utils.Utils.showText;
 
 public class EntityChooserActivity extends ListActivity implements SearchView.OnQueryTextListener {
 

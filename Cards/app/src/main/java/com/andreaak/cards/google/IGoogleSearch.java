@@ -4,4 +4,3 @@ public interface IGoogleSearch {
 
     void onSearchFinished(Exception ex);
 }
-

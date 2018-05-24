@@ -411,9 +411,9 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    List<GoogleItem> directory = googleDriveHelper.search("root", Configs.GoogleDir, null);
-                    if (directory != null && directory.size() == 1) {
-                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.get(0).getId(),
+                    GoogleItem directory = googleDriveHelper.searchFolder("root", Configs.GoogleDir, null);
+                    if (directory != null) {
+                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
                                 helper.lessonItem.getFileName(), null);
                         for (GoogleItem file : findFiles) {
                             googleDriveHelper.update(file.getId(), null, null, null, new File(helper.lessonItem.getPath()));

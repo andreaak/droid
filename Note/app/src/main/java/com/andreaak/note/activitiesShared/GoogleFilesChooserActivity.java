@@ -36,11 +36,12 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     public static final int REQUEST_DIRECTORY_CHOOSER = 4;
 
     private GoogleArrayAdapter adapter;
-    private GoogleDriveHelper helper;
+    private GoogleDriveHelper googleDriveHelper;
 
     private ListView listView;
     private Button buttonOk;
     private Button buttonCancel;
+    private Button buttonSelectAll;
     private List<GoogleItem> databaseFiles;
     private List<GoogleItem> selectedFiles;
 
@@ -49,7 +50,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.andreaak.note.R.layout.activity_google_files_chooser);
+        setContentView(com.andreaak.note.R.layout.shared_activity_google_files_chooser);
 
         listView = (ListView) findViewById(com.andreaak.note.R.id.lvMain);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -58,8 +59,10 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         buttonOk.setOnClickListener(this);
         buttonCancel = (Button) findViewById(com.andreaak.note.R.id.buttonCancel);
         buttonCancel.setOnClickListener(this);
+        buttonSelectAll = (Button) findViewById(com.andreaak.note.R.id.buttonSelectAll);
+        buttonSelectAll.setOnClickListener(this);
 
-        helper = GoogleDriveHelper.getInstance();
+        googleDriveHelper = GoogleDriveHelper.getInstance();
         RestoreInParameters();
         fill();
     }
@@ -79,11 +82,11 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    List<GoogleItem> directory = helper.search("root", Configs.GoogleDir, null);
-                    if (directory != null && directory.size() == 1) {
-                        ArrayList<GoogleItem> findFiles = helper.search(directory.get(0).getId(), null, null);
+                    GoogleItem directory = googleDriveHelper.searchFolder("root", Configs.GoogleDir, null);
+                    if (directory != null) {
+                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(), null, null);
                         for (GoogleItem file : findFiles) {
-                            if (!helper.isFolder(file) && predicate.isValid(file.getTitle())) {
+                            if (!googleDriveHelper.isFolder(file) && predicate.isValid(file.getTitle())) {
                                 databaseFiles.add(file);
                             }
                         }
@@ -130,8 +133,11 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
+            case com.andreaak.note.R.id.buttonSelectAll:
+                selectAll();
+                break;
             case com.andreaak.note.R.id.buttonOk:
-                ProcessSelection();
+                processSelection();
                 break;
             case com.andreaak.note.R.id.buttonCancel:
                 onCancel();
@@ -139,7 +145,13 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         }
     }
 
-    private void ProcessSelection() {
+    private void selectAll() {
+        for (int i = 0; i < listView.getAdapter().getCount(); i++) {
+            listView.setItemChecked(i, true);
+        }
+    }
+
+    private void processSelection() {
         SparseBooleanArray sbArray = listView.getCheckedItemPositions();
         selectedFiles = new ArrayList<>();
 

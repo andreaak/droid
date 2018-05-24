@@ -1,6 +1,7 @@
 package com.andreaak.cards.activities;
 
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -479,6 +480,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void uploadLesson() {
         final boolean[] isDownload = {false};
         final IOperationGoogleDrive act = this;
@@ -489,9 +491,9 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    List<GoogleItem> directory = googleDriveHelper.search("root", Configs.GoogleDir, null);
-                    if (directory != null && directory.size() == 1) {
-                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.get(0).getId(),
+                    GoogleItem directory = googleDriveHelper.searchFolder("root", Configs.GoogleDir, null);
+                    if (directory != null) {
+                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
                                 helper.lessonItem.getFileName(), null);
                         for (GoogleItem file : findFiles) {
                             googleDriveHelper.update(file.getId(), null, null, null, new File(helper.lessonItem.getPath()));

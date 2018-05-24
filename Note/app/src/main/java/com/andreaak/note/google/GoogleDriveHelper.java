@@ -33,7 +33,7 @@ public class GoogleDriveHelper {
     public final String MIME_TEXT = "text/plain";
     public final String MIME_FLDR = "application/vnd.google-apps.folder";
     private Drive service;
-    private IConnectGoogleDrive connectInstance;
+    private IOperationGoogleDrive connectInstance;
     private boolean isConnected;
     private EmailHolder emailHolder;
 
@@ -41,7 +41,7 @@ public class GoogleDriveHelper {
 
     public void setActivity(Activity act) {
         this.act = act;
-        connectInstance = (IConnectGoogleDrive) act;
+        connectInstance = (IOperationGoogleDrive) act;
     }
 
     private GoogleDriveHelper(EmailHolder emailHolder) {
@@ -139,15 +139,29 @@ public class GoogleDriveHelper {
     public void disconnect() {
     }
 
+    public GoogleItem searchFolder(String parentId, String path, String mime) {
+        GoogleItem result = null;
+        String[] titles = path.split("/");
+        for (String title : titles) {
+            ArrayList<GoogleItem> items = search(parentId, title, mime);
+            if (items.isEmpty()) {
+                break;
+            }
+            result = items.get(0);
+            parentId = result.getId();
+        }
+        return result;
+    }
+
     /************************************************************************************************
      * find file/folder in GOODrive
      *
-     * @param id    parent ID (optional), null searches full drive, "root" searches Drive root
+     * @param parentId    parent ID (optional), null searches full drive, "root" searches Drive root
      * @param title file/folder name (optional)
      * @param mime  file/folder mime type (optional)
      * @return arraylist of found objects
      */
-    public ArrayList<GoogleItem> search(String id, String title, String mime) {
+    public ArrayList<GoogleItem> search(String parentId, String title, String mime) {
         ArrayList<GoogleItem> result = new ArrayList<GoogleItem>();
         if (service != null && isConnected) {
             try {
@@ -156,8 +170,8 @@ public class GoogleDriveHelper {
 
                 StringBuilder sb = new StringBuilder();
                 AddClause(sb, "'me' in owners");
-                if (id != null) {
-                    AddClause(sb, String.format("'%1$s' in parents", id));
+                if (parentId != null) {
+                    AddClause(sb, String.format("'%1$s' in parents", parentId));
                     //qryClause += "'" + prnId + "' in parents and ";
                 }
                 if (title != null) {
@@ -356,17 +370,17 @@ public class GoogleDriveHelper {
             protected void onProgressUpdate(String... strings) {
                 super.onProgressUpdate(strings);
                 Logger.d(LOG_TAG, strings[0]);
-                connectInstance.onDownloadProgress(strings[0]);
+                connectInstance.onOperationProgress(strings[0]);
             }
 
             @Override
             protected void onPostExecute(Exception ex) {
                 super.onPostExecute(ex);
                 if (isDownload[0]) {
-                    connectInstance.onDownloadFinished(null);
+                    connectInstance.onOperationFinished(null);
                 } else {
                     Exception e = ex != null ? ex : new Exception(act.getString(R.string.download_fault));
-                    connectInstance.onDownloadFinished(e);
+                    connectInstance.onOperationFinished(e);
                 }
             }
         }.execute();

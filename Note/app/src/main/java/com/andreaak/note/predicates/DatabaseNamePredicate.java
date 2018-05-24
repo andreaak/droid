@@ -2,7 +2,6 @@ package com.andreaak.note.predicates;
 
 import com.andreaak.note.configs.Configs;
 
-import java.io.File;
 import java.io.Serializable;
 
 public class DatabaseNamePredicate implements DirectoryNamePredicate, Serializable {

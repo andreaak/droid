@@ -9,7 +9,6 @@ import android.preference.PreferenceActivity;
 import com.andreaak.cards.R;
 import com.andreaak.cards.activitiesShared.DirectoryChooserActivity;
 import com.andreaak.cards.configs.Configs;
-import com.andreaak.cards.configs.SharedPreferencesHelper;
 import com.andreaak.cards.predicates.AlwaysTruePredicate;
 
 import java.io.File;

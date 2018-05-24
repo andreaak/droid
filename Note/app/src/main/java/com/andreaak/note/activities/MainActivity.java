@@ -16,7 +16,7 @@ import com.andreaak.note.configs.SharedPreferencesHelper;
 import com.andreaak.note.dataBase.DataBaseHelper;
 import com.andreaak.note.google.EmailHolder;
 import com.andreaak.note.google.GoogleDriveHelper;
-import com.andreaak.note.google.IConnectGoogleDrive;
+import com.andreaak.note.google.IOperationGoogleDrive;
 import com.andreaak.note.predicates.DatabaseNamePredicate;
 import com.andreaak.note.predicates.DatabasePredicate;
 import com.andreaak.note.utils.Constants;
@@ -32,7 +32,7 @@ import java.io.File;
 
 import static com.andreaak.note.utils.Utils.showText;
 
-public class MainActivity extends Activity implements IConnectGoogleDrive {
+public class MainActivity extends Activity implements IOperationGoogleDrive {
 
     private static final int REQUEST_FILE_CHOOSER = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
@@ -145,6 +145,8 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
                     } else {
                         helper.connect();
                     }
+                } else {
+                    setTitle(com.andreaak.note.R.string.app_name);
                 }
                 break;
             case REQUEST_GOOGLE_FILES_CHOOSER:
@@ -227,12 +229,12 @@ public class MainActivity extends Activity implements IConnectGoogleDrive {
     }
 
     @Override
-    public void onDownloadProgress(String message) {
+    public void onOperationProgress(String message) {
         setTitle(message);
     }
 
     @Override
-    public void onDownloadFinished(Exception ex) {
+    public void onOperationFinished(Exception ex) {
         menu.setGroupVisible(R.id.groupGoogle, true);
         if (ex == null) {
             showText(this, R.string.download_success);
