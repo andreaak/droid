@@ -3,10 +3,10 @@ package com.andreaak.note.dataBase;
 import android.content.Context;
 import android.database.SQLException;
 
+import com.andreaak.common.fileSystemItems.ItemType;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.logger.Logger;
 import com.andreaak.note.R;
-import com.andreaak.note.fileSystemItems.ItemType;
-import com.andreaak.note.utils.Constants;
-import com.andreaak.note.utils.logger.Logger;
 
 import java.util.List;
 

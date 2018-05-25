@@ -1,6 +1,6 @@
 package com.andreaak.cards.model;
 
-import com.andreaak.cards.utils.Utils;
+import com.andreaak.common.utils.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;

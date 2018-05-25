@@ -9,12 +9,12 @@ import android.widget.Spinner;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.SelectLanguageHelper;
-import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
 import com.andreaak.cards.adapters.LangSpinAdapter;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
-import com.andreaak.cards.utils.Utils;
+import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class SelectLanguageActivity extends HandleExceptionActivity implements V
 
     private void initializeLanguageSpinner(ArrayList<WordItem> words) {
 
-        List<LanguageItem> langs = Utils.getLangs(words);
+        List<LanguageItem> langs = AppUtils.getLangs(words);
 
         langAdapter = new LangSpinAdapter(SelectLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,

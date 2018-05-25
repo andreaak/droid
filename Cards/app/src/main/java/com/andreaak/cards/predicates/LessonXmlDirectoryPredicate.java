@@ -1,6 +1,7 @@
 package com.andreaak.cards.predicates;
 
-import com.andreaak.cards.utils.Utils;
+import com.andreaak.cards.utils.AppUtils;
+import com.andreaak.common.predicates.DirectoryPredicate;
 
 import java.io.File;
 import java.io.Serializable;
@@ -9,6 +10,6 @@ public class LessonXmlDirectoryPredicate implements DirectoryPredicate, Serializ
 
     @Override
     public boolean isValid(File directory) {
-        return Utils.getLessons(directory.getAbsolutePath()).length != 0;
+        return AppUtils.getLessons(directory.getAbsolutePath()).length != 0;
     }
 }

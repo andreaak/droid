@@ -21,19 +21,20 @@ import android.widget.TextView;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.CardActivityHelper;
-import com.andreaak.cards.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.cards.adapters.WordsSpinAdapter;
-import com.andreaak.cards.configs.Configs;
-import com.andreaak.cards.configs.SharedPreferencesHelper;
-import com.andreaak.cards.google.GoogleDriveHelper;
-import com.andreaak.cards.google.GoogleItem;
-import com.andreaak.cards.google.IConnectGoogleDrive;
-import com.andreaak.cards.google.IOperationGoogleDrive;
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.WordItem;
-import com.andreaak.cards.utils.Constants;
+import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
-import com.andreaak.cards.utils.Utils;
-import com.andreaak.cards.utils.logger.Logger;
+import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
+import com.andreaak.common.configs.SharedPreferencesHelper;
+import com.andreaak.common.google.GoogleDriveHelper;
+import com.andreaak.common.google.GoogleItem;
+import com.andreaak.common.google.IConnectGoogleDrive;
+import com.andreaak.common.google.IOperationGoogleDrive;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.Utils;
+import com.andreaak.common.utils.logger.Logger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
@@ -43,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-import static com.andreaak.cards.utils.Utils.showText;
+import static com.andreaak.common.utils.Utils.showText;
 
 public class CardActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive, IOperationGoogleDrive, View.OnClickListener {
 
@@ -213,11 +214,11 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     }
 
     private void setFontSize() {
-        int fontSize = SharedPreferencesHelper.getInstance().getInt(Configs.SP_TEXT_FONT_SIZE);
+        int fontSize = SharedPreferencesHelper.getInstance().getInt(AppConfigs.SP_TEXT_FONT_SIZE);
         if (fontSize > 0) {
             textViewWord.setTextSize(fontSize);
         }
-        fontSize = SharedPreferencesHelper.getInstance().getInt(Configs.SP_TRANS_FONT_SIZE);
+        fontSize = SharedPreferencesHelper.getInstance().getInt(AppConfigs.SP_TRANS_FONT_SIZE);
         if (fontSize > 0) {
             textViewTrans.setTextSize(fontSize);
         }
@@ -389,10 +390,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         Queue<String> files = new ArrayDeque<String>();
 
         String language = helper.lessonItem.getCurrentLanguage();
-        List<String> words = Utils.getWords(helper.currentWord.getValue(language));
+        List<String> words = AppUtils.getWords(helper.currentWord.getValue(language));
 
         for (String word : words) {
-            String filePath = Utils.getSoundFile(language, word, SOUND_FORMAT);
+            String filePath = AppUtils.getSoundFile(language, word, SOUND_FORMAT);
             File file = new File(filePath);
             if (file.exists()) {
                 files.add(filePath);
@@ -491,7 +492,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    GoogleItem directory = googleDriveHelper.searchFolder("root", Configs.GoogleDir, null);
+                    GoogleItem directory = googleDriveHelper.searchFolder("root", AppConfigs.getInstance().GoogleDir, null);
                     if (directory != null) {
                         ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
                                 helper.lessonItem.getFileName(), null);
@@ -534,7 +535,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
     @Override
     public void onOperationFinished(Exception ex) {
-
 
         Utils.showText(this, (ex == null) ?
                 R.string.upload_success :

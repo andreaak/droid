@@ -22,10 +22,10 @@
 
         <!--Home-->
         <!--<meta-data-->
-            <!--android:name="com.google.android.geo.API_KEY"-->
-            <!--android:value="650768443623-r99bdpuo4hr0bh7cslb4v25u6s1jbooe.apps.googleusercontent.com" />-->
+        <!--android:name="com.google.android.geo.API_KEY"-->
+        <!--android:value="650768443623-r99bdpuo4hr0bh7cslb4v25u6s1jbooe.apps.googleusercontent.com" />-->
 
-       <!--Work-->
+        <!--Work-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="650768443623-nlhuqffv4l7a2k3el9tupriill7c8n1u.apps.googleusercontent.com" />

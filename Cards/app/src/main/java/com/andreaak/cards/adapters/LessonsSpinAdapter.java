@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.andreaak.cards.utils.Utils;
+import com.andreaak.common.utils.Utils;
 
 import java.io.File;
 

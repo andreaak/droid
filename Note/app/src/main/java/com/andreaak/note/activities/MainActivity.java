@@ -8,29 +8,29 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.andreaak.common.activitiesShared.FileChooserActivity;
+import com.andreaak.common.activitiesShared.GoogleFilesChooserActivity;
+import com.andreaak.common.configs.SharedPreferencesHelper;
+import com.andreaak.common.google.EmailHolder;
+import com.andreaak.common.google.GoogleDriveHelper;
+import com.andreaak.common.google.IOperationGoogleDrive;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.Utils;
+import com.andreaak.common.utils.logger.FileLogger;
+import com.andreaak.common.utils.logger.ILogger;
+import com.andreaak.common.utils.logger.Logger;
+import com.andreaak.common.utils.logger.NativeLogger;
 import com.andreaak.note.R;
-import com.andreaak.note.activitiesShared.FileChooserActivity;
-import com.andreaak.note.activitiesShared.GoogleFilesChooserActivity;
-import com.andreaak.note.configs.Configs;
-import com.andreaak.note.configs.SharedPreferencesHelper;
+import com.andreaak.note.configs.AppConfigs;
 import com.andreaak.note.dataBase.DataBaseHelper;
-import com.andreaak.note.google.EmailHolder;
-import com.andreaak.note.google.GoogleDriveHelper;
-import com.andreaak.note.google.IOperationGoogleDrive;
 import com.andreaak.note.predicates.DatabaseNamePredicate;
 import com.andreaak.note.predicates.DatabasePredicate;
-import com.andreaak.note.utils.Constants;
-import com.andreaak.note.utils.Utils;
-import com.andreaak.note.utils.logger.FileLogger;
-import com.andreaak.note.utils.logger.ILogger;
-import com.andreaak.note.utils.logger.Logger;
-import com.andreaak.note.utils.logger.NativeLogger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
 import java.io.File;
 
-import static com.andreaak.note.utils.Utils.showText;
+import static com.andreaak.common.utils.Utils.showText;
 
 public class MainActivity extends Activity implements IOperationGoogleDrive {
 
@@ -60,8 +60,8 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
             helper = GoogleDriveHelper.getInstance();
             emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
             Utils.init(this);
-            Configs.init(this);
-            Configs.read();
+            AppConfigs.getInstance().init(this);
+            AppConfigs.getInstance().read();
             setLogger();
             prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -159,7 +159,7 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
                 break;
             case REQUEST_PREFERENCES:
                 if (isPrefChanged) {
-                    Configs.read();
+                    AppConfigs.getInstance().read();
                     setLogger();
                 }
                 break;
@@ -168,7 +168,7 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
     }
 
     private void setLogger() {
-        ILogger log = Configs.IsLoggingActive ? new FileLogger() : new NativeLogger();
+        ILogger log = AppConfigs.getInstance().IsLoggingActive ? new FileLogger() : new NativeLogger();
         Logger.setLogger(log);
     }
 
@@ -176,7 +176,7 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
         Intent intent = new Intent(this, FileChooserActivity.class);
         intent.putExtra(FileChooserActivity.PREDICATE, new DatabasePredicate());
         intent.putExtra(FileChooserActivity.TITLE, getString(R.string.select_file));
-        intent.putExtra(FileChooserActivity.INITIAL_PATH, Configs.FilesDir);
+        intent.putExtra(FileChooserActivity.INITIAL_PATH, AppConfigs.getInstance().WorkingDir);
         startActivityForResult(intent, REQUEST_FILE_CHOOSER);
     }
 
@@ -205,7 +205,7 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
         boolean dbExist = databaseHelper.checkDataBase();
         if (dbExist) {
             String savePath = new File(path).getParent();
-            Configs.saveFilesDirectory(savePath);
+            AppConfigs.getInstance().saveWorkingDirectory(savePath);
 
             Intent intent = new Intent(this, EntityChooserActivity.class);
             startActivity(intent);

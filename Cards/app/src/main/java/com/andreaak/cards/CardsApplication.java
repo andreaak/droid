@@ -2,8 +2,8 @@ package com.andreaak.cards;
 
 import android.app.Application;
 
-import com.andreaak.cards.utils.Constants;
-import com.andreaak.cards.utils.logger.Logger;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.logger.Logger;
 
 public class CardsApplication extends Application {
 
