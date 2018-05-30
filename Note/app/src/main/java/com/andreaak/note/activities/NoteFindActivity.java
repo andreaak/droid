@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import com.andreaak.common.utils.Utils;
 import com.andreaak.note.R;
 import com.andreaak.note.dataBase.EntityHelper;
 import com.andreaak.note.dataBase.EntityItem;
 import com.andreaak.note.dataBase.FindNoteArrayAdapter;
 import com.andreaak.note.dataBase.FindNoteItem;
-import com.andreaak.note.utils.Utils;
 
 import java.util.List;
 

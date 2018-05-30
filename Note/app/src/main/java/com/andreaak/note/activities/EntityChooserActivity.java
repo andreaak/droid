@@ -15,17 +15,16 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.andreaak.common.fileSystemItems.ItemType;
+import com.andreaak.common.utils.Utils;
 import com.andreaak.note.R;
 import com.andreaak.note.dataBase.EntityArrayAdapter;
 import com.andreaak.note.dataBase.EntityHelper;
 import com.andreaak.note.dataBase.EntityItem;
-import com.andreaak.note.fileSystemItems.ItemType;
-import com.andreaak.note.utils.Utils;
 
 import java.util.List;
 
-import static com.andreaak.note.utils.Utils.getSeparatedText;
-import static com.andreaak.note.utils.Utils.showText;
+import static com.andreaak.common.utils.Utils.getSeparatedText;
 
 public class EntityChooserActivity extends ListActivity implements SearchView.OnQueryTextListener {
 

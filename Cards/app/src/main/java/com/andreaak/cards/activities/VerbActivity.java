@@ -20,18 +20,19 @@ import android.widget.TextView;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.VerbActivityHelper;
-import com.andreaak.cards.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.cards.adapters.VerbSpinAdapter;
-import com.andreaak.cards.configs.Configs;
-import com.andreaak.cards.google.GoogleDriveHelper;
-import com.andreaak.cards.google.GoogleItem;
-import com.andreaak.cards.google.IConnectGoogleDrive;
-import com.andreaak.cards.google.IOperationGoogleDrive;
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.VerbItem;
-import com.andreaak.cards.utils.Constants;
+import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
-import com.andreaak.cards.utils.Utils;
-import com.andreaak.cards.utils.logger.Logger;
+import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
+import com.andreaak.common.google.GoogleDriveHelper;
+import com.andreaak.common.google.GoogleItem;
+import com.andreaak.common.google.IConnectGoogleDrive;
+import com.andreaak.common.google.IOperationGoogleDrive;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.Utils;
+import com.andreaak.common.utils.logger.Logger;
 
 import java.io.File;
 import java.util.ArrayDeque;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-import static com.andreaak.cards.utils.Utils.showText;
+import static com.andreaak.common.utils.Utils.showText;
 
 public class VerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
         IOperationGoogleDrive, View.OnClickListener {
@@ -411,9 +412,9 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    List<GoogleItem> directory = googleDriveHelper.search("root", Configs.GoogleDir, null);
-                    if (directory != null && directory.size() == 1) {
-                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.get(0).getId(),
+                    GoogleItem directory = googleDriveHelper.searchFolder("root", AppConfigs.getInstance().GoogleDir, null);
+                    if (directory != null) {
+                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
                                 helper.lessonItem.getFileName(), null);
                         for (GoogleItem file : findFiles) {
                             googleDriveHelper.update(file.getId(), null, null, null, new File(helper.lessonItem.getPath()));
@@ -482,12 +483,12 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
 
         Queue<String> files = new ArrayDeque<String>();
 
-        List<String> words = Utils.getWords(helper.currentWord.infinitive);
-        words.addAll(Utils.getWords(helper.currentWord.pastSimple));
-        words.addAll(Utils.getWords(helper.currentWord.pastParticiple));
+        List<String> words = AppUtils.getWords(helper.currentWord.infinitive);
+        words.addAll(AppUtils.getWords(helper.currentWord.pastSimple));
+        words.addAll(AppUtils.getWords(helper.currentWord.pastParticiple));
 
         for (String word : words) {
-            String filePath = Utils.getVerbSoundFile(LANGUAGE, word, SOUND_FORMAT);
+            String filePath = AppUtils.getVerbSoundFile(LANGUAGE, word, SOUND_FORMAT);
             File file = new File(filePath);
             if (file.exists()) {
                 files.add(filePath);

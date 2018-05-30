@@ -1,0 +1,11 @@
+<resources>
+    <string name="download_file">Download:</string>
+    <string name="download_fault">Download fault</string>
+    <string name="item">item</string>
+    <string name="items">items</string>
+    <string name="parentDirectory">..</string>
+    <string name="search">Search</string>
+    <string name="search_fault">Search fault</string>
+    <string name="select_directory">Select directory</string>
+    <string name="select_working_directory">Select working directory</string>
+</resources>

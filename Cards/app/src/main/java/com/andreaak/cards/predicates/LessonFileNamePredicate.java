@@ -1,13 +1,14 @@
 package com.andreaak.cards.predicates;
 
-import com.andreaak.cards.configs.Configs;
+import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.common.predicates.DirectoryNamePredicate;
 
 import java.io.Serializable;
 
 public class LessonFileNamePredicate implements DirectoryNamePredicate, Serializable {
     @Override
     public boolean isValid(String name) {
-        return name.startsWith(Configs.LessonsPrefix) && name.endsWith(Configs.LessonsExtension);
+        return name.startsWith(AppConfigs.LessonsPrefix) && name.endsWith(AppConfigs.LessonsExtension);
     }
 }
 

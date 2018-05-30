@@ -10,17 +10,17 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.activities.helpers.SelectLanguageHelper;
 import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
-import com.andreaak.cards.activitiesShared.DirectoryChooserActivity;
-import com.andreaak.cards.activitiesShared.FileChooserWithButtonsActivity;
-import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
-import com.andreaak.cards.configs.Configs;
-import com.andreaak.cards.configs.SharedPreferencesHelper;
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.predicates.LessonFilePredicate;
 import com.andreaak.cards.predicates.LessonXmlDirectoryPredicate;
-import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.common.activitiesShared.DirectoryChooserActivity;
+import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
+import com.andreaak.common.activitiesShared.HandleExceptionActivity;
+import com.andreaak.common.configs.SharedPreferencesHelper;
+import com.andreaak.common.utils.Utils;
 
 import java.io.File;
 
@@ -44,7 +44,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
 
         buttonOpenLastLesson = (ImageButton) findViewById(R.id.buttonOpenLastLesson);
         buttonOpenLastLesson.setOnClickListener(this);
-        String lastLesson = SharedPreferencesHelper.getInstance().getString(Configs.SP_LAST_LESSON_PATH);
+        String lastLesson = SharedPreferencesHelper.getInstance().getString(AppConfigs.SP_LAST_LESSON_PATH);
         if (Utils.isEmpty(lastLesson)) {
             textViewLastLesson = (TextView) findViewById(R.id.textViewLastLesson);
             textViewLastLesson.setEnabled(false);
@@ -81,8 +81,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
                     selectLessonAndLanguage(path);
-                    Configs.saveLessonsDirectory(path);
-                    ;
+                    AppConfigs.getInstance().saveWorkingDirectory(path);
                 }
                 break;
             case REQUEST_LESSON_AND_LANGUAGE_CHOOSER:
@@ -97,7 +96,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
                 if (resultCode == RESULT_OK) {
                     String filePath = data.getStringExtra(FileChooserWithButtonsActivity.FILE_PATH);
                     String path = new File(filePath).getParent();
-                    Configs.saveLessonsDirectory(path);
+                    AppConfigs.getInstance().saveWorkingDirectory(path);
                     selectLanguage(filePath);
                 }
                 break;
@@ -114,8 +113,8 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
     }
 
     private void openLastLesson() {
-        String lastLesson = SharedPreferencesHelper.getInstance().getString(Configs.SP_LAST_LESSON_PATH);
-        String lastLanguage = SharedPreferencesHelper.getInstance().getString(Configs.SP_LAST_LESSON_LANGUAGE);
+        String lastLesson = SharedPreferencesHelper.getInstance().getString(AppConfigs.SP_LAST_LESSON_PATH);
+        String lastLanguage = SharedPreferencesHelper.getInstance().getString(AppConfigs.SP_LAST_LESSON_LANGUAGE);
         LessonItem lessonItem = XmlParser.parseLesson(lastLesson);
 
         LanguageItem languageItem = LanguageItem.getItem(lastLanguage);
@@ -128,7 +127,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
         Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
         intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new LessonFilePredicate());
         intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
-        String initialPath = Configs.LessonDir;
+        String initialPath = AppConfigs.getInstance().WorkingDir;
         intent.putExtra(FileChooserWithButtonsActivity.INITIAL_PATH, initialPath);
         startActivityForResult(intent, REQUEST_LESSON_FILE_CHOOSER);
     }
@@ -143,7 +142,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new LessonXmlDirectoryPredicate());
         intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
-        String initialPath = Configs.LessonDir;
+        String initialPath = AppConfigs.getInstance().WorkingDir;
         intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, initialPath);
         startActivityForResult(intent, REQUEST_LESSONS_DIRECTORY_CHOOSER);
     }
@@ -167,8 +166,8 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
     }
 
     private void saveLastLesson(LessonItem lessonItem) {
-        SharedPreferencesHelper.getInstance().save(Configs.SP_LAST_LESSON_PATH, lessonItem.getPath());
-        SharedPreferencesHelper.getInstance().save(Configs.SP_LAST_LESSON_LANGUAGE,
+        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_LAST_LESSON_PATH, lessonItem.getPath());
+        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_LAST_LESSON_LANGUAGE,
                 lessonItem.getLanguageItem().toString());
     }
 }

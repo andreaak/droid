@@ -7,10 +7,9 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
 import com.andreaak.cards.R;
-import com.andreaak.cards.activitiesShared.DirectoryChooserActivity;
-import com.andreaak.cards.configs.Configs;
-import com.andreaak.cards.configs.SharedPreferencesHelper;
-import com.andreaak.cards.predicates.AlwaysTruePredicate;
+import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.common.activitiesShared.DirectoryChooserActivity;
+import com.andreaak.common.predicates.AlwaysTruePredicate;
 
 import java.io.File;
 
@@ -44,15 +43,15 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     private void initPreferences() {
         openLessonsFolderButton = findPreference(OPEN_LESSONS_FOLDER_BUTTON);
         openLessonsFolderButton.setOnPreferenceClickListener(this);
-        lessonsFolderPref = (EditTextPreference) findPreference(Configs.SP_DIRECTORY_WITH_LESSONS_PATH);
+        lessonsFolderPref = (EditTextPreference) findPreference(AppConfigs.SP_DIRECTORY_WITH_LESSONS_PATH);
 
         openSoundsFolderButton = findPreference(OPEN_SOUNDS_FOLDER_BUTTON);
         openSoundsFolderButton.setOnPreferenceClickListener(this);
-        soundsFolderPref = (EditTextPreference) findPreference(Configs.SP_DIRECTORY_WITH_SOUNDS_PATH);
+        soundsFolderPref = (EditTextPreference) findPreference(AppConfigs.SP_DIRECTORY_WITH_SOUNDS_PATH);
 
         openLogFolderButton = findPreference(OPEN_LOG_FOLDER_BUTTON);
         openLogFolderButton.setOnPreferenceClickListener(this);
-        logFilePref = (EditTextPreference) findPreference(Configs.SP_LOG_FILE);
+        logFilePref = (EditTextPreference) findPreference(AppConfigs.SP_LOG_FILE);
 
         resetButton = findPreference(RESET_BUTTON);
         resetButton.setOnPreferenceClickListener(this);
@@ -62,7 +61,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     public boolean onPreferenceClick(Preference preference) {
 
         if (preference == resetButton) {
-            Configs.clear();
+            AppConfigs.getInstance().clear();
             getPreferenceScreen().removeAll();
             addPreferencesFromResource(com.andreaak.cards.R.layout.activity_settings);
             initPreferences();
@@ -84,24 +83,24 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
 
-                    String logFilePath = Configs.LogFile;
+                    String logFilePath = AppConfigs.getInstance().LogFile;
                     File file = new File(logFilePath);
                     String newFile = path + "/" + file.getName();
-                    Configs.saveLogFile(newFile);
+                    AppConfigs.getInstance().saveLogFile(newFile);
                     logFilePref.setText(newFile);
                 }
                 break;
             case REQUEST_LESSONS_DIRECTORY_CHOOSER:
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
-                    Configs.saveLessonsDirectory(path);
+                    AppConfigs.getInstance().saveWorkingDirectory(path);
                     lessonsFolderPref.setText(path);
                 }
                 break;
             case REQUEST_SOUNDS_DIRECTORY_CHOOSER:
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
-                    Configs.saveSoundsDirectory(path);
+                    AppConfigs.getInstance().saveSoundsDirectory(path);
                     soundsFolderPref.setText(path);
                 }
                 break;
@@ -113,7 +112,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
         intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_log));
-        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, Configs.LogFile);
+        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, AppConfigs.getInstance().LogFile);
         startActivityForResult(intent, REQUEST_LOG_DIRECTORY_CHOOSER);
     }
 
@@ -121,7 +120,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
         intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
-        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, Configs.LessonDir);
+        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, AppConfigs.getInstance().WorkingDir);
         startActivityForResult(intent, REQUEST_LESSONS_DIRECTORY_CHOOSER);
     }
 
@@ -129,7 +128,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
         intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_sounds_folder));
-        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, Configs.SoundsDir);
+        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, AppConfigs.getInstance().SoundsDir);
         startActivityForResult(intent, REQUEST_SOUNDS_DIRECTORY_CHOOSER);
     }
 }

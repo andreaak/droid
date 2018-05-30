@@ -7,17 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.andreaak.common.fileSystemItems.ItemType;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.Utils;
+import com.andreaak.common.utils.logger.Logger;
 import com.andreaak.note.R;
-import com.andreaak.note.fileSystemItems.ItemType;
-import com.andreaak.note.utils.Constants;
-import com.andreaak.note.utils.Utils;
-import com.andreaak.note.utils.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.andreaak.note.utils.Utils.showText;
+import static com.andreaak.common.utils.Utils.showText;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -28,7 +28,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static String ENTITY_TYPE = "Type";
     public static String ENTITY_DESCRIPTION = "Description";
     //The Android's default system path of your application database.
-    private static String STANDART_DB_PATH = "/data/data/com.andreaak.note/databases/";
     private static String ENTITY_DATA = "EntityData";
     private static String ENTITY_DATA_TEXT = "TextData";
     private static String ENTITY_DATA_HTML = "HtmlData";

@@ -6,11 +6,11 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
+import com.andreaak.common.activitiesShared.DirectoryChooserActivity;
+import com.andreaak.common.configs.SharedPreferencesHelper;
+import com.andreaak.common.predicates.AlwaysTruePredicate;
 import com.andreaak.note.R;
-import com.andreaak.note.activitiesShared.DirectoryChooserActivity;
-import com.andreaak.note.configs.Configs;
-import com.andreaak.note.configs.SharedPreferencesHelper;
-import com.andreaak.note.predicates.AlwaysTruePredicate;
+import com.andreaak.note.configs.AppConfigs;
 
 import java.io.File;
 
@@ -37,7 +37,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
         openLogFolderButton = findPreference(OPEN_LOG_FOLDER_BUTTON);
         openLogFolderButton.setOnPreferenceClickListener(this);
-        logFilePref = (EditTextPreference) findPreference(Configs.SP_LOG_FILE);
+        logFilePref = (EditTextPreference) findPreference(AppConfigs.SP_LOG_FILE);
 
         resetButton = findPreference(RESET_BUTTON);
         resetButton.setOnPreferenceClickListener(this);
@@ -47,7 +47,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     public boolean onPreferenceClick(Preference preference) {
 
         if (preference == resetButton) {
-            Configs.clear();
+            AppConfigs.getInstance().clear();
             getPreferenceScreen().removeAll();
             addPreferencesFromResource(com.andreaak.note.R.layout.activity_settings);
             initPreferences();
@@ -65,10 +65,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
 
-                    String logFilePath = SharedPreferencesHelper.getInstance().getString(Configs.SP_LOG_FILE);
+                    String logFilePath = SharedPreferencesHelper.getInstance().getString(AppConfigs.SP_LOG_FILE);
                     File file = new File(logFilePath);
                     String newFile = path + "/" + file.getName();
-                    Configs.saveLogFile(newFile);
+                    AppConfigs.getInstance().saveLogFile(newFile);
                     logFilePref.setText(newFile);
                 }
                 break;
@@ -80,7 +80,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
         intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_log));
-        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, Configs.LogFile);
+        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, AppConfigs.getInstance().LogFile);
         startActivityForResult(intent, REQUEST_LOG_DIRECTORY_CHOOSER);
     }
 }

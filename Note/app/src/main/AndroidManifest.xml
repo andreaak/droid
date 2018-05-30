@@ -17,12 +17,12 @@
         <!--meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="650768443623-g2nblm238v6vvbbqpkll7sjh5bti5ts5.apps.googleusercontent.com" /-->
-        
-		<!--Note-->
-		<meta-data
+
+        <!--Note-->
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="650768443623-pnl2vqf2hmnr88esipndln4b6fevavg3.apps.googleusercontent.com" />
-			
+
         <!--
 		<meta-data
             android:name="com.google.android.geo.API_KEY"

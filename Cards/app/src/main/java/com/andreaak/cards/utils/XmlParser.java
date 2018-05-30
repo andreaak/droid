@@ -4,7 +4,8 @@ import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.model.VerbLessonItem;
 import com.andreaak.cards.model.WordItem;
-import com.andreaak.cards.utils.logger.Logger;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.logger.Logger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

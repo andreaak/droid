@@ -5,7 +5,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
-import com.andreaak.cards.utils.logger.Logger;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.logger.Logger;
 
 import java.util.Queue;
 

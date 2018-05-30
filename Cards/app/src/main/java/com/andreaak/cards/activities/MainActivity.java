@@ -11,30 +11,30 @@ import android.widget.ImageButton;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.VerbActivityHelper;
-import com.andreaak.cards.activitiesShared.FileChooserWithButtonsActivity;
-import com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity;
-import com.andreaak.cards.activitiesShared.HandleExceptionActivity;
-import com.andreaak.cards.configs.Configs;
-import com.andreaak.cards.configs.SharedPreferencesHelper;
-import com.andreaak.cards.google.EmailHolder;
-import com.andreaak.cards.google.GoogleDriveHelper;
-import com.andreaak.cards.google.IOperationGoogleDrive;
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.VerbLessonItem;
-import com.andreaak.cards.predicates.CompositeFileNamePredicate;
 import com.andreaak.cards.predicates.IrregularVerbEnFileNamePredicate;
 import com.andreaak.cards.predicates.IrregularVerbEnFilePredicate;
 import com.andreaak.cards.predicates.LessonFileNamePredicate;
-import com.andreaak.cards.utils.Constants;
-import com.andreaak.cards.utils.Utils;
 import com.andreaak.cards.utils.XmlParser;
-import com.andreaak.cards.utils.logger.FileLogger;
-import com.andreaak.cards.utils.logger.ILogger;
-import com.andreaak.cards.utils.logger.Logger;
-import com.andreaak.cards.utils.logger.NativeLogger;
+import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
+import com.andreaak.common.activitiesShared.GoogleFilesChooserActivity;
+import com.andreaak.common.activitiesShared.HandleExceptionActivity;
+import com.andreaak.common.configs.SharedPreferencesHelper;
+import com.andreaak.common.google.EmailHolder;
+import com.andreaak.common.google.GoogleDriveHelper;
+import com.andreaak.common.google.IOperationGoogleDrive;
+import com.andreaak.common.predicates.CompositeFileNamePredicate;
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.Utils;
+import com.andreaak.common.utils.logger.FileLogger;
+import com.andreaak.common.utils.logger.ILogger;
+import com.andreaak.common.utils.logger.Logger;
+import com.andreaak.common.utils.logger.NativeLogger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
-import static com.andreaak.cards.utils.Utils.showText;
+import static com.andreaak.common.utils.Utils.showText;
 
 public class MainActivity extends HandleExceptionActivity implements IOperationGoogleDrive, View.OnClickListener {
 
@@ -74,8 +74,8 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
             helper = GoogleDriveHelper.getInstance();
             emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
             Utils.init(this);
-            Configs.init(this);
-            Configs.read();
+            AppConfigs.getInstance().init(this);
+            AppConfigs.getInstance().read();
             setLogger();
             prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -176,7 +176,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
                 break;
             case REQUEST_PREFERENCES:
                 if (isPrefChanged) {
-                    Configs.read();
+                    AppConfigs.getInstance().read();
                     setLogger();
                 }
                 break;
@@ -191,7 +191,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
     }
 
     private void setLogger() {
-        ILogger log = Configs.IsLoggingActive ? new FileLogger() : new NativeLogger();
+        ILogger log = AppConfigs.getInstance().IsLoggingActive ? new FileLogger() : new NativeLogger();
         Logger.setLogger(log);
     }
 
@@ -204,7 +204,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
         Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
         intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new IrregularVerbEnFilePredicate());
         intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
-        String initialPath = Configs.LessonDir;
+        String initialPath = AppConfigs.getInstance().WorkingDir;
         intent.putExtra(FileChooserWithButtonsActivity.INITIAL_PATH, initialPath);
         startActivityForResult(intent, REQUEST_VERB_CHOOSER);
     }
