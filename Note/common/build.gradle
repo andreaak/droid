@@ -1,2 +1,2 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('../../Cards/common/build/outputs/aar/common-debug.aar'))
+artifacts.add("default", file('../../Cards/common/build/outputs/aar/common-release.aar'))
