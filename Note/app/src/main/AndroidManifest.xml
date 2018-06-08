@@ -19,15 +19,14 @@
             android:value="650768443623-g2nblm238v6vvbbqpkll7sjh5bti5ts5.apps.googleusercontent.com" /-->
 
         <!--Note-->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="650768443623-pnl2vqf2hmnr88esipndln4b6fevavg3.apps.googleusercontent.com" />
+        <!--<meta-data-->
+            <!--android:name="com.google.android.geo.API_KEY"-->
+            <!--android:value="650768443623-pnl2vqf2hmnr88esipndln4b6fevavg3.apps.googleusercontent.com" />-->
 
-        <!--
+        <!--Work-->
 		<meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="650768443623-fhjb0k1muf6hm4kjnb78qe7ate2betk0.apps.googleusercontent.com" />
-        -->
+            android:value="650768443623-lgnflgclpl5p78c9dinjmht3qu8a78gc.apps.googleusercontent.com" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -43,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activitiesShared.FileChooserActivity"
+            android:name="com.andreaak.common.activitiesShared.FileChooserActivity"
             android:label="Choose Database File"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.note.activitiesShared.FileChooserActivity" />
@@ -51,7 +50,7 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activitiesShared.DirectoryChooserActivity"
+            android:name="com.andreaak.common.activitiesShared.DirectoryChooserActivity"
             android:label="Choose Download Directory"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.note.activitiesShared.DirectoryChooserActivity" />
@@ -59,7 +58,7 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activitiesShared.GoogleFilesChooserActivity"
+            android:name="com.andreaak.common.activitiesShared.GoogleFilesChooserActivity"
             android:label="Choose Database Files"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.note.activitiesShared.GoogleFilesChooserActivity" />

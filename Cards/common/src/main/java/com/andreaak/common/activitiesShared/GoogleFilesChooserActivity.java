@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.andreaak.common.R;
@@ -148,7 +149,12 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     }
 
     private void selectAll() {
-        for (int i = 0; i < listView.getAdapter().getCount(); i++) {
+
+        ListAdapter adapter = listView.getAdapter();
+        if(adapter == null) {
+            return;
+        }
+        for (int i = 0; i < adapter.getCount(); i++) {
             listView.setItemChecked(i, true);
         }
     }

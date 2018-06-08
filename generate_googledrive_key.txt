@@ -1,0 +1,2 @@
+cd C:\Program Files\Java\jre1.8.0_161\bin
+keytool -exportcert -keystore "C:\Users\akulikov\.android\debug.keystore" -list -v

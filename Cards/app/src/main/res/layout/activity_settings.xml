@@ -6,7 +6,7 @@
     <PreferenceCategory android:title="Lesson's folder">
 
         <EditTextPreference
-            android:key="SP_DIRECTORY_WITH_LESSONS_PATH"
+            android:key="SP_WORKING_DIRECTORY_PATH"
             android:summary="Set lesson's folder"
             android:title="Lesson's folder" />
 

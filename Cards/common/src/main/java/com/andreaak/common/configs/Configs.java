@@ -6,7 +6,7 @@ import static com.andreaak.common.utils.Utils.isEmpty;
 
 public class Configs {
     //Working directory
-    public static final String SP_DIRECTORY_WITH_LESSONS_PATH = "SP_WORKING_DIRECTORY_PATH";
+    public static final String SP_WORKING_DIRECTORY_PATH = "SP_WORKING_DIRECTORY_PATH";
     // Google
     public static final String SP_GOOGLE_DIR = "SP_GOOGLE_DIR";
     //Log
@@ -35,7 +35,7 @@ public class Configs {
     public void read() {
         SharedPreferencesHelper helper = SharedPreferencesHelper.getInstance();
 
-        WorkingDir = getConfig(helper, SP_DIRECTORY_WITH_LESSONS_PATH,
+        WorkingDir = getConfig(helper, SP_WORKING_DIRECTORY_PATH,
                 FilesDefaultLocation);
 
         LogFile = getConfig(helper, SP_LOG_FILE,
@@ -56,7 +56,7 @@ public class Configs {
 
     public boolean saveWorkingDirectory(String path) {
         WorkingDir = path;
-        return SharedPreferencesHelper.getInstance().save(SP_DIRECTORY_WITH_LESSONS_PATH, path);
+        return SharedPreferencesHelper.getInstance().save(SP_WORKING_DIRECTORY_PATH, path);
     }
 
     public boolean saveLogFile(String path) {

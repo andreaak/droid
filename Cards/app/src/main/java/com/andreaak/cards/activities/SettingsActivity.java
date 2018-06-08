@@ -43,7 +43,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     private void initPreferences() {
         openLessonsFolderButton = findPreference(OPEN_LESSONS_FOLDER_BUTTON);
         openLessonsFolderButton.setOnPreferenceClickListener(this);
-        lessonsFolderPref = (EditTextPreference) findPreference(AppConfigs.SP_DIRECTORY_WITH_LESSONS_PATH);
+        lessonsFolderPref = (EditTextPreference) findPreference(AppConfigs.SP_WORKING_DIRECTORY_PATH);
 
         openSoundsFolderButton = findPreference(OPEN_SOUNDS_FOLDER_BUTTON);
         openSoundsFolderButton.setOnPreferenceClickListener(this);

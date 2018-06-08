@@ -102,7 +102,7 @@
 
         <!-- Shared -->
         <activity
-            android:name=".activitiesShared.FileChooserActivity"
+            android:name="com.andreaak.common.activitiesShared.FileChooserActivity"
             android:label="@string/select_file"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.cards.activitiesShared.FileChooserActivity" />
@@ -110,7 +110,7 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activitiesShared.FileChooserWithButtonsActivity"
+            android:name="com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity"
             android:label="@string/select_file"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.cards.activitiesShared.FileChooserWithButtonsActivity" />
@@ -118,7 +118,7 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activitiesShared.DirectoryChooserActivity"
+            android:name="com.andreaak.common.activitiesShared.DirectoryChooserActivity"
             android:label="@string/select_directory"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.cards.activitiesShared.DirectoryChooserActivity" />
@@ -126,7 +126,7 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activitiesShared.GoogleFilesChooserActivity"
+            android:name="com.andreaak.common.activitiesShared.GoogleFilesChooserActivity"
             android:label="@string/select_google_file"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity" />
