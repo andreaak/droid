@@ -130,6 +130,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         if (ex == null) {
             adapter = new GoogleArrayAdapter(this, com.andreaak.common.R.layout.shared_list_item_google_files_chooser, databaseFiles);
             listView.setAdapter(adapter);
+            selectNew();
         } else {
             Utils.showText(this, com.andreaak.common.R.string.search_fault);
         }
@@ -151,7 +152,6 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         }
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -168,11 +168,25 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     private void selectAll() {
 
         ListAdapter adapter = listView.getAdapter();
-        if(adapter == null) {
+        if (adapter == null) {
             return;
         }
         for (int i = 0; i < adapter.getCount(); i++) {
             listView.setItemChecked(i, true);
+        }
+    }
+
+    private void selectNew() {
+
+        ListAdapter adapter = listView.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+        for (int i = 0; i < adapter.getCount(); i++) {
+            GoogleItem item = (GoogleItem) adapter.getItem(i);
+            if (item.isNew()) {
+                listView.setItemChecked(i, true);
+            }
         }
     }
 

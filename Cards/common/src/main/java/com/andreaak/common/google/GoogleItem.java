@@ -1,6 +1,6 @@
 package com.andreaak.common.google;
 
-import com.google.api.client.util.DateTime;
+import com.andreaak.common.configs.Configs;
 import com.google.api.services.drive.model.File;
 
 import java.text.SimpleDateFormat;
@@ -12,13 +12,15 @@ public class GoogleItem {
     private String mime;
     private Date date;
     private SimpleDateFormat dateFormat;
+    private boolean isNewItem;
 
     public GoogleItem(File file) {
         this.id = file.getId();
         this.title = file.getTitle();
         this.mime = file.getMimeType();
         this.date = new Date(file.getModifiedDate().getValue());
-        dateFormat = new SimpleDateFormat ("yyyy.MM.dd 'at' hh:mm:ss");
+        dateFormat = new SimpleDateFormat("yyyy.MM.dd 'at' hh:mm:ss");
+        isNewItem = getDiskFileModifiedDate(title).getTime() < date.getTime();
     }
 
     public String getTitle() {
@@ -41,8 +43,16 @@ public class GoogleItem {
         return mime;
     }
 
-    public Date getDate() { return date; }
+    public boolean isNew() {
+        return isNewItem;
+    }
 
-    public String getFormattedDate() { return dateFormat.format(date); }
+    //public String getFormattedDate() { return dateFormat.format(date); }
+
+    private Date getDiskFileModifiedDate(String fileName) {
+        String filePath = Configs.getInstance().WorkingDir + "/" + fileName;
+        java.io.File file = new java.io.File(filePath);
+        return new Date(file.exists() ? file.lastModified() : 0);
+    }
 }
 
