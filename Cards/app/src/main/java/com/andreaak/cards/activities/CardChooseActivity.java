@@ -8,33 +8,22 @@ import android.widget.TextView;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.CardActivityHelper;
-import com.andreaak.cards.activities.helpers.SelectLanguageHelper;
 import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
-import com.andreaak.cards.predicates.LessonFilePredicate;
-import com.andreaak.cards.predicates.LessonXmlDirectoryPredicate;
 import com.andreaak.cards.utils.XmlParser;
-import com.andreaak.common.activitiesShared.DirectoryChooserActivity;
-import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.utils.Utils;
 
-import java.io.File;
-
 public class CardChooseActivity extends HandleExceptionActivity implements View.OnClickListener {
 
-    private static final int REQUEST_LESSONS_DIRECTORY_CHOOSER = 1;
     private static final int REQUEST_LESSON_AND_LANGUAGE_CHOOSER = 2;
-    private static final int REQUEST_LESSON_FILE_CHOOSER = 3;
-    private static final int REQUEST_LANGUAGE_CHOOSER = 5;
 
     ImageButton buttonOpenLastLesson;
     TextView textViewLastLesson;
     ImageButton buttonOpenLesson;
-    ImageButton buttonOpenLessonsFolder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,9 +42,6 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
 
         buttonOpenLesson = (ImageButton) findViewById(R.id.buttonOpenLesson);
         buttonOpenLesson.setOnClickListener(this);
-
-        buttonOpenLessonsFolder = (ImageButton) findViewById(R.id.buttonOpenLessonsFolder);
-        buttonOpenLessonsFolder.setOnClickListener(this);
     }
 
     @Override
@@ -66,10 +52,7 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
                 openLastLesson();
                 break;
             case R.id.buttonOpenLesson:
-                getLessonFile();
-                break;
-            case R.id.buttonOpenLessonsFolder:
-                getLessonsDirectory();
+                openLesson();
                 break;
         }
     }
@@ -77,32 +60,9 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_LESSONS_DIRECTORY_CHOOSER:
-                if (resultCode == RESULT_OK) {
-                    String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
-                    selectLessonAndLanguage(path);
-                    AppConfigs.getInstance().saveWorkingDirectory(path);
-                }
-                break;
             case REQUEST_LESSON_AND_LANGUAGE_CHOOSER:
                 if (resultCode == RESULT_OK) {
                     SelectLessonAndLanguageHelper selectHelper = (SelectLessonAndLanguageHelper) data.getSerializableExtra(SelectLessonAndLanguageActivity.HELPER);
-                    if (selectHelper.lessonItem.isContainsWords()) {
-                        openCard(selectHelper.lessonItem);
-                    }
-                }
-                break;
-            case REQUEST_LESSON_FILE_CHOOSER:
-                if (resultCode == RESULT_OK) {
-                    String filePath = data.getStringExtra(FileChooserWithButtonsActivity.FILE_PATH);
-                    String path = new File(filePath).getParent();
-                    AppConfigs.getInstance().saveWorkingDirectory(path);
-                    selectLanguage(filePath);
-                }
-                break;
-            case REQUEST_LANGUAGE_CHOOSER:
-                if (resultCode == RESULT_OK) {
-                    SelectLanguageHelper selectHelper = (SelectLanguageHelper) data.getSerializableExtra(SelectLanguageActivity.HELPER);
                     if (selectHelper.lessonItem.isContainsWords()) {
                         openCard(selectHelper.lessonItem);
                     }
@@ -122,29 +82,8 @@ public class CardChooseActivity extends HandleExceptionActivity implements View.
         openCard(lessonItem);
     }
 
-
-    private void getLessonFile() {
-        Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
-        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new LessonFilePredicate());
-        intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
-        String initialPath = AppConfigs.getInstance().WorkingDir;
-        intent.putExtra(FileChooserWithButtonsActivity.INITIAL_PATH, initialPath);
-        startActivityForResult(intent, REQUEST_LESSON_FILE_CHOOSER);
-    }
-
-    private void selectLanguage(String path) {
-        Intent intent = new Intent(this, SelectLanguageActivity.class);
-        intent.putExtra(SelectLanguageActivity.FILE, path);
-        startActivityForResult(intent, REQUEST_LANGUAGE_CHOOSER);
-    }
-
-    private void getLessonsDirectory() {
-        Intent intent = new Intent(this, DirectoryChooserActivity.class);
-        intent.putExtra(DirectoryChooserActivity.PREDICATE, new LessonXmlDirectoryPredicate());
-        intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
-        String initialPath = AppConfigs.getInstance().WorkingDir;
-        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, initialPath);
-        startActivityForResult(intent, REQUEST_LESSONS_DIRECTORY_CHOOSER);
+    private void openLesson() {
+        selectLessonAndLanguage(AppConfigs.getInstance().WorkingDir);
     }
 
     private void selectLessonAndLanguage(String path) {

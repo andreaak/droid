@@ -4,7 +4,9 @@ import com.andreaak.common.configs.Configs;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 
 public class AppConfigs extends Configs {
-    //Keys
+    //
+    public static final String SP_DOWNLOAD_DIRECTORY_PATH = "SP_DOWNLOAD_DIRECTORY_PATH";
+    //
     public static final String SP_TEXT_ZOOM = "SP_TEXT_ZOOM";
     //
     private static final String SP_DATABASE_EXTENSION = "SP_DATABASE_EXTENSION";
@@ -13,6 +15,7 @@ public class AppConfigs extends Configs {
     private static final String SP_DATABASE_EXTENSION_DEFAULT = ".db";
     //
     public String DatabaseExtension;
+    public String DownloadDir;
 
     public static AppConfigs getInstance() {
         if (instance == null) {
@@ -28,7 +31,15 @@ public class AppConfigs extends Configs {
         DatabaseExtension = getConfig(helper, SP_DATABASE_EXTENSION,
                 SP_DATABASE_EXTENSION_DEFAULT);
 
+        DownloadDir = getConfig(helper, SP_DOWNLOAD_DIRECTORY_PATH,
+                "");
+
         GoogleDir = getConfig(helper, SP_GOOGLE_DIR,
                 SP_GOOGLE_DIR_DEFAULT);
+    }
+
+    public boolean saveDownloadDirectory(String path) {
+        this.DownloadDir = path;
+        return SharedPreferencesHelper.getInstance().save(SP_DOWNLOAD_DIRECTORY_PATH, path);
     }
 }

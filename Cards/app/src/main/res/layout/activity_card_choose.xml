@@ -59,7 +59,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <!--LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -81,7 +81,7 @@
                 android:textColor="@color/colorWhite"
                 android:textSize="20dp" />
 
-        </LinearLayout>
+        </LinearLayout-->
 
     </LinearLayout>
 

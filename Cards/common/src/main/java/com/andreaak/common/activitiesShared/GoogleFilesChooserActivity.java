@@ -30,10 +30,11 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     //in
     public static final String PREDICATE = "Predicate";
     public static final String APP_NAME = "AppName";
+    public static final String DOWNLOAD_TO_PATH_INITIAL = "DownloadToPathInitial";
     //out
     public static final String IDS = "ids";
     public static final String NAMES = "names";
-    public static final String PATH = "path";
+    public static final String DOWNLOAD_TO_PATH = "DownloadToPath";
 
     public static final int REQUEST_DIRECTORY_CHOOSER = 4;
 
@@ -49,6 +50,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
 
     private DirectoryNamePredicate predicate;
     private String appName;
+    private String downloadToPath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     private void RestoreInParameters() {
         predicate = (DirectoryNamePredicate) getIntent().getSerializableExtra(PREDICATE);
         appName = (String) getIntent().getSerializableExtra(APP_NAME);
+        downloadToPath = (String) getIntent().getSerializableExtra(DOWNLOAD_TO_PATH_INITIAL);
     }
 
     private void fill() {
@@ -148,6 +151,20 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         }
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_DIRECTORY_CHOOSER:
+                if (resultCode == RESULT_OK) {
+                    String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
+                    processSelection(path);
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void selectAll() {
 
         ListAdapter adapter = listView.getAdapter();
@@ -170,37 +187,22 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
                 selectedFiles.add(file);
             }
         }
-        getDirectory();
-    }
-
-    private void getDirectory() {
-
-        String initialPath = Configs.getInstance().WorkingDir;
-        if (Utils.isEmpty(initialPath)) {
-            Intent intent = new Intent(this, DirectoryChooserActivity.class);
-            intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
-            intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_working_directory));
-            intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, initialPath);
-            startActivityForResult(intent, REQUEST_DIRECTORY_CHOOSER);
+        if (Utils.isEmpty(downloadToPath)) {
+            selectDownloadFolder();
         } else {
-            onFolderSelected(initialPath);
+            processSelection(downloadToPath);
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_DIRECTORY_CHOOSER:
-                if (resultCode == RESULT_OK) {
-                    String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
-                    onFolderSelected(path);
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
+    private void selectDownloadFolder() {
+        Intent intent = new Intent(this, DirectoryChooserActivity.class);
+        intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
+        intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_working_directory));
+        intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, Configs.getInstance().WorkingDir);
+        startActivityForResult(intent, REQUEST_DIRECTORY_CHOOSER);
     }
 
-    private void onFolderSelected(String path) {
+    private void processSelection(String downloadToPath) {
 
         String[] ids = new String[selectedFiles.size()];
         String[] names = new String[selectedFiles.size()];
@@ -214,7 +216,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         Intent intent = new Intent();
         intent.putExtra(IDS, ids);
         intent.putExtra(NAMES, names);
-        intent.putExtra(PATH, path);
+        intent.putExtra(DOWNLOAD_TO_PATH, downloadToPath);
         setResult(RESULT_OK, intent);
         finish();
     }

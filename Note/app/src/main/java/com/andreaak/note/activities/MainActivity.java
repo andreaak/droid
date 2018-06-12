@@ -28,8 +28,6 @@ import com.andreaak.note.predicates.DatabasePredicate;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
-import java.io.File;
-
 import static com.andreaak.common.utils.Utils.showText;
 
 public class MainActivity extends Activity implements IOperationGoogleDrive {
@@ -153,7 +151,7 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
                 if (resultCode == RESULT_OK) {
                     String[] ids = data.getStringArrayExtra(GoogleFilesChooserActivity.IDS);
                     String[] names = data.getStringArrayExtra(GoogleFilesChooserActivity.NAMES);
-                    String path = data.getStringExtra(GoogleFilesChooserActivity.PATH);
+                    String path = data.getStringExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH);
                     downloadFromGoogleDrive(ids, names, path);
                 }
                 break;
@@ -183,6 +181,8 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
     private void getGoogleFiles() {
         Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
         intent.putExtra(GoogleFilesChooserActivity.PREDICATE, new DatabaseNamePredicate());
+        intent.putExtra(GoogleFilesChooserActivity.APP_NAME, getString(com.andreaak.note.R.string.app_name));
+        intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().DownloadDir);
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);
     }
 
@@ -204,9 +204,6 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
 
         boolean dbExist = databaseHelper.checkDataBase();
         if (dbExist) {
-            String savePath = new File(path).getParent();
-            AppConfigs.getInstance().saveWorkingDirectory(savePath);
-
             Intent intent = new Intent(this, EntityChooserActivity.class);
             startActivity(intent);
         } else {

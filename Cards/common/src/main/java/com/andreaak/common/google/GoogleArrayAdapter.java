@@ -6,9 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
+import android.widget.TextView;
 
 import com.andreaak.common.R;
+import com.andreaak.common.configs.Configs;
 
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 public class GoogleArrayAdapter extends ArrayAdapter<GoogleItem> {
@@ -43,7 +47,21 @@ public class GoogleArrayAdapter extends ArrayAdapter<GoogleItem> {
             CheckedTextView tvName = (CheckedTextView) view.findViewById(R.id.checkedItem);
             if (tvName != null)
                 tvName.setText(item.getTitle());
+            TextView txDate = (TextView) view.findViewById(R.id.textViewDate);
+            if (txDate != null) {
+                String text = item.getFormattedDate();
+                if (getModifiedDate(item.getTitle()).getTime() < item.getDate().getTime()) {
+                    text += " (new)";
+                }
+                txDate.setText(text);
+            }
         }
         return view;
+    }
+
+    private Date getModifiedDate(String fileName) {
+        String filePath = Configs.getInstance().WorkingDir + "/" + fileName;
+        File file = new File(filePath);
+        return new Date(file.exists() ? file.lastModified() : 0);
     }
 }

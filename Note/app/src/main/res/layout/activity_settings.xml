@@ -3,6 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <PreferenceCategory android:title="Working folder">
+
+        <EditTextPreference
+            android:key="SP_WORKING_DIRECTORY_PATH"
+            android:summary="Set db folder"
+            android:title="DB folder" />
+
+        <Preference
+            android:key="OPEN_DB_FOLDER_BUTTON"
+            android:summary=""
+            android:title="..." />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="DOWNLOAD folder">
+
+        <EditTextPreference
+            android:key="SP_DOWNLOAD_DIRECTORY_PATH"
+            android:summary="Set download folder"
+            android:title="Download folder" />
+
+        <Preference
+            android:key="OPEN_DOWNLOAD_FOLDER_BUTTON"
+            android:summary=""
+            android:title="..." />
+
+    </PreferenceCategory>
+
     <CheckBoxPreference
         android:key="SP_IS_LOGGING_ACTIVE"
         android:summary="Enable logging"

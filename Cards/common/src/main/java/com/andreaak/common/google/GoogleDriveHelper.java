@@ -184,7 +184,7 @@ public class GoogleDriveHelper {
                 }
                 //qryClause = qryClause.substring(0, qryClause.length() - " and ".length());
                 Drive.Files.List qry = service.files().list().setQ(sb.toString())
-                        .setFields("items(id,mimeType,labels/trashed,title),nextPageToken");
+                        .setFields("items(id,mimeType,labels/trashed,title,modifiedDate),nextPageToken");
 
                 if (qry == null) {
                     return result;
@@ -204,7 +204,7 @@ public class GoogleDriveHelper {
                         qry.setPageToken(pageToken);
                     }
                 }
-                while (pageToken != null && pageToken.length() > 0);                     //Utils.lg("found " + vlss.size());
+                while (pageToken != null && pageToken.length() > 0);
 
             } catch (Exception e) {
                 Logger.e(LOG_TAG, e.getMessage(), e);

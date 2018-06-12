@@ -170,7 +170,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
                 if (resultCode == RESULT_OK) {
                     String[] ids = data.getStringArrayExtra(GoogleFilesChooserActivity.IDS);
                     String[] names = data.getStringArrayExtra(GoogleFilesChooserActivity.NAMES);
-                    String path = data.getStringExtra(GoogleFilesChooserActivity.PATH);
+                    String path = data.getStringExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH);
                     downloadFromGoogleDrive(ids, names, path);
                 }
                 break;
@@ -224,7 +224,9 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
         Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
         CompositeFileNamePredicate predicate = new CompositeFileNamePredicate(
                 new LessonFileNamePredicate(), new IrregularVerbEnFileNamePredicate());
-        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, predicate);
+        intent.putExtra(GoogleFilesChooserActivity.PREDICATE, predicate);
+        intent.putExtra(GoogleFilesChooserActivity.APP_NAME, getString(com.andreaak.cards.R.string.app_name));
+        intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().WorkingDir);
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);
     }
 
