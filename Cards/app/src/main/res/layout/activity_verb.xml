@@ -24,6 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
+                android:id="@+id/verbs"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -148,8 +149,9 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_above="@+id/verbs"
+                android:layout_marginLeft="15dp"
+                android:layout_marginBottom="-15dp"
                 android:background="@drawable/sound48" />
 
         </RelativeLayout>
