@@ -58,6 +58,30 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/buttonOpenGrammar"
+                android:layout_width="75dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="20dp"
+                android:title="@string/app_name"
+                android:background="@drawable/cards" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:text="@string/grammar"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

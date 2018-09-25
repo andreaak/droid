@@ -9,27 +9,28 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
 
     <application
-        android:name="com.andreaak.cards.CardsApplication"
+        android:name=".CardsApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!--Notebook-->
-        <!--<meta-data-->
-        <!--android:name="com.google.android.geo.API_KEY"-->
-        <!--android:value="650768443623-d9vhv3hpitf0tvenlubc2740m1vcmkgp.apps.googleusercontent.com" />-->
+        <!-- Notebook -->
+        <!-- <meta-data -->
+        <!-- android:name="com.google.android.geo.API_KEY" -->
+        <!-- android:value="650768443623-d9vhv3hpitf0tvenlubc2740m1vcmkgp.apps.googleusercontent.com" /> -->
 
-        <!--Home-->
-        <!--<meta-data-->
-        <!--android:name="com.google.android.geo.API_KEY"-->
-        <!--android:value="650768443623-r99bdpuo4hr0bh7cslb4v25u6s1jbooe.apps.googleusercontent.com" />-->
 
-        <!--Work-->
+        <!-- Home -->
+        <!-- <meta-data -->
+        <!-- android:name="com.google.android.geo.API_KEY" -->
+        <!-- android:value="650768443623-r99bdpuo4hr0bh7cslb4v25u6s1jbooe.apps.googleusercontent.com" /> -->
+
+
+        <!-- Work -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="650768443623-nlhuqffv4l7a2k3el9tupriill7c8n1u.apps.googleusercontent.com" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -99,6 +100,22 @@
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
+        <activity
+            android:name=".activities.EntityChooserActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activities.EntityChooserActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
+            android:name=".activities.HtmlActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activities.HtmlActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
 
         <!-- Shared -->
         <activity
@@ -133,7 +150,6 @@
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
-
     </application>
 
 </manifest>

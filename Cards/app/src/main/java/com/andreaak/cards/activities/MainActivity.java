@@ -20,6 +20,7 @@ import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.GoogleFilesChooserActivity;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
+import com.andreaak.common.configs.Configs;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.google.EmailHolder;
 import com.andreaak.common.google.GoogleDriveHelper;
@@ -51,6 +52,7 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
 
     private ImageButton buttonOpenCards;
     private ImageButton buttonOpenVerbCards;
+    private ImageButton buttonOpenGrammar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,9 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
 
         buttonOpenVerbCards = (ImageButton) findViewById(R.id.buttonOpenVerbCards);
         buttonOpenVerbCards.setOnClickListener(this);
+
+        buttonOpenGrammar = (ImageButton) findViewById(R.id.buttonOpenGrammar);
+        buttonOpenGrammar.setOnClickListener(this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -145,7 +150,16 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
             case R.id.buttonOpenVerbCards:
                 getIrregularVerbEnFile();
                 break;
+            case R.id.buttonOpenGrammar:
+                openGrammar();
+                break;
         }
+    }
+
+    private void openGrammar() {
+        Intent intent = new Intent(this, EntityChooserActivity.class);
+        intent.putExtra(EntityChooserActivity.PATH, Configs.getInstance().WorkingDir + "/Grammar");
+        startActivity(intent);
     }
 
     @Override
@@ -270,4 +284,6 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
         }
         setTitle(com.andreaak.cards.R.string.app_name);
     }
+
+
 }
