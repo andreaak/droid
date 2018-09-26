@@ -48,14 +48,17 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         openDBFolderButton = findPreference(OPEN_DB_FOLDER_BUTTON);
         openDBFolderButton.setOnPreferenceClickListener(this);
         dbFolderPref = (EditTextPreference) findPreference(AppConfigs.SP_WORKING_DIRECTORY_PATH);
+        dbFolderPref.setSummary(AppConfigs.getInstance().WorkingDir);
 
         openDownloadFolderButton = findPreference(OPEN_DOWNLOAD_FOLDER_BUTTON);
         openDownloadFolderButton.setOnPreferenceClickListener(this);
         downloadFolderPref = (EditTextPreference) findPreference(AppConfigs.SP_DOWNLOAD_DIRECTORY_PATH);
+        downloadFolderPref.setSummary(AppConfigs.getInstance().DownloadDir);
 
         openLogFolderButton = findPreference(OPEN_LOG_FOLDER_BUTTON);
         openLogFolderButton.setOnPreferenceClickListener(this);
         logFilePref = (EditTextPreference) findPreference(AppConfigs.SP_LOG_FILE);
+        logFilePref.setSummary(AppConfigs.getInstance().LogFile);
 
         resetButton = findPreference(RESET_BUTTON);
         resetButton.setOnPreferenceClickListener(this);

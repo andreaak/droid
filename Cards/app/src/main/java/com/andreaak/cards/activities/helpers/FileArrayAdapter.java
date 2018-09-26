@@ -13,21 +13,21 @@ import com.andreaak.cards.R;
 
 import java.util.List;
 
-public class EntityArrayAdapter extends ArrayAdapter<EntityItem> {
+public class FileArrayAdapter extends ArrayAdapter<FileItem> {
 
     private Context c;
     private int id;
-    private List<EntityItem> items;
+    private List<FileItem> items;
 
-    public EntityArrayAdapter(Context context, int textViewResourceId,
-                              List<EntityItem> objects) {
+    public FileArrayAdapter(Context context, int textViewResourceId,
+                            List<FileItem> objects) {
         super(context, textViewResourceId, objects);
         c = context;
         id = textViewResourceId;
         items = objects;
     }
 
-    public EntityItem getItem(int i) {
+    public FileItem getItem(int i) {
 
         return items.get(i);
     }
@@ -40,7 +40,7 @@ public class EntityArrayAdapter extends ArrayAdapter<EntityItem> {
             view = vi.inflate(id, null);
         }
 
-        final EntityItem item = items.get(position);
+        final FileItem item = items.get(position);
         if (item != null) {
             TextView tvName = (TextView) view.findViewById(R.id.TextViewName);
             ImageView imageView = (ImageView) view.findViewById(R.id.fd_Icon1);

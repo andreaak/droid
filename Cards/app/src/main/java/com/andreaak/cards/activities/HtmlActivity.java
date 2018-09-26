@@ -7,13 +7,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.andreaak.cards.R;
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
-import com.andreaak.common.utils.Constants;
-import com.andreaak.common.utils.logger.Logger;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class HtmlActivity extends HandleExceptionActivity {
 
@@ -30,6 +25,8 @@ public class HtmlActivity extends HandleExceptionActivity {
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDisplayZoomControls(false);
         loadText();
+        float scale = AppConfigs.getInstance().Scale;
+        webView.setInitialScale((int)(scale * 100));
     }
 
     @Override
@@ -42,76 +39,30 @@ public class HtmlActivity extends HandleExceptionActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == R.id.menu_plus) {
-            textBigger();
+            webView.zoomIn();
+            AppConfigs.getInstance().saveScale(webView.getScale());
             return true;
         } else if (item.getItemId() == R.id.menu_minus) {
-            textSmaller();
+            webView.zoomOut();
+            AppConfigs.getInstance().saveScale(webView.getScale());
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void textSmaller() {
-
-        WebSettings settings = webView.getSettings();
-        settings.setTextZoom(settings.getTextZoom() - 10);
-        saveTextZoom(settings.getTextZoom());
-    }
-
-    private void textBigger() {
-
-        WebSettings settings = webView.getSettings();
-        settings.setTextZoom(settings.getTextZoom() + 10);
-        saveTextZoom(settings.getTextZoom());
-    }
-
     private void loadText() {
-//        int zoom = SharedPreferencesHelper.getInstance().getInt(AppConfigs.SP_TEXT_ZOOM);
-//        if (zoom != SharedPreferencesHelper.NOT_DEFINED_INT) {
-//            webView.getSettings().setTextZoom(zoom);
-//        }
-
         String description = getIntent().getStringExtra(DESCRIPTION);
         setTitle(description);
 
         String path = getIntent().getStringExtra(PATH);
-        String text = getTextFileContent(path);
-        webView.loadData(text, "text/html; charset=UTF-8", null);
-    }
 
-    private void saveTextZoom(int textZoom) {
-//        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TEXT_ZOOM, textZoom);
-    }
+        WebSettings settings = webView.getSettings();
+        settings.setDefaultTextEncodingName("utf-8");
 
-    private String getTextFileContent(String path) {
-        // This will reference one line at a time
-        String line = null;
-        StringBuilder sb = new StringBuilder();
-
-        BufferedReader bufferedReader = null;
-        try {
-            // FileReader reads text files in the default encoding.
-            FileReader fileReader = new FileReader(path);
-
-            // Always wrap FileReader in BufferedReader.
-            bufferedReader = new BufferedReader(fileReader);
-
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (Exception e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-        } finally {
-            // Always close files.
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-                }
-            }
-        }
-
-        return sb.toString();
+        //String text = FilesHelper.getTextFileContent(path);
+        // webView.loadData(text, "text/html; charset=utf-8", "utf-8");
+        //webView.loadDataWithBaseURL(null, text, "text/html", "UTF-8", null);
+        String url = "file://" + path;
+        webView.loadUrl(url);
     }
 }

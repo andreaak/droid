@@ -3,11 +3,11 @@ package com.andreaak.cards.activities.helpers;
 import com.andreaak.common.fileSystemItems.FileSystemItem;
 import com.andreaak.common.fileSystemItems.ItemType;
 
-public class EntityItem extends FileSystemItem {
+public class FileItem extends FileSystemItem {
     private String path;
     private String description;
 
-    public EntityItem(String path, String description, ItemType type) {
+    public FileItem(String path, String description, ItemType type) {
         super(type);
         this.path = path;
         this.description = description;

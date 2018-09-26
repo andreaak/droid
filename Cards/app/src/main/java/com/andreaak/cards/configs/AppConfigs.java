@@ -20,11 +20,13 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     //
     public static final String SP_TEXT_FONT_SIZE = "SP_TEXT_FONT_SIZE";
     public static final String SP_TRANS_FONT_SIZE = "SP_TRANS_FONT_SIZE";
+    public static final String SP_TRANS_SCALE = "SP_TRANS_SCALE";
 
     //Values
     public static String SoundsDir;
     public static String LessonsExtension;
     public static String LessonsPrefix;
+    public static float Scale;
 
     public static AppConfigs getInstance() {
         if (instance == null) {
@@ -49,10 +51,28 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
         GoogleDir = getConfig(helper, SP_GOOGLE_DIR,
                 SP_GOOGLE_DIR_DEFAULT);
+
+        Scale = getConfig(helper, SP_TRANS_SCALE,
+                1f);
     }
 
     public boolean saveSoundsDirectory(String path) {
         SoundsDir = path;
         return SharedPreferencesHelper.getInstance().save(SP_DIRECTORY_WITH_SOUNDS_PATH, path);
+    }
+
+    public boolean saveScale(float scale) {
+        Scale = scale;
+        return SharedPreferencesHelper.getInstance().save(SP_TRANS_SCALE, scale);
+    }
+
+    protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {
+        float value = helper.getFloat(key);
+        if ((int)value > (int)SharedPreferencesHelper.NOT_DEFINED_FLOAT) {
+            return value;
+        } else {
+            helper.save(key, defaultValue);
+            return defaultValue;
+        }
     }
 }

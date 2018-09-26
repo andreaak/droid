@@ -157,8 +157,8 @@ public class MainActivity extends HandleExceptionActivity implements IOperationG
     }
 
     private void openGrammar() {
-        Intent intent = new Intent(this, EntityChooserActivity.class);
-        intent.putExtra(EntityChooserActivity.PATH, Configs.getInstance().WorkingDir + "/Grammar");
+        Intent intent = new Intent(this, FileChooserActivity.class);
+        intent.putExtra(FileChooserActivity.PATH, Configs.getInstance().WorkingDir + "/Grammar");
         startActivity(intent);
     }
 

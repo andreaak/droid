@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 public class SharedPreferencesHelper {
 
     public static final int NOT_DEFINED_INT = -1;
+    public static final float NOT_DEFINED_FLOAT = -999;
     public static final boolean NOT_DEFINED_BOOLEAN = false;
 
     private static SharedPreferencesHelper instance;
@@ -38,6 +39,13 @@ public class SharedPreferencesHelper {
         return ed.commit();
     }
 
+    public boolean save(String id, float value) {
+        SharedPreferences sPref = getSharedPreferences();
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putFloat(id, value);
+        return ed.commit();
+    }
+
     public String getString(String id) {
         SharedPreferences sPref = getSharedPreferences();
         return sPref.getString(id, "");
@@ -55,5 +63,10 @@ public class SharedPreferencesHelper {
 
     public SharedPreferences getSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    public float getFloat(String id) {
+        SharedPreferences sPref = getSharedPreferences();
+        return sPref.getFloat(id, NOT_DEFINED_FLOAT);
     }
 }

@@ -9,13 +9,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityHelper {
+public class FileHelper {
 
     private String currentPath;
     private String rootPath;
     private Context context;
 
-    public EntityHelper(Context context, String currentPath) {
+    public FileHelper(Context context, String currentPath) {
         this.context = context;
         rootPath = this.currentPath = currentPath;
     }
@@ -24,9 +24,9 @@ public class EntityHelper {
         return currentPath;
     }
 
-    public List<EntityItem> getEntities(String currentPath) {
+    public List<FileItem> getEntities(String currentPath) {
 
-        List items = new ArrayList<EntityItem>();
+        List items = new ArrayList<FileItem>();
         if (currentPath == null) {
             return items;
         }
@@ -38,12 +38,12 @@ public class EntityHelper {
 
         if (!currentPath.equals(rootPath)) {
             String parentPath = file.getParent();
-            EntityItem item = new EntityItem(parentPath, context.getString(R.string.parentDirectory), ItemType.ParentDirectory);
+            FileItem item = new FileItem(parentPath, context.getString(R.string.parentDirectory), ItemType.ParentDirectory);
             items.add(0, item);
         }
         for (File subFile : file.listFiles()) {
             ItemType type = subFile.isDirectory() ? ItemType.Directory : ItemType.File;
-            EntityItem item = new EntityItem(subFile.getAbsolutePath(), subFile.getName(), type);
+            FileItem item = new FileItem(subFile.getAbsolutePath(), subFile.getName(), type);
             items.add(item);
         }
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.andreaak.cards.activities.HtmlActivity">
 
-    <WebView
+    <com.andreaak.cards.activities.helpers.CustomWebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
