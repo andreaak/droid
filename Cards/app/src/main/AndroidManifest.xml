@@ -45,10 +45,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.CardChooseActivity"
+            android:name=".activities.LessonChooseActivity"
             android:label="@string/select_lessons"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.activities.CardChooseActivity" />
+            <action android:name="com.andreaak.cards.activities.LessonChooseActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
@@ -101,10 +101,18 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activities.FileChooserActivity"
+            android:name=".activities.VerbChooseActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.activities.FileChooserActivity" />
+            <action android:name="com.andreaak.cards.activities.VerbChooseActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
+            android:name=".activities.GrammarChooserActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activities.GrammarChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>

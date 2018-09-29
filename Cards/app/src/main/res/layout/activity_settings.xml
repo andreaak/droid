@@ -7,11 +7,11 @@
 
         <EditTextPreference
             android:key="SP_WORKING_DIRECTORY_PATH"
-            android:summary="Set lesson's folder"
-            android:title="Lesson's folder" />
+            android:summary="Set working folder"
+            android:title="Working folder" />
 
         <Preference
-            android:key="OPEN_LESSONS_FOLDER_BUTTON"
+            android:key="OPEN_WORKING_FOLDER_BUTTON"
             android:summary=""
             android:title="..." />
 

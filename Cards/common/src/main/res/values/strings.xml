@@ -1,8 +1,12 @@
 <resources>
+    <string name="connecting">Connecting...</string>
     <string name="download_file">Download:</string>
+    <string name="download_success">Download success</string>
     <string name="download_fault">Download fault</string>
+    <string name="google_error">Google Error</string>
     <string name="item">item</string>
     <string name="items">items</string>
+    <string name="no_google_account">No Google account</string>
     <string name="parentDirectory">..</string>
     <string name="search">Search</string>
     <string name="search_fault">Search fault</string>

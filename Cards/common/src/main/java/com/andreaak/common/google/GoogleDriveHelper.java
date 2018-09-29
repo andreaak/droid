@@ -30,18 +30,19 @@ import static com.andreaak.common.utils.Constants.LOG_TAG;
 public class GoogleDriveHelper {
 
     private static GoogleDriveHelper instance;
+    //https://developers.google.com/drive/api/v3/mime-types
     public final String MIME_TEXT = "text/plain";
-    public final String MIME_FLDR = "application/vnd.google-apps.folder";
+    public final static String MIME_FLDR = "application/vnd.google-apps.folder";
     private Drive service;
-    private IOperationGoogleDrive connectInstance;
+    private IOperationGoogleDrive operationGoogleDrive;
     private boolean isConnected;
     private EmailHolder emailHolder;
 
-    private Activity act;
+    private Activity activity;
 
-    public void setActivity(Activity act) {
-        this.act = act;
-        connectInstance = (IOperationGoogleDrive) act;
+    public void setActivity(Activity activity, IOperationGoogleDrive operationGoogleDrive) {
+        this.activity = activity;
+        this.operationGoogleDrive = operationGoogleDrive;
     }
 
     private GoogleDriveHelper(EmailHolder emailHolder) {
@@ -124,9 +125,9 @@ public class GoogleDriveHelper {
                 protected void onPostExecute(Exception ex) {
                     super.onPostExecute(ex);
                     if (isConnected) {
-                        connectInstance.onConnectionOK();
+                        operationGoogleDrive.onConnectionOK();
                     } else {  // null indicates general error (fatal)
-                        connectInstance.onConnectionFail(ex);
+                        operationGoogleDrive.onConnectionFail(ex);
                     }
                 }
             }.execute();
@@ -139,12 +140,14 @@ public class GoogleDriveHelper {
     public void disconnect() {
     }
 
-    public GoogleItem searchFolder(String parentId, String path, String mime) {
+    public GoogleItem searchFolder(String parentId, String relativePath) {
         GoogleItem result = null;
-        String[] titles = path.split("/");
+        String[] titles = relativePath.split("/");
         for (String title : titles) {
-            ArrayList<GoogleItem> items = search(parentId, title, mime);
+            ArrayList<GoogleItem> items = search(parentId, title, MIME_FLDR);
+
             if (items.isEmpty()) {
+                result = null;
                 break;
             }
             result = items.get(0);
@@ -337,15 +340,11 @@ public class GoogleDriveHelper {
     /**
      * FILE / FOLDER type object inquiry
      *
-     * @param cv oontent values
+     * @param items oontent values
      * @return TRUE if FOLDER, FALSE otherwise
      */
-    public boolean isFolder(GoogleItem cv) {
-        String mime = cv.getMime();
-        return mime != null && MIME_FLDR.equalsIgnoreCase(mime);
-    }
 
-    public void saveFiles(final String[] ids, final String[] names, final String path) {
+    public void saveFiles(final GoogleItems items, final String path) {
         final boolean[] isDownload = {false};
         new AsyncTask<Void, String, Exception>() {
             @Override
@@ -353,10 +352,10 @@ public class GoogleDriveHelper {
                 try {
                     boolean res = true;
 
-                    for (int i = 0; i < ids.length; i++) {
-                        publishProgress(act.getString(R.string.download_file) + " " + names[i]);
-                        java.io.File targetFile = new java.io.File(path + "/" + names[i]);
-                        res = saveToFile(ids[i], targetFile) && res;
+                    for (GoogleItem item : items.getItems()) {
+                        publishProgress(activity.getString(R.string.download_file) + " " + item.getTitle());
+                        java.io.File targetFile = new java.io.File(path + "/" +item.getTitle());
+                        res = saveToFile(item.getId(), targetFile) && res;
                     }
                     isDownload[0] = res;
                 } catch (Exception e) {
@@ -370,17 +369,17 @@ public class GoogleDriveHelper {
             protected void onProgressUpdate(String... strings) {
                 super.onProgressUpdate(strings);
                 Logger.d(LOG_TAG, strings[0]);
-                connectInstance.onOperationProgress(strings[0]);
+                operationGoogleDrive.onOperationProgress(strings[0]);
             }
 
             @Override
             protected void onPostExecute(Exception ex) {
                 super.onPostExecute(ex);
                 if (isDownload[0]) {
-                    connectInstance.onOperationFinished(null);
+                    operationGoogleDrive.onOperationFinished(null);
                 } else {
-                    Exception e = ex != null ? ex : new Exception(act.getString(R.string.download_fault));
-                    connectInstance.onOperationFinished(e);
+                    Exception e = ex != null ? ex : new Exception(activity.getString(R.string.download_fault));
+                    operationGoogleDrive.onOperationFinished(e);
                 }
             }
         }.execute();

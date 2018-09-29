@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_select_account"
+        android:icon="@drawable/google"
+        android:showAsAction="ifRoom"
+        android:title="@string/select_account" />
+    <group android:id="@+id/groupGoogle">
+        <item
+            android:id="@+id/menu_download"
+            android:icon="@drawable/ic_action_download"
+            android:showAsAction="ifRoom"
+            android:title="@string/download" />
+    </group>
+</menu>

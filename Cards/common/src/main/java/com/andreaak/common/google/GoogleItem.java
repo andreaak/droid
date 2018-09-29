@@ -3,10 +3,11 @@ package com.andreaak.common.google;
 import com.andreaak.common.configs.Configs;
 import com.google.api.services.drive.model.File;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class GoogleItem {
+public class GoogleItem implements Serializable {
     private String title;
     private String id;
     private String mime;
@@ -45,6 +46,10 @@ public class GoogleItem {
 
     public boolean isNew() {
         return isNewItem;
+    }
+
+    public boolean isFolder() {
+        return mime != null && GoogleDriveHelper.MIME_FLDR.equalsIgnoreCase(mime);
     }
 
     //public String getFormattedDate() { return dateFormat.format(date); }

@@ -15,6 +15,7 @@ import com.andreaak.common.configs.Configs;
 import com.andreaak.common.google.GoogleArrayAdapter;
 import com.andreaak.common.google.GoogleDriveHelper;
 import com.andreaak.common.google.GoogleItem;
+import com.andreaak.common.google.GoogleItems;
 import com.andreaak.common.google.IGoogleSearch;
 import com.andreaak.common.predicates.AlwaysTruePredicate;
 import com.andreaak.common.predicates.DirectoryNamePredicate;
@@ -30,10 +31,12 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     //in
     public static final String PREDICATE = "Predicate";
     public static final String APP_NAME = "AppName";
+    public static final String GOOGLE_DRIVE_PATH = "GoogleDrivePath";
+    public static final String IS_DEEP_SEARCH = "IsDeepSearch";
     public static final String DOWNLOAD_TO_PATH_INITIAL = "DownloadToPathInitial";
     //out
-    public static final String IDS = "ids";
-    public static final String NAMES = "names";
+    public static final String ITEMS = "Items";
+    //public static final String NAMES = "names";
     public static final String DOWNLOAD_TO_PATH = "DownloadToPath";
 
     public static final int REQUEST_DIRECTORY_CHOOSER = 4;
@@ -45,11 +48,13 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     private Button buttonOk;
     private Button buttonCancel;
     private Button buttonSelectAll;
-    private List<GoogleItem> databaseFiles;
+    private List<GoogleItem> files;
     private List<GoogleItem> selectedFiles;
 
     private DirectoryNamePredicate predicate;
     private String appName;
+    private String googleDrivePath;
+    private boolean isDeepSearch;
     private String downloadToPath;
 
     @Override
@@ -74,14 +79,16 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
 
     private void RestoreInParameters() {
         predicate = (DirectoryNamePredicate) getIntent().getSerializableExtra(PREDICATE);
-        appName = (String) getIntent().getSerializableExtra(APP_NAME);
-        downloadToPath = (String) getIntent().getSerializableExtra(DOWNLOAD_TO_PATH_INITIAL);
+        appName = getIntent().getStringExtra(APP_NAME);
+        googleDrivePath = getIntent().getStringExtra(GOOGLE_DRIVE_PATH);
+        isDeepSearch = getIntent().getBooleanExtra(IS_DEEP_SEARCH, false);
+        downloadToPath = getIntent().getStringExtra(DOWNLOAD_TO_PATH_INITIAL);
     }
 
     private void fill() {
         final boolean[] isDownload = {false};
         final IGoogleSearch act = this;
-        databaseFiles = new ArrayList();
+        files = new ArrayList();
         setTitle(com.andreaak.common.R.string.search);
 
         new AsyncTask<Void, String, Exception>() {
@@ -89,14 +96,9 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    GoogleItem directory = googleDriveHelper.searchFolder("root", Configs.getInstance().GoogleDir, null);
-                    if (directory != null) {
-                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(), null, null);
-                        for (GoogleItem file : findFiles) {
-                            if (!googleDriveHelper.isFolder(file) && predicate.isValid(file.getTitle())) {
-                                databaseFiles.add(file);
-                            }
-                        }
+                    GoogleItem rootItem = googleDriveHelper.searchFolder("root", googleDrivePath);
+                    if (rootItem != null) {
+                        FillFiles(rootItem, files);
                     }
                     publishProgress("Search Completed");
                     isDownload[0] = true;
@@ -125,10 +127,23 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         }.execute();
     }
 
+    private void FillFiles(GoogleItem directory, List<GoogleItem> resItems) {
+        ArrayList<GoogleItem> items = googleDriveHelper.search(directory.getId(), null, null);
+        for (GoogleItem item : items) {
+            if(item.isFolder()) {
+                if(isDeepSearch) {
+                    FillFiles(item, resItems);
+                }
+            } else if (predicate.isValid(item.getTitle())) {
+                resItems.add(item);
+            }
+        }
+    }
+
     @Override
     public void onSearchFinished(Exception ex) {
         if (ex == null) {
-            adapter = new GoogleArrayAdapter(this, com.andreaak.common.R.layout.shared_list_item_google_files_chooser, databaseFiles);
+            adapter = new GoogleArrayAdapter(this, com.andreaak.common.R.layout.shared_list_item_google_files_chooser, files);
             listView.setAdapter(adapter);
             selectNew();
         } else {
@@ -197,7 +212,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         for (int i = 0; i < sbArray.size(); i++) {
             int key = sbArray.keyAt(i);
             if (sbArray.get(key)) {
-                GoogleItem file = databaseFiles.get(key);
+                GoogleItem file = files.get(key);
                 selectedFiles.add(file);
             }
         }
@@ -218,18 +233,19 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
 
     private void processSelection(String downloadToPath) {
 
-        String[] ids = new String[selectedFiles.size()];
-        String[] names = new String[selectedFiles.size()];
-
-        for (int i = 0; i < selectedFiles.size(); i++) {
-            GoogleItem gi = selectedFiles.get(i);
-            ids[i] = gi.getId();
-            names[i] = gi.getTitle();
-        }
+//        String[] ids = new String[selectedFiles.size()];
+//        String[] names = new String[selectedFiles.size()];
+//
+//        for (int i = 0; i < selectedFiles.size(); i++) {
+//            GoogleItem gi = selectedFiles.get(i);
+//            ids[i] = gi.getId();
+//            names[i] = gi.getTitle();
+//        }
 
         Intent intent = new Intent();
-        intent.putExtra(IDS, ids);
-        intent.putExtra(NAMES, names);
+        intent.putExtra(ITEMS, new GoogleItems(selectedFiles));
+//        intent.putExtra(IDS, ids);
+//        intent.putExtra(NAMES, names);
         intent.putExtra(DOWNLOAD_TO_PATH, downloadToPath);
         setResult(RESULT_OK, intent);
         finish();

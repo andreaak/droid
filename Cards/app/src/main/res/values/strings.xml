@@ -1,10 +1,7 @@
 <resources>
     <string name="app_name">Cards</string>
-    <string name="connecting">Connecting...</string>
     <string name="download">Download lessons</string>
     <string name="download_file">Download:</string>
-    <string name="download_success">Download success</string>
-    <string name="download_fault">Download fault</string>
     <string name="google_error">Google Error</string>
     <string name="item">item</string>
     <string name="items">items</string>
@@ -12,11 +9,9 @@
     <string name="plus">Increase Font</string>
     <string name="minus">Decrease Font</string>
     <string name="menu_exit">Exit</string>
-    <string name="no_google_account">No Google account</string>
     <string name="parentDirectory">..</string>
     <string name="search">Search</string>
     <string name="select_account">Select Google Account…</string>
-    <string name="search_fault">Search fault</string>
     <string name="upload">Upload lessons</string>
     <string name="upload_success">Upload success</string>
     <string name="uploading">Uploading...</string>
@@ -27,8 +22,6 @@
     <string name="open_lesson">Open lesson</string>
     <string name="open_last_lesson">Open last lesson</string>
     <string name="select_lessons">Select lessons</string>
-    <string name="open_lesson_s_folder">Open lesson\'s folder</string>
-    <string name="select_lessons_folder">"Select lesson\'s folder"</string>
     <string name="select_language">Select language</string>
     <string name="select_log">Select log file folder</string>
     <string name="edit_word">Edit word</string>

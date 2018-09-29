@@ -13,6 +13,7 @@ import com.andreaak.common.activitiesShared.GoogleFilesChooserActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.google.EmailHolder;
 import com.andreaak.common.google.GoogleDriveHelper;
+import com.andreaak.common.google.GoogleItems;
 import com.andreaak.common.google.IOperationGoogleDrive;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
@@ -149,10 +150,9 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
                 break;
             case REQUEST_GOOGLE_FILES_CHOOSER:
                 if (resultCode == RESULT_OK) {
-                    String[] ids = data.getStringArrayExtra(GoogleFilesChooserActivity.IDS);
-                    String[] names = data.getStringArrayExtra(GoogleFilesChooserActivity.NAMES);
+                    GoogleItems items = (GoogleItems)data.getSerializableExtra(GoogleFilesChooserActivity.ITEMS);
                     String path = data.getStringExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH);
-                    downloadFromGoogleDrive(ids, names, path);
+                    downloadFromGoogleDrive(items, path);
                 }
                 break;
             case REQUEST_PREFERENCES:
@@ -182,18 +182,19 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
         Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
         intent.putExtra(GoogleFilesChooserActivity.PREDICATE, new DatabaseNamePredicate());
         intent.putExtra(GoogleFilesChooserActivity.APP_NAME, getString(com.andreaak.note.R.string.app_name));
+        intent.putExtra(GoogleFilesChooserActivity.GOOGLE_DRIVE_PATH, AppConfigs.getInstance().GoogleDir);
         intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().DownloadDir);
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);
     }
 
-    private void downloadFromGoogleDrive(final String[] ids, final String[] names, final String path) {
-        if (ids.length == 0) {
+    private void downloadFromGoogleDrive(final GoogleItems items, final String path) {
+        if (items.getItems().length == 0) {
             return;
         }
 
         menu.setGroupVisible(R.id.groupGoogle, false);
 
-        helper.saveFiles(ids, names, path);
+        helper.saveFiles(items, path);
     }
 
     private void checkDatabase(String path) {

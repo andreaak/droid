@@ -3,7 +3,6 @@ package com.andreaak.cards.activities.helpers;
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-
 import android.view.MotionEvent;
 import android.webkit.WebView;
 
@@ -59,8 +58,7 @@ public class CustomWebView extends WebView {
 
                 case MotionEvent.ACTION_MOVE:
                     if (mode == DRAG) {
-                    }
-                    else if (mode == ZOOM) {
+                    } else if (mode == ZOOM) {
                         float newDist = spacing(ev);
                         if (newDist > 5f) {
                             //scale = newDist / oldDist;
@@ -89,7 +87,7 @@ public class CustomWebView extends WebView {
     private float spacing(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);
-        return (float)Math.sqrt(x * x + y * y);
+        return (float) Math.sqrt(x * x + y * y);
     }
 
     private void midPoint(PointF point, MotionEvent event) {

@@ -15,17 +15,17 @@ import java.io.File;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener {
 
-    private final static String OPEN_LESSONS_FOLDER_BUTTON = "OPEN_LESSONS_FOLDER_BUTTON";
+    private final static String OPEN_WORKING_FOLDER_BUTTON = "OPEN_WORKING_FOLDER_BUTTON";
     private final static String OPEN_SOUNDS_FOLDER_BUTTON = "OPEN_SOUNDS_FOLDER_BUTTON";
     private final static String OPEN_LOG_FOLDER_BUTTON = "OPEN_LOG_FOLDER_BUTTON";
     private final static String RESET_BUTTON = "RESET_BUTTON";
 
-    private static final int REQUEST_LESSONS_DIRECTORY_CHOOSER = 1;
+    private static final int REQUEST_WORKING_DIRECTORY_CHOOSER = 1;
     private static final int REQUEST_LOG_DIRECTORY_CHOOSER = 2;
     private static final int REQUEST_SOUNDS_DIRECTORY_CHOOSER = 3;
 
-    private Preference openLessonsFolderButton;
-    private EditTextPreference lessonsFolderPref;
+    private Preference openWorkingFolderButton;
+    private EditTextPreference workingFolderPref;
     private Preference openSoundsFolderButton;
     private EditTextPreference soundsFolderPref;
     private Preference openLogFolderButton;
@@ -41,10 +41,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     }
 
     private void initPreferences() {
-        openLessonsFolderButton = findPreference(OPEN_LESSONS_FOLDER_BUTTON);
-        openLessonsFolderButton.setOnPreferenceClickListener(this);
-        lessonsFolderPref = (EditTextPreference) findPreference(AppConfigs.SP_WORKING_DIRECTORY_PATH);
-        lessonsFolderPref.setSummary(AppConfigs.getInstance().WorkingDir);
+        openWorkingFolderButton = findPreference(OPEN_WORKING_FOLDER_BUTTON);
+        openWorkingFolderButton.setOnPreferenceClickListener(this);
+        workingFolderPref = (EditTextPreference) findPreference(AppConfigs.SP_WORKING_DIRECTORY_PATH);
+        workingFolderPref.setSummary(AppConfigs.getInstance().WorkingDir);
 
         openSoundsFolderButton = findPreference(OPEN_SOUNDS_FOLDER_BUTTON);
         openSoundsFolderButton.setOnPreferenceClickListener(this);
@@ -69,8 +69,8 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             addPreferencesFromResource(com.andreaak.cards.R.layout.activity_settings);
             initPreferences();
             return true;
-        } else if (preference == openLessonsFolderButton) {
-            setLessonsDirectory();
+        } else if (preference == openWorkingFolderButton) {
+            setWorkingDirectory();
         } else if (preference == openSoundsFolderButton) {
             setSoundsDirectory();
         } else if (preference == openLogFolderButton) {
@@ -93,11 +93,11 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     logFilePref.setText(newFile);
                 }
                 break;
-            case REQUEST_LESSONS_DIRECTORY_CHOOSER:
+            case REQUEST_WORKING_DIRECTORY_CHOOSER:
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
                     AppConfigs.getInstance().saveWorkingDirectory(path);
-                    lessonsFolderPref.setText(path);
+                    workingFolderPref.setText(path);
                 }
                 break;
             case REQUEST_SOUNDS_DIRECTORY_CHOOSER:
@@ -119,12 +119,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         startActivityForResult(intent, REQUEST_LOG_DIRECTORY_CHOOSER);
     }
 
-    private void setLessonsDirectory() {
+    private void setWorkingDirectory() {
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
-        intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_lessons_folder));
+        intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_working_directory));
         intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, AppConfigs.getInstance().WorkingDir);
-        startActivityForResult(intent, REQUEST_LESSONS_DIRECTORY_CHOOSER);
+        startActivityForResult(intent, REQUEST_WORKING_DIRECTORY_CHOOSER);
     }
 
     private void setSoundsDirectory() {

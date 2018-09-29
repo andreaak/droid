@@ -26,7 +26,7 @@ public class HtmlActivity extends HandleExceptionActivity {
         webView.getSettings().setDisplayZoomControls(false);
         loadText();
         float scale = AppConfigs.getInstance().Scale;
-        webView.setInitialScale((int)(scale * 100));
+        webView.setInitialScale((int) (scale * 100));
     }
 
     @Override

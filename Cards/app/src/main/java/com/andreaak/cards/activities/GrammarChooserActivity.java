@@ -14,7 +14,7 @@ import com.andreaak.common.fileSystemItems.ItemType;
 
 import java.util.List;
 
-public class FileChooserActivity extends ListActivity {
+public class GrammarChooserActivity extends ListActivity {
 
     public static final String PATH = "path";
 
@@ -45,7 +45,7 @@ public class FileChooserActivity extends ListActivity {
     private void fill(String currentPath) {
         List<FileItem> dir = helper.getEntities(currentPath);
         setTitle(helper.getDescriptions(currentPath));
-        adapter = new FileArrayAdapter(FileChooserActivity.this, R.layout.activity_file_chooser, dir);
+        adapter = new FileArrayAdapter(GrammarChooserActivity.this, R.layout.activity_file_chooser, dir);
         this.setListAdapter(adapter);
     }
 

@@ -32,6 +32,7 @@ import com.andreaak.common.google.GoogleDriveHelper;
 import com.andreaak.common.google.GoogleItem;
 import com.andreaak.common.google.IConnectGoogleDrive;
 import com.andreaak.common.google.IOperationGoogleDrive;
+import com.andreaak.common.google.OperationGoogleDrive;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.Logger;
@@ -66,7 +67,8 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
     private Menu menu;
 
-    GoogleDriveHelper googleDriveHelper;
+    private GoogleDriveHelper googleDriveHelper;
+    private OperationGoogleDrive operationGoogleDriveHelper;
 
     private CardActivityHelper helper;
     private WordsSpinAdapter wordsAdapter;
@@ -101,7 +103,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         setInitialCardVisibility();
 
         googleDriveHelper = GoogleDriveHelper.getInstance();
-        googleDriveHelper.setActivity(this);
+        googleDriveHelper.setActivity(this, this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -116,6 +118,13 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
             setTitle(helper.lessonItem.getName());
         }
+
+        googleDriveHelper = GoogleDriveHelper.getInstance();
+        operationGoogleDriveHelper = new OperationGoogleDrive(
+                this,
+                getString(com.andreaak.cards.R.string.app_name),
+                com.andreaak.cards.R.id.groupGoogle);
+        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
     }
 
     @Override
@@ -138,6 +147,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         }
 
         this.menu = menu;
+        operationGoogleDriveHelper.setMenu(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -155,23 +165,12 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
                 }
                 break;
             case REQUEST_GOOGLE_CONNECT:
-                setTitle(com.andreaak.cards.R.string.connecting);
-                if (data != null && data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) != null) {
-                    googleDriveHelper.getEmailHolder().setEmail(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
-                    if (!googleDriveHelper.init()) {
-                        showText(this, com.andreaak.cards.R.string.no_google_account);
-                        setTitle(helper.lessonItem.getName());
-                        Logger.d(Constants.LOG_TAG, getString(com.andreaak.cards.R.string.no_google_account));
-                    } else {
-                        googleDriveHelper.connect();
-                    }
-                }
+                operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
                 break;
 
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -492,7 +491,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    GoogleItem directory = googleDriveHelper.searchFolder("root", AppConfigs.getInstance().GoogleDir, null);
+                    GoogleItem directory = googleDriveHelper.searchFolder("root", AppConfigs.getInstance().GoogleDir);
                     if (directory != null) {
                         ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
                                 helper.lessonItem.getFileName(), null);
