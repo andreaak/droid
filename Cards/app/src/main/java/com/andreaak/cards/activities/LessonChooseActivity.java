@@ -70,9 +70,15 @@ public class LessonChooseActivity extends HandleExceptionActivity implements Vie
         googleDriveHelper = GoogleDriveHelper.getInstance();
         operationGoogleDriveHelper = new OperationGoogleDrive(
                 this,
-                getString(com.andreaak.cards.R.string.app_name),
+                getString(R.string.select_lesson),
                 com.andreaak.cards.R.id.groupGoogle);
         googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
+    }
+
+    @Override
+    protected void onRestart() {
+        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
+        super.onRestart();
     }
 
     @Override

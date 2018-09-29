@@ -41,7 +41,7 @@ public class VerbChooseActivity extends ListActivity {
     private FileHelper fileHelper;
 
     private Menu menu;
-    private GoogleDriveHelper helper;
+    private GoogleDriveHelper googleDriveHelper;
     private OperationGoogleDrive operationGoogleDriveHelper;
 
     @Override
@@ -58,18 +58,25 @@ public class VerbChooseActivity extends ListActivity {
         }
         fill(fileHelper.getCurrentPath());
 
-        helper = GoogleDriveHelper.getInstance();
+        googleDriveHelper = GoogleDriveHelper.getInstance();
         operationGoogleDriveHelper = new OperationGoogleDrive(
                 this,
-                getString(com.andreaak.cards.R.string.app_name),
+                getString(R.string.select_lesson),
                 com.andreaak.cards.R.id.groupGoogle);
-        helper.setActivity(this, operationGoogleDriveHelper);
+        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
+        setTitle(com.andreaak.cards.R.string.select_lesson);
+    }
+
+    @Override
+    protected void onRestart() {
+        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
+        super.onRestart();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_verb_choose, menu);
-        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, helper.isConnected());
+        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, googleDriveHelper.isConnected());
         this.menu = menu;
         operationGoogleDriveHelper.setMenu(menu);
         return super.onCreateOptionsMenu(menu);
@@ -100,7 +107,7 @@ public class VerbChooseActivity extends ListActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_GOOGLE_CONNECT:
-                operationGoogleDriveHelper.connectGoogleDrive(data, this, helper);
+                operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
                 break;
             case REQUEST_GOOGLE_FILES_CHOOSER:
                 if (resultCode == RESULT_OK) {
@@ -160,6 +167,6 @@ public class VerbChooseActivity extends ListActivity {
 
         menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false);
 
-        helper.saveFiles(items, path);
+        googleDriveHelper.saveFiles(items, path);
     }
 }

@@ -1,6 +1,5 @@
 package com.andreaak.common.google;
 
-import com.andreaak.common.configs.Configs;
 import com.google.api.services.drive.model.File;
 
 import java.io.Serializable;
@@ -21,7 +20,6 @@ public class GoogleItem implements Serializable {
         this.mime = file.getMimeType();
         this.date = new Date(file.getModifiedDate().getValue());
         dateFormat = new SimpleDateFormat("yyyy.MM.dd 'at' hh:mm:ss");
-        isNewItem = getDiskFileModifiedDate(title).getTime() < date.getTime();
     }
 
     public String getTitle() {
@@ -52,12 +50,18 @@ public class GoogleItem implements Serializable {
         return mime != null && GoogleDriveHelper.MIME_FLDR.equalsIgnoreCase(mime);
     }
 
+    public void setIsNew(String directoryPath) {
+        String filePath = directoryPath + "/" + title;
+        java.io.File file = new java.io.File(filePath);
+        isNewItem = new Date(file.exists() ? file.lastModified() : 0).getTime() < date.getTime();
+    }
+
     //public String getFormattedDate() { return dateFormat.format(date); }
 
-    private Date getDiskFileModifiedDate(String fileName) {
-        String filePath = Configs.getInstance().WorkingDir + "/" + fileName;
-        java.io.File file = new java.io.File(filePath);
-        return new Date(file.exists() ? file.lastModified() : 0);
-    }
+//    private Date getDiskFileModifiedDate(String fileName) {
+//        String filePath = Configs.getInstance().WorkingDir + "/" + fileName;
+//        java.io.File file = new java.io.File(filePath);
+//        return new Date(file.exists() ? file.lastModified() : 0);
+//    }
 }
 

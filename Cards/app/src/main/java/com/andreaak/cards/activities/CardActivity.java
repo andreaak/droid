@@ -1,6 +1,5 @@
 package com.andreaak.cards.activities;
 
-import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;

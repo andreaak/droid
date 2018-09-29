@@ -15,15 +15,11 @@ import com.andreaak.common.configs.Configs;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.google.EmailHolder;
 import com.andreaak.common.google.GoogleDriveHelper;
-import com.andreaak.common.google.OperationGoogleDrive;
-import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.FileLogger;
 import com.andreaak.common.utils.logger.ILogger;
 import com.andreaak.common.utils.logger.Logger;
 import com.andreaak.common.utils.logger.NativeLogger;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.AccountPicker;
 
 public class MainActivity extends HandleExceptionActivity implements View.OnClickListener {
 

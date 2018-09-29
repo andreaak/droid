@@ -36,7 +36,6 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     public static final String DOWNLOAD_TO_PATH_INITIAL = "DownloadToPathInitial";
     //out
     public static final String ITEMS = "Items";
-    //public static final String NAMES = "names";
     public static final String DOWNLOAD_TO_PATH = "DownloadToPath";
 
     public static final int REQUEST_DIRECTORY_CHOOSER = 4;
@@ -143,6 +142,10 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     @Override
     public void onSearchFinished(Exception ex) {
         if (ex == null) {
+            for (GoogleItem item : files) {
+                item.setIsNew(downloadToPath);
+            }
+
             adapter = new GoogleArrayAdapter(this, com.andreaak.common.R.layout.shared_list_item_google_files_chooser, files);
             listView.setAdapter(adapter);
             selectNew();
@@ -233,19 +236,8 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
 
     private void processSelection(String downloadToPath) {
 
-//        String[] ids = new String[selectedFiles.size()];
-//        String[] names = new String[selectedFiles.size()];
-//
-//        for (int i = 0; i < selectedFiles.size(); i++) {
-//            GoogleItem gi = selectedFiles.get(i);
-//            ids[i] = gi.getId();
-//            names[i] = gi.getTitle();
-//        }
-
         Intent intent = new Intent();
         intent.putExtra(ITEMS, new GoogleItems(selectedFiles));
-//        intent.putExtra(IDS, ids);
-//        intent.putExtra(NAMES, names);
         intent.putExtra(DOWNLOAD_TO_PATH, downloadToPath);
         setResult(RESULT_OK, intent);
         finish();
