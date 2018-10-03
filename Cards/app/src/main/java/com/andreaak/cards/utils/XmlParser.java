@@ -1,5 +1,6 @@
 package com.andreaak.cards.utils;
 
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.model.VerbLessonItem;
@@ -64,7 +65,7 @@ public class XmlParser {
         File[] files = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
-                return s.startsWith("lesson");
+                return s.startsWith(AppConfigs.getInstance().LessonsPrefix);
             }
         });
 

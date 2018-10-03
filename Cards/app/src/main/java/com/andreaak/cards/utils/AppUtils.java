@@ -17,7 +17,7 @@ public class AppUtils {
         File[] files = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
-                return s.startsWith("lesson");
+                return s.startsWith(AppConfigs.getInstance().LessonsPrefix);
             }
         });
         if (files == null) {
@@ -79,7 +79,7 @@ public class AppUtils {
             region = language;
         }
 
-        return AppConfigs.SoundsDir + String.format("/%1$s_%5$s/%3$s_%2$s/%4$s_%2$s.%5$s",
+        return AppConfigs.getInstance().SoundsDir + String.format("/%1$s_%5$s/%3$s_%2$s/%4$s_%2$s.%5$s",
                 region.toLowerCase(), region.toLowerCase(), word.charAt(0), word, soundFormat);
     }
 
@@ -92,7 +92,7 @@ public class AppUtils {
             region = language;
         }
 
-        return AppConfigs.SoundsDir + String.format("/Irregular/%1$s/%2$s_%1$s.%3$s",
+        return AppConfigs.getInstance().SoundsDir + String.format("/Irregular/%1$s/%2$s_%1$s.%3$s",
                 region.toLowerCase(), word, soundFormat);
     }
 }

@@ -109,10 +109,10 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activities.GrammarChooserActivity"
+            android:name=".activities.GrammarChooseActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.activities.GrammarChooserActivity" />
+            <action android:name="com.andreaak.cards.activities.GrammarChooseActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>

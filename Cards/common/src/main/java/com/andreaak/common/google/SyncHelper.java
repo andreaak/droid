@@ -3,22 +3,21 @@ package com.andreaak.common.google;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
-import com.andreaak.common.R;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.logger.Logger;
 
 public class SyncHelper {
 
     private RootSyncItem rootSyncItem;
-    private IGoogleSearch searchActivity;
+    private IOperationGoogleDrive searchActivity;
 
-    public SyncHelper(String rootFolder, String remoteRootFolder, IGoogleSearch searchActivity) {
+    public SyncHelper(String rootFolder, String remoteRootFolder, IOperationGoogleDrive searchActivity) {
         rootSyncItem = new RootSyncItem(rootFolder, remoteRootFolder);
         this.searchActivity = searchActivity;
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void fill(final ISyncItem item) {
+    public void process() {
         final boolean[] isDownload = {false};
 
         new AsyncTask<Void, String, Exception>() {
@@ -26,8 +25,13 @@ public class SyncHelper {
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    item.init();
-                    publishProgress("Search Completed");
+                    publishProgress("Search started");
+                    rootSyncItem.init();
+                    publishProgress("Download started");
+                    boolean res = rootSyncItem.download();
+                    if(!res) {
+                        throw new Exception("Download fault");
+                    }
                     isDownload[0] = true;
                 } catch (Exception ex) {
                     Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
@@ -40,15 +44,16 @@ public class SyncHelper {
             protected void onProgressUpdate(String... strings) {
                 super.onProgressUpdate(strings);
                 Logger.d(Constants.LOG_TAG, strings[0]);
+                searchActivity.onOperationProgress(strings[0]);
             }
 
             @Override
             protected void onPostExecute(Exception ex) {
                 super.onPostExecute(ex);
                 if (isDownload[0]) {
-                    searchActivity.onSearchFinished(null);
+                    searchActivity.onOperationFinished(null);
                 } else {
-                    searchActivity.onSearchFinished(ex);
+                    searchActivity.onOperationFinished(ex);
                 }
             }
         }.execute();

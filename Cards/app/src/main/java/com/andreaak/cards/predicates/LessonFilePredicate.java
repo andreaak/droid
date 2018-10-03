@@ -11,6 +11,6 @@ public class LessonFilePredicate implements DirectoryPredicate, Serializable {
     @Override
     public boolean isValid(File lesson) {
         String name = lesson.getName();
-        return name.startsWith(AppConfigs.LessonsPrefix) && name.endsWith(AppConfigs.LessonsExtension);
+        return name.startsWith(AppConfigs.getInstance().LessonsPrefix) && name.endsWith(AppConfigs.getInstance().LessonsExtension);
     }
 }

@@ -11,7 +11,6 @@ import android.widget.ImageButton;
 import com.andreaak.cards.R;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
-import com.andreaak.common.configs.Configs;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.google.EmailHolder;
 import com.andreaak.common.google.GoogleDriveHelper;
@@ -142,13 +141,13 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
     private void chooseIrregularVerbs() {
         Intent intent = new Intent(this, VerbChooseActivity.class);
-        intent.putExtra(GrammarChooserActivity.PATH, AppConfigs.getInstance().getIrregularVerbDir());
+        intent.putExtra(VerbChooseActivity.PATH, AppConfigs.getInstance().getIrregularVerbDir());
         startActivity(intent);
     }
 
     private void openGrammar() {
-        Intent intent = new Intent(this, GrammarChooserActivity.class);
-        intent.putExtra(GrammarChooserActivity.PATH, Configs.getInstance().WorkingDir + "/Grammar");
+        Intent intent = new Intent(this, GrammarChooseActivity.class);
+        intent.putExtra(GrammarChooseActivity.PATH, AppConfigs.getInstance().getGrammarDir());
         startActivity(intent);
     }
 }

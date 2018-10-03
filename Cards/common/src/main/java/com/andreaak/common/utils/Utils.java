@@ -51,6 +51,9 @@ public class Utils {
     }
 
     public static boolean saveToFile(InputStream is, File file) {
+        if(!checkOrCreateFolder(file)) {
+            return false;
+        }
 
         BufferedInputStream bufferedStream = null;
         if (is != null) try {
@@ -81,19 +84,17 @@ public class Utils {
         return fileName.replaceFirst("[.][^.]+$", "");
     }
 
-    public static File[] getLessons(String path) {
-        File directory = new File(path);
-        File[] files = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.startsWith("lesson");
+    public static boolean checkOrCreateFolder(File file) {
+        File parent = file.getParentFile();
+        if(!parent.exists()) {
+            try {
+                parent.mkdir();
+            } catch (Exception e){
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                return false;
             }
-        });
-        if (files == null) {
-            files = new File[0];
         }
-        Arrays.sort(files);
-        return files;
+        return true;
     }
 }
 

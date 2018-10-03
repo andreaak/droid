@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class LessonFileNamePredicate implements DirectoryNamePredicate, Serializable {
     @Override
     public boolean isValid(String name) {
-        return name.startsWith(AppConfigs.LessonsPrefix) && name.endsWith(AppConfigs.LessonsExtension);
+        return name.startsWith(AppConfigs.getInstance().LessonsPrefix) && name.endsWith(AppConfigs.getInstance().LessonsExtension);
     }
 }
 

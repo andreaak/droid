@@ -15,6 +15,7 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     private static final String SP_LESSONS_PREFFIX_DEFAULT = "lesson_";
     private static final String LESSONS_DIR = "Lessons";
     private static final String IRREGULAR_VERB_DIR = "IrregularVerbs";
+    private static final String GRAMMAR_DIR = "Grammar";
     // Google
     private static final String SP_GOOGLE_DIR_DEFAULT = "Eng";
     //irregular
@@ -26,10 +27,10 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
 
     //Values
-    public static String SoundsDir;
-    public static String LessonsExtension;
-    public static String LessonsPrefix;
-    public static float Scale;
+    public String SoundsDir;
+    public String LessonsExtension;
+    public String LessonsPrefix;
+    public float Scale;
 
     public static AppConfigs getInstance() {
         if (instance == null) {
@@ -83,6 +84,14 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
     public String getRemoteIrregularVerbDir() {
         return GoogleDir + "/" + IRREGULAR_VERB_DIR;
+    }
+
+    public String getGrammarDir() {
+        return WorkingDir + "/" + GRAMMAR_DIR;
+    }
+
+    public String getRemoteGrammarDir() {
+        return GoogleDir + "/" + GRAMMAR_DIR;
     }
 
     protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {

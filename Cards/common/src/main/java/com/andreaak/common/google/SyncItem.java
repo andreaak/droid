@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SyncItem extends FileSystemItem implements ISyncItem, Serializable {
+public class SyncItem extends FileSystemItem implements Serializable {
 
     private File file;
     private GoogleItem googleItem;
     private SyncItem parent;
     private List<SyncItem> items;
-    private boolean selected;
 
     public SyncItem(File file, GoogleItem googleItem, SyncItem parent) {
         super(getItemType(file, googleItem));
@@ -44,22 +43,25 @@ public class SyncItem extends FileSystemItem implements ISyncItem, Serializable 
     public void init() {
 
         items = new ArrayList<>();
-        File[] files = file.listFiles();
+
 
         ArrayList<GoogleItem> subGoogleItems = null;
         if(googleItem != null) {
             subGoogleItems = GoogleDriveHelper.getInstance().search(googleItem.getId(), null, null);
         }
 
-        for(File subFile : files) {
-            GoogleItem subGoogleItem = getGoogleItem(subGoogleItems, subFile.getName());
-            SyncItem syncItem = new SyncItem(subFile, subGoogleItem, this);
-            if(subFile.isDirectory()) {
-                syncItem.init();
-            }
-            items.add(syncItem);
-            if(subGoogleItem != null) {
-                subGoogleItems.remove(subGoogleItem);
+        File[] files = file.listFiles();
+        if(files != null) {
+            for (File subFile : files) {
+                GoogleItem subGoogleItem = getGoogleItem(subGoogleItems, subFile.getName());
+                SyncItem syncItem = new SyncItem(subFile, subGoogleItem, this);
+                if (subFile.isDirectory()) {
+                    syncItem.init();
+                }
+                items.add(syncItem);
+                if (subGoogleItem != null) {
+                    subGoogleItems.remove(subGoogleItem);
+                }
             }
         }
 
@@ -73,14 +75,16 @@ public class SyncItem extends FileSystemItem implements ISyncItem, Serializable 
         }
     }
 
-    public void download() {
+    public boolean download() {
+        boolean res = true;
         for(SyncItem item : items) {
             if(item.isFolder()) {
-                item.download();
+                res &= item.download();
             } else if(item.isNeedDownload()) {
-                GoogleDriveHelper.getInstance().saveToFile(item.googleItem.getId(), item.file);
+                res &= GoogleDriveHelper.getInstance().saveToFile(item.googleItem.getId(), item.file);
             }
         }
+        return res;
     }
 
     private GoogleItem getGoogleItem(ArrayList<GoogleItem> googleItems, String name) {
@@ -99,43 +103,6 @@ public class SyncItem extends FileSystemItem implements ISyncItem, Serializable 
     private File getFile(String path, String title) {
 
         return new File(path + "/" + title);
-    }
-
-    private File getFile(File[] files, String title) {
-
-        if(files == null || files.length == 0) {
-            return null;
-        }
-
-        for(File file : files) {
-            if(title.equalsIgnoreCase(file.getName())) {
-                return file;
-            }
-        }
-        return null;
-    }
-
-    public GoogleItem getGoogleItem() {
-        return googleItem;
-    }
-
-    public List<SyncItem> getItems() {
-        return items;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    public boolean isNew() {
-        if(!doesRemoteExist()) {
-            return false;
-        }
-        return new Date(file.exists() ? file.lastModified() : 0).getTime() < googleItem.getDate().getTime();
     }
 
     public boolean isNeedDownload() {
