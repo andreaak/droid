@@ -323,6 +323,11 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
         textViewPastParticiple.setText(word.pastParticiple);
         textViewPastParticipleTrans.setText(word.pastParticipleTrans);
         textViewTranslation.setText(word.translation);
+
+        Queue<String> files = getSoundFiles();
+        boolean isVisible = !files.isEmpty();
+        int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
+        buttonSound.setVisibility(flag);
     }
 
     private void previousWord() {

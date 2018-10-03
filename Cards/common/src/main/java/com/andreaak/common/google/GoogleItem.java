@@ -38,6 +38,10 @@ public class GoogleItem implements Serializable {
         this.id = id;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
     public String getMime() {
         return mime;
     }

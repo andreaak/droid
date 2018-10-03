@@ -16,7 +16,6 @@ import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.predicates.LessonFileNamePredicate;
 import com.andreaak.cards.utils.XmlParser;
-import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.GoogleFilesChooserActivity;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
@@ -189,8 +188,8 @@ public class LessonChooseActivity extends HandleExceptionActivity implements Vie
 
     private void chooseFilesForDownload() {
         Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
-        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new LessonFileNamePredicate());
-        intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
+        intent.putExtra(GoogleFilesChooserActivity.PREDICATE, new LessonFileNamePredicate());
+        intent.putExtra(GoogleFilesChooserActivity.TITLE, getString(R.string.select_lesson));
         intent.putExtra(GoogleFilesChooserActivity.GOOGLE_DRIVE_PATH, AppConfigs.getInstance().getRemoteLessonsDir());
         intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().getLessonsDir());
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);

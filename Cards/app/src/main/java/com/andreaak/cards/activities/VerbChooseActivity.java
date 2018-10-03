@@ -17,7 +17,6 @@ import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.VerbLessonItem;
 import com.andreaak.cards.predicates.IrregularVerbEnFileNamePredicate;
 import com.andreaak.cards.utils.XmlParser;
-import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.GoogleFilesChooserActivity;
 import com.andreaak.common.fileSystemItems.ItemType;
 import com.andreaak.common.google.GoogleDriveHelper;
@@ -153,8 +152,8 @@ public class VerbChooseActivity extends ListActivity {
 
     private void chooseFilesForDownload() {
         Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
-        intent.putExtra(FileChooserWithButtonsActivity.PREDICATE, new IrregularVerbEnFileNamePredicate());
-        intent.putExtra(FileChooserWithButtonsActivity.TITLE, getString(R.string.select_lesson));
+        intent.putExtra(GoogleFilesChooserActivity.PREDICATE, new IrregularVerbEnFileNamePredicate());
+        intent.putExtra(GoogleFilesChooserActivity.TITLE, getString(R.string.select_lesson));
         intent.putExtra(GoogleFilesChooserActivity.GOOGLE_DRIVE_PATH, AppConfigs.getInstance().getRemoteIrregularVerbDir());
         intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().getIrregularVerbDir());
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);

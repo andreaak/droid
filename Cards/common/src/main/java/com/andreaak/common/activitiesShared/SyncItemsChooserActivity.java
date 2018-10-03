@@ -1,38 +1,38 @@
 package com.andreaak.common.activitiesShared;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.SparseBooleanArray;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.andreaak.common.R;
 import com.andreaak.common.configs.Configs;
-import com.andreaak.common.google.GoogleArrayAdapter;
+import com.andreaak.common.fileSystemItems.ItemType;
 import com.andreaak.common.google.GoogleDriveHelper;
-import com.andreaak.common.google.GoogleItem;
-import com.andreaak.common.google.GoogleItems;
 import com.andreaak.common.google.IGoogleSearch;
+import com.andreaak.common.google.ISyncItem;
+import com.andreaak.common.google.RootSyncItem;
+import com.andreaak.common.google.SyncArrayAdapter;
+import com.andreaak.common.google.SyncItem;
 import com.andreaak.common.predicates.AlwaysTruePredicate;
 import com.andreaak.common.predicates.DirectoryNamePredicate;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class GoogleFilesChooserActivity extends Activity implements View.OnClickListener, IGoogleSearch {
+public class SyncItemsChooserActivity extends Activity implements View.OnClickListener, ListView.OnItemClickListener, IGoogleSearch {
 
     //in
     public static final String PREDICATE = "Predicate";
     public static final String TITLE = "Title";
-    public static final String GOOGLE_DRIVE_PATH = "GoogleDrivePath";
-    public static final String IS_DEEP_SEARCH = "IsDeepSearch";
+    public static final String ROOT_FOLDER = "RootFolder";
+    public static final String REMOTE_ROOT_FOLDER = "RemoteRootFolder";
     public static final String DOWNLOAD_TO_PATH_INITIAL = "DownloadToPathInitial";
     //out
     public static final String ITEMS = "Items";
@@ -40,65 +40,64 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
 
     public static final int REQUEST_DIRECTORY_CHOOSER = 4;
 
-    private GoogleArrayAdapter adapter;
+    private SyncArrayAdapter adapter;
     private GoogleDriveHelper googleDriveHelper;
 
     private ListView listView;
     private Button buttonOk;
     private Button buttonCancel;
     private Button buttonSelectAll;
-    private List<GoogleItem> files;
-    private List<GoogleItem> selectedFiles;
+
+    private ISyncItem currentItem;
 
     private DirectoryNamePredicate predicate;
     private String title;
-    private String googleDrivePath;
-    private boolean isDeepSearch;
+
+    private RootSyncItem rootSyncItem;
     private String downloadToPath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.andreaak.common.R.layout.shared_activity_google_files_chooser);
+        setContentView(R.layout.shared_activity_google_files_chooser);
 
-        listView = (ListView) findViewById(com.andreaak.common.R.id.lvMain);
+        listView = (ListView) findViewById(R.id.lvMain);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        buttonOk = (Button) findViewById(com.andreaak.common.R.id.buttonOk);
+        buttonOk = (Button) findViewById(R.id.buttonOk);
         buttonOk.setOnClickListener(this);
-        buttonCancel = (Button) findViewById(com.andreaak.common.R.id.buttonCancel);
+        buttonCancel = (Button) findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(this);
-        buttonSelectAll = (Button) findViewById(com.andreaak.common.R.id.buttonSelectAll);
+        buttonSelectAll = (Button) findViewById(R.id.buttonSelectAll);
         buttonSelectAll.setOnClickListener(this);
 
         googleDriveHelper = GoogleDriveHelper.getInstance();
         RestoreInParameters();
-        fill();
+        rootSyncItem.item.init();
+        fill(rootSyncItem);
     }
 
     private void RestoreInParameters() {
         predicate = (DirectoryNamePredicate) getIntent().getSerializableExtra(PREDICATE);
         title = getIntent().getStringExtra(TITLE);
-        googleDrivePath = getIntent().getStringExtra(GOOGLE_DRIVE_PATH);
-        isDeepSearch = getIntent().getBooleanExtra(IS_DEEP_SEARCH, false);
+        rootSyncItem = new RootSyncItem(getIntent().getStringExtra(ROOT_FOLDER),
+                                        getIntent().getStringExtra(REMOTE_ROOT_FOLDER));
         downloadToPath = getIntent().getStringExtra(DOWNLOAD_TO_PATH_INITIAL);
     }
 
-    private void fill() {
+    @SuppressLint("StaticFieldLeak")
+    private void fill(final ISyncItem item) {
         final boolean[] isDownload = {false};
         final IGoogleSearch act = this;
-        files = new ArrayList();
-        setTitle(com.andreaak.common.R.string.search);
+        setTitle(R.string.search);
 
         new AsyncTask<Void, String, Exception>() {
 
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    GoogleItem rootItem = googleDriveHelper.searchFolder("root", googleDrivePath);
-                    if (rootItem != null) {
-                        FillFiles(rootItem, files);
-                    }
+                    item.init();
+                    currentItem = item;
                     publishProgress("Search Completed");
                     isDownload[0] = true;
                 } catch (Exception ex) {
@@ -126,33 +125,29 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         }.execute();
     }
 
-    private void FillFiles(GoogleItem directory, List<GoogleItem> resItems) {
-        ArrayList<GoogleItem> items = googleDriveHelper.search(directory.getId(), null, null);
-        for (GoogleItem item : items) {
-            if(item.isFolder()) {
-                if(isDeepSearch) {
-                    FillFiles(item, resItems);
-                }
-            } else if (predicate.isValid(item.getTitle())) {
-                resItems.add(item);
-            }
-        }
-    }
-
     @Override
     public void onSearchFinished(Exception ex) {
         if (ex == null) {
-            for (GoogleItem item : files) {
-                item.setIsNew(downloadToPath);
-            }
-
-            adapter = new GoogleArrayAdapter(this, com.andreaak.common.R.layout.shared_list_item_google_files_chooser, files);
+            adapter = new SyncArrayAdapter(this, R.layout.shared_list_item_file_chooser, currentItem.getItems());
             listView.setAdapter(adapter);
             selectNew();
         } else {
-            Utils.showText(this, com.andreaak.common.R.string.search_fault);
+            Utils.showText(this, R.string.search_fault);
         }
         setTitle(title);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        SyncItem item = adapter.getItem(position);
+        if (item.getType() == ItemType.Directory || item.getType() == ItemType.ParentDirectory) {
+            //activityHelper.currentDir = new File(item.getPath());
+            fill(item);
+        } else {
+            //setOkButtonState(item);
+            view.setSelected(true);
+            //activityHelper.currentPosition = position;
+        }
     }
 
     @Override
@@ -190,7 +185,11 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
             return;
         }
         for (int i = 0; i < adapter.getCount(); i++) {
-            listView.setItemChecked(i, true);
+            SyncItem item = (SyncItem) adapter.getItem(i);
+            if(item.getType() == ItemType.File) {
+                item.setSelected(true);
+                listView.setItemChecked(i, true);
+            }
         }
     }
 
@@ -201,24 +200,16 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
             return;
         }
         for (int i = 0; i < adapter.getCount(); i++) {
-            GoogleItem item = (GoogleItem) adapter.getItem(i);
+            SyncItem item = (SyncItem) adapter.getItem(i);
             if (item.isNew()) {
+                item.setSelected(true);
                 listView.setItemChecked(i, true);
             }
         }
     }
 
     private void processSelection() {
-        SparseBooleanArray sbArray = listView.getCheckedItemPositions();
-        selectedFiles = new ArrayList<>();
 
-        for (int i = 0; i < sbArray.size(); i++) {
-            int key = sbArray.keyAt(i);
-            if (sbArray.get(key)) {
-                GoogleItem file = files.get(key);
-                selectedFiles.add(file);
-            }
-        }
         if (Utils.isEmpty(downloadToPath)) {
             selectDownloadFolder();
         } else {
@@ -237,7 +228,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     private void processSelection(String downloadToPath) {
 
         Intent intent = new Intent();
-        intent.putExtra(ITEMS, new GoogleItems(selectedFiles));
+        intent.putExtra(ITEMS, rootSyncItem);
         intent.putExtra(DOWNLOAD_TO_PATH, downloadToPath);
         setResult(RESULT_OK, intent);
         finish();
