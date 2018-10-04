@@ -28,6 +28,7 @@ import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.common.google.GoogleDriveHelper;
 import com.andreaak.common.google.GoogleItem;
 import com.andreaak.common.google.IConnectGoogleDrive;
+import com.andreaak.common.google.IGoogleActivity;
 import com.andreaak.common.google.IOperationGoogleDrive;
 import com.andreaak.common.google.OperationGoogleDrive;
 import com.andreaak.common.utils.Constants;
@@ -45,7 +46,7 @@ import java.util.Queue;
 import static com.andreaak.common.utils.Utils.showText;
 
 public class VerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
-        IOperationGoogleDrive, View.OnClickListener {
+        IOperationGoogleDrive, IGoogleActivity, View.OnClickListener {
 
     private static final String SOUND_FORMAT = "mp3";
     private static final String LANGUAGE = "en";
@@ -502,5 +503,10 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
             }
         }
         return files;
+    }
+
+    @Override
+    public void onFinished() {
+
     }
 }

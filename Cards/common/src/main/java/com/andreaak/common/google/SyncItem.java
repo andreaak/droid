@@ -32,9 +32,9 @@ public class SyncItem extends FileSystemItem implements Serializable {
     private static ItemType getItemType(File file, GoogleItem googleItem) {
 
         boolean isFolder = true;
-        if(googleItem != null) {
+        if (googleItem != null) {
             isFolder = googleItem.isFolder();
-        } else if(file.exists()) {
+        } else if (file.exists()) {
             isFolder = file.isDirectory();
         }
         return isFolder ? ItemType.Directory : ItemType.File;
@@ -46,12 +46,12 @@ public class SyncItem extends FileSystemItem implements Serializable {
 
 
         ArrayList<GoogleItem> subGoogleItems = null;
-        if(googleItem != null) {
+        if (googleItem != null) {
             subGoogleItems = GoogleDriveHelper.getInstance().search(googleItem.getId(), null, null);
         }
 
         File[] files = file.listFiles();
-        if(files != null) {
+        if (files != null) {
             for (File subFile : files) {
                 GoogleItem subGoogleItem = getGoogleItem(subGoogleItems, subFile.getName());
                 SyncItem syncItem = new SyncItem(subFile, subGoogleItem, this);
@@ -65,35 +65,53 @@ public class SyncItem extends FileSystemItem implements Serializable {
             }
         }
 
-        for(GoogleItem googleItem : subGoogleItems) {
-            File subFile = getFile(file.getAbsolutePath(), googleItem.getTitle());
-            SyncItem syncItem = new SyncItem(subFile, googleItem, this);
-            if(googleItem.isFolder()) {
-                syncItem.init();
+        if (subGoogleItems != null) {
+            for (GoogleItem googleItem : subGoogleItems) {
+                File subFile = getFile(file.getAbsolutePath(), googleItem.getTitle());
+                SyncItem syncItem = new SyncItem(subFile, googleItem, this);
+                if (googleItem.isFolder()) {
+                    syncItem.init();
+                }
+                items.add(syncItem);
             }
-            items.add(syncItem);
         }
     }
 
-    public boolean download() {
+    public boolean synchronize() {
         boolean res = true;
-        for(SyncItem item : items) {
-            if(item.isFolder()) {
-                res &= item.download();
-            } else if(item.isNeedDownload()) {
-                res &= GoogleDriveHelper.getInstance().saveToFile(item.googleItem.getId(), item.file);
+        for (SyncItem item : items) {
+            if (item.doesRemoteExist()) {
+                if (item.isFolder()) {
+                    res &= item.synchronize();
+                } else if (item.isNeedDownload()) {
+                    res &= GoogleDriveHelper.getInstance().saveToFile(item.googleItem.getId(), item.file);
+                }
+            } else {
+                delete(item.file);
             }
         }
         return res;
     }
 
+    private void delete(File file) {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File subFile : files) {
+                    delete(subFile);
+                }
+            }
+        }
+        file.delete();
+    }
+
     private GoogleItem getGoogleItem(ArrayList<GoogleItem> googleItems, String name) {
-        if(googleItems == null || googleItems.isEmpty()) {
+        if (googleItems == null || googleItems.isEmpty()) {
             return null;
         }
 
-        for(GoogleItem item : googleItems) {
-            if(name.equalsIgnoreCase(item.getTitle())) {
+        for (GoogleItem item : googleItems) {
+            if (name.equalsIgnoreCase(item.getTitle())) {
                 return item;
             }
         }
@@ -106,14 +124,14 @@ public class SyncItem extends FileSystemItem implements Serializable {
     }
 
     public boolean isNeedDownload() {
-        if(!doesRemoteExist()) {
+        if (!doesRemoteExist()) {
             return false;
         }
         return new Date(file.exists() ? file.lastModified() : 0).getTime() < googleItem.getDate().getTime();
     }
 
     public boolean isFolder() {
-        if(doesRemoteExist()) {
+        if (doesRemoteExist()) {
             return googleItem.isFolder();
         }
         return file.isDirectory();

@@ -21,6 +21,7 @@ import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.google.GoogleDriveHelper;
 import com.andreaak.common.google.GoogleItems;
+import com.andreaak.common.google.IGoogleActivity;
 import com.andreaak.common.google.OperationGoogleDrive;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
@@ -28,7 +29,7 @@ import com.andreaak.common.utils.logger.Logger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
-public class LessonChooseActivity extends HandleExceptionActivity implements View.OnClickListener {
+public class LessonChooseActivity extends HandleExceptionActivity implements IGoogleActivity, View.OnClickListener {
 
     private static final int REQUEST_LESSON_AND_LANGUAGE_CHOOSER = 1;
 
@@ -205,4 +206,8 @@ public class LessonChooseActivity extends HandleExceptionActivity implements Vie
         googleDriveHelper.saveFiles(items, path);
     }
 
+    @Override
+    public void onFinished() {
+
+    }
 }

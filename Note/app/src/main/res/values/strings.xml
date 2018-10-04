@@ -5,7 +5,7 @@
     <string name="connecting">Connecting...</string>
     <string name="db_fault">Database fault</string>
     <string name="download">Download</string>
-    <string name="download_file">Download file:</string>
+    <string name="download_file">Download:</string>
     <string name="download_success">Download success</string>
     <string name="download_fault">Download fault</string>
     <string name="google_error">Google Error</string>

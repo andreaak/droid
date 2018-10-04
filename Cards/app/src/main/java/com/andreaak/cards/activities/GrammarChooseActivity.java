@@ -15,6 +15,7 @@ import com.andreaak.cards.activities.helpers.FileItem;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.fileSystemItems.ItemType;
 import com.andreaak.common.google.GoogleDriveHelper;
+import com.andreaak.common.google.IGoogleActivity;
 import com.andreaak.common.google.OperationGoogleDrive;
 import com.andreaak.common.google.SyncHelper;
 import com.andreaak.common.utils.Constants;
@@ -24,7 +25,7 @@ import com.google.android.gms.common.AccountPicker;
 
 import java.util.List;
 
-public class GrammarChooseActivity extends ListActivity {
+public class GrammarChooseActivity extends ListActivity implements IGoogleActivity {
 
     //in
     public static final String PATH = "path";
@@ -56,7 +57,7 @@ public class GrammarChooseActivity extends ListActivity {
         googleDriveHelper = GoogleDriveHelper.getInstance();
         operationGoogleDriveHelper = new OperationGoogleDrive(
                 this,
-                getString(R.string.select_lesson),
+                getString(R.string.grammar),
                 com.andreaak.cards.R.id.groupGoogle);
         googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
     }
@@ -141,5 +142,10 @@ public class GrammarChooseActivity extends ListActivity {
         intent.putExtra(HtmlActivity.PATH, item.getPath());
         intent.putExtra(HtmlActivity.DESCRIPTION, item.getDescription());
         startActivity(intent);
+    }
+
+    @Override
+    public void onFinished() {
+        fill(helper.getCurrentPath());
     }
 }

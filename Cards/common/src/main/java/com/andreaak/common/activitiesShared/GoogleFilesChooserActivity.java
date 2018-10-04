@@ -129,8 +129,8 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     private void FillFiles(GoogleItem directory, List<GoogleItem> resItems) {
         ArrayList<GoogleItem> items = googleDriveHelper.search(directory.getId(), null, null);
         for (GoogleItem item : items) {
-            if(item.isFolder()) {
-                if(isDeepSearch) {
+            if (item.isFolder()) {
+                if (isDeepSearch) {
                     FillFiles(item, resItems);
                 }
             } else if (predicate.isValid(item.getTitle())) {

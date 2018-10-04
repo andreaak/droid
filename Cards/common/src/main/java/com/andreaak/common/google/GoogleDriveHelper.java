@@ -354,7 +354,7 @@ public class GoogleDriveHelper {
 
                     for (GoogleItem item : items.getItems()) {
                         publishProgress(activity.getString(R.string.download_file) + " " + item.getTitle());
-                        java.io.File targetFile = new java.io.File(path + "/" +item.getTitle());
+                        java.io.File targetFile = new java.io.File(path + "/" + item.getTitle());
                         res = saveToFile(item.getId(), targetFile) && res;
                     }
                     isDownload[0] = res;

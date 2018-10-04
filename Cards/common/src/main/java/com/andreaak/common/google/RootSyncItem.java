@@ -21,7 +21,7 @@ public class RootSyncItem implements Serializable {
         item.init();
     }
 
-    public boolean download() {
-        return item.download();
+    public boolean synchronize() {
+        return item.synchronize();
     }
 }

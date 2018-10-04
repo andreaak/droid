@@ -27,9 +27,9 @@ public class SyncHelper {
                 try {
                     publishProgress("Search started");
                     rootSyncItem.init();
-                    publishProgress("Download started");
-                    boolean res = rootSyncItem.download();
-                    if(!res) {
+                    publishProgress("Synchronization started");
+                    boolean res = rootSyncItem.synchronize();
+                    if (!res) {
                         throw new Exception("Download fault");
                     }
                     isDownload[0] = true;

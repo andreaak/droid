@@ -2,6 +2,7 @@ package com.andreaak.common.google;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 
@@ -14,14 +15,14 @@ import static com.andreaak.common.utils.Utils.showText;
 
 public class OperationGoogleDrive implements IOperationGoogleDrive {
 
-    private Activity activity;
+    private IGoogleActivity activity;
     private Menu menu;
-    private String appName;
+    private String title;
     private int group;
 
-    public OperationGoogleDrive(Activity activity, String appName, int group) {
+    public OperationGoogleDrive(IGoogleActivity activity, String title, int group) {
         this.activity = activity;
-        this.appName = appName;
+        this.title = title;
         this.group = group;
     }
 
@@ -35,27 +36,27 @@ public class OperationGoogleDrive implements IOperationGoogleDrive {
             googleDriveHelper.getEmailHolder().setEmail(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
             if (!googleDriveHelper.init()) {
                 showText(activity, R.string.no_google_account);
-                activity.setTitle(appName);
+                activity.setTitle(title);
                 Logger.d(Constants.LOG_TAG, activity.getString(R.string.no_google_account));
             } else {
                 googleDriveHelper.connect();
             }
         } else {
-            activity.setTitle(appName);
+            activity.setTitle(title);
         }
     }
 
     @Override
     public void onConnectionOK() {
         menu.setGroupVisible(group, true);
-        activity.setTitle(appName);
+        activity.setTitle(title);
     }
 
     @Override
     public void onConnectionFail(Exception ex) {
         menu.setGroupVisible(group, false);
-        Utils.showText(activity, R.string.google_error);
-        activity.setTitle(appName);
+        Utils.showText((Context) activity, R.string.google_error);
+        activity.setTitle(title);
         Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
     }
 
@@ -68,11 +69,12 @@ public class OperationGoogleDrive implements IOperationGoogleDrive {
     public void onOperationFinished(Exception ex) {
         menu.setGroupVisible(group, true);
         if (ex == null) {
-            Utils.showText(activity, R.string.download_success);
+            Utils.showText((Context) activity, R.string.download_success);
         } else {
-            Utils.showText(activity, R.string.download_fault);
+            Utils.showText((Context) activity, R.string.download_fault);
             Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
         }
-        activity.setTitle(appName);
+        activity.setTitle(title);
+        activity.onFinished();
     }
 }

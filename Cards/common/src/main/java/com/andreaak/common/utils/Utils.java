@@ -8,9 +8,7 @@ import com.andreaak.common.utils.logger.Logger;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 
 public class Utils {
@@ -51,7 +49,7 @@ public class Utils {
     }
 
     public static boolean saveToFile(InputStream is, File file) {
-        if(!checkOrCreateFolder(file)) {
+        if (!checkOrCreateFolder(file)) {
             return false;
         }
 
@@ -86,10 +84,10 @@ public class Utils {
 
     public static boolean checkOrCreateFolder(File file) {
         File parent = file.getParentFile();
-        if(!parent.exists()) {
+        if (!parent.exists()) {
             try {
                 parent.mkdir();
-            } catch (Exception e){
+            } catch (Exception e) {
                 Logger.e(Constants.LOG_TAG, e.getMessage(), e);
                 return false;
             }

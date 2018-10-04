@@ -21,6 +21,7 @@ import com.andreaak.common.activitiesShared.GoogleFilesChooserActivity;
 import com.andreaak.common.fileSystemItems.ItemType;
 import com.andreaak.common.google.GoogleDriveHelper;
 import com.andreaak.common.google.GoogleItems;
+import com.andreaak.common.google.IGoogleActivity;
 import com.andreaak.common.google.OperationGoogleDrive;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.logger.Logger;
@@ -29,7 +30,7 @@ import com.google.android.gms.common.AccountPicker;
 
 import java.util.List;
 
-public class VerbChooseActivity extends ListActivity {
+public class VerbChooseActivity extends ListActivity implements IGoogleActivity {
 
     //in
     public static final String PATH = "path";
@@ -168,5 +169,10 @@ public class VerbChooseActivity extends ListActivity {
         menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false);
 
         googleDriveHelper.saveFiles(items, path);
+    }
+
+    @Override
+    public void onFinished() {
+
     }
 }

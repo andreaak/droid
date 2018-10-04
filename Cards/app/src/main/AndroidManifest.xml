@@ -110,7 +110,7 @@
         </activity>
         <activity
             android:name=".activities.GrammarChooseActivity"
-            android:label="@string/app_name"
+            android:label="@string/grammar"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.cards.activities.GrammarChooseActivity" />
 

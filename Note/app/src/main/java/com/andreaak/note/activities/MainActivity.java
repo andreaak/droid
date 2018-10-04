@@ -1,6 +1,5 @@
 package com.andreaak.note.activities;
 
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,7 +13,8 @@ import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.google.EmailHolder;
 import com.andreaak.common.google.GoogleDriveHelper;
 import com.andreaak.common.google.GoogleItems;
-import com.andreaak.common.google.IOperationGoogleDrive;
+import com.andreaak.common.google.IGoogleActivity;
+import com.andreaak.common.google.OperationGoogleDrive;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.FileLogger;
@@ -31,7 +31,7 @@ import com.google.android.gms.common.AccountPicker;
 
 import static com.andreaak.common.utils.Utils.showText;
 
-public class MainActivity extends Activity implements IOperationGoogleDrive {
+public class MainActivity extends Activity implements IGoogleActivity {
 
     private static final int REQUEST_FILE_CHOOSER = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
@@ -39,10 +39,13 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
     private static final int REQUEST_PREFERENCES = 4;
 
     private EmailHolder emailHolder;
-    private Menu menu;
-    private GoogleDriveHelper helper;
+
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
     private boolean isPrefChanged;
+
+    private Menu menu;
+    private GoogleDriveHelper googleDriveHelper;
+    private OperationGoogleDrive operationGoogleDriveHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,11 +55,11 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
     }
 
     private void onRestoreNonConfigurationInstance() {
-        helper = (GoogleDriveHelper) getLastNonConfigurationInstance();
-        if (helper == null) {
+        googleDriveHelper = (GoogleDriveHelper) getLastNonConfigurationInstance();
+        if (googleDriveHelper == null) {
             SharedPreferencesHelper.initInstance(this);
             GoogleDriveHelper.initInstance(new EmailHolder());
-            helper = GoogleDriveHelper.getInstance();
+            googleDriveHelper = GoogleDriveHelper.getInstance();
             emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
             Utils.init(this);
             AppConfigs.getInstance().init(this);
@@ -72,20 +75,31 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
                     .registerOnSharedPreferenceChangeListener(prefListener);
 
         }
-        helper.setActivity(this);
+        operationGoogleDriveHelper = new OperationGoogleDrive(
+                this,
+                getString(R.string.app_name),
+                com.andreaak.note.R.id.groupGoogle);
+        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
         emailHolder = GoogleDriveHelper.getInstance().getEmailHolder();
     }
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return helper;
+        return googleDriveHelper;
+    }
+
+    @Override
+    protected void onRestart() {
+        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
+        super.onRestart();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.setGroupVisible(R.id.groupGoogle, helper.isConnected());
+        menu.setGroupVisible(R.id.groupGoogle, googleDriveHelper.isConnected());
         this.menu = menu;
+        operationGoogleDriveHelper.setMenu(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -134,25 +148,13 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
                 }
                 break;
             case REQUEST_GOOGLE_CONNECT:
-                setTitle(R.string.connecting);
-                if (data != null && data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) != null) {
-                    emailHolder.setEmail(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
-                    if (!helper.init()) {
-                        showText(this, R.string.no_google_account);
-                        setTitle(R.string.app_name);
-                        Logger.d(Constants.LOG_TAG, getString(R.string.no_google_account));
-                    } else {
-                        helper.connect();
-                    }
-                } else {
-                    setTitle(com.andreaak.note.R.string.app_name);
-                }
+                operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
                 break;
             case REQUEST_GOOGLE_FILES_CHOOSER:
                 if (resultCode == RESULT_OK) {
                     GoogleItems items = (GoogleItems)data.getSerializableExtra(GoogleFilesChooserActivity.ITEMS);
                     String path = data.getStringExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH);
-                    downloadFromGoogleDrive(items, path);
+                    downloadFromGoogleDrive(items, AppConfigs.getInstance().DownloadDir);
                 }
                 break;
             case REQUEST_PREFERENCES:
@@ -181,9 +183,9 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
     private void getGoogleFiles() {
         Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
         intent.putExtra(GoogleFilesChooserActivity.PREDICATE, new DatabaseNamePredicate());
-        intent.putExtra(GoogleFilesChooserActivity.APP_NAME, getString(com.andreaak.note.R.string.app_name));
+        intent.putExtra(GoogleFilesChooserActivity.TITLE, getString(com.andreaak.note.R.string.app_name));
         intent.putExtra(GoogleFilesChooserActivity.GOOGLE_DRIVE_PATH, AppConfigs.getInstance().GoogleDir);
-        intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().DownloadDir);
+        intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().WorkingDir);
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);
     }
 
@@ -194,7 +196,7 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
 
         menu.setGroupVisible(R.id.groupGoogle, false);
 
-        helper.saveFiles(items, path);
+        googleDriveHelper.saveFiles(items, path);
     }
 
     private void checkDatabase(String path) {
@@ -213,33 +215,7 @@ public class MainActivity extends Activity implements IOperationGoogleDrive {
     }
 
     @Override
-    public void onConnectionOK() {
-        menu.setGroupVisible(R.id.groupGoogle, true);
-        setTitle(R.string.app_name);
-    }
+    public void onFinished() {
 
-    @Override
-    public void onConnectionFail(Exception ex) {
-        menu.setGroupVisible(R.id.groupGoogle, false);
-        showText(this, R.string.google_error);
-        setTitle(R.string.app_name);
-        Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-    }
-
-    @Override
-    public void onOperationProgress(String message) {
-        setTitle(message);
-    }
-
-    @Override
-    public void onOperationFinished(Exception ex) {
-        menu.setGroupVisible(R.id.groupGoogle, true);
-        if (ex == null) {
-            showText(this, R.string.download_success);
-        } else {
-            showText(this, R.string.download_fault);
-            Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-        }
-        setTitle(R.string.app_name);
     }
 }

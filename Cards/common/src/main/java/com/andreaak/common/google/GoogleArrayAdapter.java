@@ -34,8 +34,8 @@ public class GoogleArrayAdapter extends ArrayAdapter<GoogleItem> {
     public View getView(int position, View convertView, ViewGroup parent) {
         //View view = convertView;
         //if (view == null) {
-            LayoutInflater vi = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = vi.inflate(id, null);
+        LayoutInflater vi = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = vi.inflate(id, null);
         //}
 
         final GoogleItem item = items.get(position);
