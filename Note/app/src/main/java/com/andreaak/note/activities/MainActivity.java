@@ -152,7 +152,7 @@ public class MainActivity extends Activity implements IGoogleActivity {
                 break;
             case REQUEST_GOOGLE_FILES_CHOOSER:
                 if (resultCode == RESULT_OK) {
-                    GoogleItems items = (GoogleItems)data.getSerializableExtra(GoogleFilesChooserActivity.ITEMS);
+                    GoogleItems items = (GoogleItems) data.getSerializableExtra(GoogleFilesChooserActivity.ITEMS);
                     String path = data.getStringExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH);
                     downloadFromGoogleDrive(items, AppConfigs.getInstance().DownloadDir);
                 }

@@ -95,6 +95,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     String newFile = path + "/" + file.getName();
                     AppConfigs.getInstance().saveLogFile(newFile);
                     logFilePref.setText(newFile);
+                    logFilePref.setSummary(newFile);
                 }
                 break;
             case REQUEST_DB_DIRECTORY_CHOOSER:
@@ -102,6 +103,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
                     AppConfigs.getInstance().saveWorkingDirectory(path);
                     dbFolderPref.setText(path);
+                    dbFolderPref.setSummary(path);
                 }
                 break;
             case REQUEST_DOWNLOAD_DIRECTORY_CHOOSER:
@@ -109,6 +111,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     String path = data.getStringExtra(DirectoryChooserActivity.DIRECTORY_PATH);
                     AppConfigs.getInstance().saveDownloadDirectory(path);
                     downloadFolderPref.setText(path);
+                    downloadFolderPref.setSummary(path);
                 }
                 break;
         }
