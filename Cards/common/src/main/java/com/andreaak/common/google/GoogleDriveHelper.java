@@ -77,8 +77,9 @@ public class GoogleDriveHelper {
                 Logger.d(LOG_TAG, "Google drive initialized");
                 return true;
             }
-        } catch (Exception e) {
-            Logger.e(LOG_TAG, e.getMessage(), e);
+        } catch (Exception ex) {
+            Logger.e(LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         }
         return false;
     }
@@ -97,26 +98,30 @@ public class GoogleDriveHelper {
                         service.files().get("root").setFields("title").execute();
                         isConnected = true;
                         Logger.d(LOG_TAG, "Google drive connected");
-                    } catch (UserRecoverableAuthIOException e) {  // standard authorization failure - user fixable
-                        Logger.e(LOG_TAG, e.getMessage(), e);
-                        return e;
-                    } catch (GoogleAuthIOException e) {  // usually PackageName /SHA1 mismatch in DevConsole
-                        Logger.e(LOG_TAG, e.getMessage(), e);
-                        return e;
-                    } catch (IOException e) {   // '404 not found' in FILE scope, consider connected
-                        if (e instanceof GoogleJsonResponseException) {
-                            if (404 == ((GoogleJsonResponseException) e).getStatusCode()) {
+                    } catch (UserRecoverableAuthIOException ex) {  // standard authorization failure - user fixable
+                        Logger.e(LOG_TAG, ex.getMessage(), ex);
+                        ex.printStackTrace();
+                        return ex;
+                    } catch (GoogleAuthIOException ex) {  // usually PackageName /SHA1 mismatch in DevConsole
+                        Logger.e(LOG_TAG, ex.getMessage(), ex);
+                        ex.printStackTrace();
+                        return ex;
+                    } catch (IOException ex) {   // '404 not found' in FILE scope, consider connected
+                        ex.printStackTrace();
+                        if (ex instanceof GoogleJsonResponseException) {
+                            if (404 == ((GoogleJsonResponseException) ex).getStatusCode()) {
                                 isConnected = true;
                                 Logger.d(LOG_TAG, "Google drive connected");
                             }
 
                         } else {
-                            Logger.e(LOG_TAG, e.getMessage(), e);
-                            return e;
+                            Logger.e(LOG_TAG, ex.getMessage(), ex);
+                            return ex;
                         }
-                    } catch (Exception e) {  // "the name must not be empty" indicates
-                        Logger.e(LOG_TAG, e.getMessage(), e);           // UNREGISTERED / EMPTY account in 'setSelectedAccountName()' above
-                        return e;
+                    } catch (Exception ex) {  // "the name must not be empty" indicates
+                        Logger.e(LOG_TAG, ex.getMessage(), ex);           // UNREGISTERED / EMPTY account in 'setSelectedAccountName()' above
+                        ex.printStackTrace();
+                        return ex;
                     }
                     return null;
                 }
@@ -209,8 +214,9 @@ public class GoogleDriveHelper {
                 }
                 while (pageToken != null && pageToken.length() > 0);
 
-            } catch (Exception e) {
-                Logger.e(LOG_TAG, e.getMessage(), e);
+            } catch (Exception ex) {
+                Logger.e(LOG_TAG, ex.getMessage(), ex);
+                ex.printStackTrace();
             }
         }
         return result;
@@ -241,14 +247,16 @@ public class GoogleDriveHelper {
             File gFl = null;
             try {
                 gFl = service.files().insert(meta).execute();
-            } catch (Exception e) {
-                Logger.e(LOG_TAG, e.getMessage(), e);
+            } catch (Exception ex) {
+                Logger.e(LOG_TAG, ex.getMessage(), ex);
+                ex.printStackTrace();
             }
             if (gFl != null && gFl.getId() != null) {
                 rsId = gFl.getId();
             }
-        } catch (Exception e) {
-            Logger.e(LOG_TAG, e.getMessage(), e);
+        } catch (Exception ex) {
+            Logger.e(LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         }
         return rsId;
     }
@@ -273,8 +281,9 @@ public class GoogleDriveHelper {
             File gFl = service.files().insert(meta, new FileContent(mime, file)).execute();
             if (gFl != null)
                 rsId = gFl.getId();
-        } catch (Exception e) {
-            Logger.e(LOG_TAG, e.getMessage(), e);
+        } catch (Exception ex) {
+            Logger.e(LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         }
         return rsId;
     }
@@ -287,8 +296,9 @@ public class GoogleDriveHelper {
                     String strUrl = googleFile.getDownloadUrl();
                     return Utils.saveToFile(service.getRequestFactory().buildGetRequest(new GenericUrl(strUrl)).execute().getContent(), file);
                 }
-            } catch (Exception e) {
-                Logger.e(LOG_TAG, e.getMessage(), e);
+            } catch (Exception ex) {
+                Logger.e(LOG_TAG, ex.getMessage(), ex);
+                ex.printStackTrace();
             }
         return false;
     }
@@ -316,8 +326,9 @@ public class GoogleDriveHelper {
             else
                 gFl = service.files().update(resId, meta, new FileContent(mime, file)).execute();
 
-        } catch (Exception e) {
-            Logger.e(LOG_TAG, e.getMessage(), e);
+        } catch (Exception ex) {
+            Logger.e(LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         }
         return gFl == null ? null : gFl.getId();
     }
@@ -331,8 +342,9 @@ public class GoogleDriveHelper {
     public boolean trash(String resId) {
         if (service != null && isConnected && resId != null) try {
             return null != service.files().trash(resId).execute();
-        } catch (Exception e) {
-            Logger.e(LOG_TAG, e.getMessage(), e);
+        } catch (Exception ex) {
+            Logger.e(LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         }
         return false;
     }
@@ -358,9 +370,10 @@ public class GoogleDriveHelper {
                         res = saveToFile(item.getId(), targetFile) && res;
                     }
                     isDownload[0] = res;
-                } catch (Exception e) {
-                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-                    return e;
+                } catch (Exception ex) {
+                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                    ex.printStackTrace();
+                    return ex;
                 }
                 return null;
             }

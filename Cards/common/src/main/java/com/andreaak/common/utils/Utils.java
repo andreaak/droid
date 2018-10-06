@@ -66,13 +66,15 @@ public class Utils {
             }
             fileOutput.close();
             return true;
-        } catch (Exception e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+        } catch (Exception ex) {
+            Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         } finally {
             try {
                 if (bufferedStream != null) bufferedStream.close();
-            } catch (Exception e) {
-                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            } catch (Exception ex) {
+                Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                ex.printStackTrace();
             }
         }
         return false;
@@ -87,8 +89,9 @@ public class Utils {
         if (!parent.exists()) {
             try {
                 parent.mkdir();
-            } catch (Exception e) {
-                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            } catch (Exception ex) {
+                Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                ex.printStackTrace();
                 return false;
             }
         }

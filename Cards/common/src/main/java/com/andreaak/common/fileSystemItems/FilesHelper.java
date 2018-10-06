@@ -55,8 +55,9 @@ public class FilesHelper {
                         files.add(fileItem);
                     }
                 }
-            } catch (Exception e) {
-                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            } catch (Exception ex) {
+                Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                ex.printStackTrace();
             }
         }
 

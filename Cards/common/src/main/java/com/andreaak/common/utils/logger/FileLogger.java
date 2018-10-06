@@ -22,8 +22,9 @@ public class FileLogger implements ILogger {
         }
         try {
             log.createNewFile();
-        } catch (IOException e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+        } catch (IOException ex) {
+            Log.e(Constants.LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         }
     }
 
@@ -50,8 +51,9 @@ public class FileLogger implements ILogger {
             buf.append(message);
             buf.flush();
             buf.close();
-        } catch (IOException e) {
-            Log.e(Constants.LOG_TAG, e.getMessage(), e);
+        } catch (IOException ex) {
+            Log.e(Constants.LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         }
     }
 
@@ -61,7 +63,7 @@ public class FileLogger implements ILogger {
 
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%1$s Ex: %2$s \nExceeption: %3$s", formattedDate, msg, tr.getClass().toString()) + '\n');
-        StackTraceElement[] elements = tr.getStackTrace();
+
         for (StackTraceElement el : tr.getStackTrace()) {
             sb.append(String.format("at %1$s.%2$s (%3$s:%4$d)", el.getClassName(), el.getMethodName(), el.getFileName(), el.getLineNumber()) + '\n');
         }

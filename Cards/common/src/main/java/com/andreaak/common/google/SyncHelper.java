@@ -35,6 +35,7 @@ public class SyncHelper {
                     isDownload[0] = true;
                 } catch (Exception ex) {
                     Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                    ex.printStackTrace();
                     return ex;
                 }
                 return null;

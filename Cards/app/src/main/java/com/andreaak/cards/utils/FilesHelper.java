@@ -26,15 +26,17 @@ public class FilesHelper {
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
-        } catch (Exception e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+        } catch (Exception ex) {
+            Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
         } finally {
             // Always close files.
             if (bufferedReader != null) {
                 try {
                     bufferedReader.close();
-                } catch (IOException e) {
-                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                } catch (IOException ex) {
+                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                    ex.printStackTrace();
                 }
             }
         }

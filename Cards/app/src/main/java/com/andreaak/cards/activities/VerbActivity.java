@@ -193,9 +193,10 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
                             null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true,
                             null, null, null, null),
                             REQUEST_GOOGLE_CONNECT);
-                } catch (Exception e) {
+                } catch (Exception ex) {
                     Logger.d(Constants.LOG_TAG, "Google services problem");
-                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                    ex.printStackTrace();
                 }
                 return true;
             }
@@ -433,6 +434,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
                     isDownload[0] = true;
                 } catch (Exception ex) {
                     Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                    ex.printStackTrace();
                     return ex;
                 }
                 return null;

@@ -103,6 +103,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
                     isDownload[0] = true;
                 } catch (Exception ex) {
                     Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                    ex.printStackTrace();
                     return ex;
                 }
                 return null;

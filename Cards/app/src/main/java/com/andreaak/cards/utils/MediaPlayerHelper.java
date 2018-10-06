@@ -41,6 +41,7 @@ public class MediaPlayerHelper {
             return true;
         } catch (Exception ex) {
             Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
             IsActive = false;
             return false;
         }

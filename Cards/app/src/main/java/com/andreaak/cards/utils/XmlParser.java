@@ -196,8 +196,10 @@ public class XmlParser {
             return true;
         } catch (TransformerConfigurationException e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
         } catch (TransformerException e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
         }
         return false;
     }
