@@ -2,6 +2,7 @@ package com.andreaak.cards.utils;
 
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
+import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.WordItem;
 
 import java.io.File;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class AppUtils {
 
-    public static File[] getLessons(String path) {
+    public static LessonItem[] getLessons(String path) {
         File directory = new File(path);
         File[] files = directory.listFiles(new FilenameFilter() {
             @Override
@@ -20,11 +21,15 @@ public class AppUtils {
                 return s.startsWith(AppConfigs.getInstance().LessonsPrefix);
             }
         });
-        if (files == null) {
-            files = new File[0];
+        ArrayList<LessonItem> res = new ArrayList<>();
+        if (files != null) {
+            Arrays.sort(files);
+            for (File file : files) {
+                res.add(new LessonItem(file));
+            }
         }
-        Arrays.sort(files);
-        return files;
+
+        return res.toArray(new LessonItem[0]);
     }
 
     public static List<LanguageItem> getLangs(ArrayList<WordItem> words) {

@@ -34,6 +34,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     public static final String GOOGLE_DRIVE_PATH = "GoogleDrivePath";
     public static final String IS_DEEP_SEARCH = "IsDeepSearch";
     public static final String DOWNLOAD_TO_PATH_INITIAL = "DownloadToPathInitial";
+    public static final String WORKING_FOLDER_PATH = "WorkingFolderPath";
     //out
     public static final String ITEMS = "Items";
     public static final String DOWNLOAD_TO_PATH = "DownloadToPath";
@@ -55,6 +56,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     private String googleDrivePath;
     private boolean isDeepSearch;
     private String downloadToPath;
+    private String workingFolderPath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +84,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         googleDrivePath = getIntent().getStringExtra(GOOGLE_DRIVE_PATH);
         isDeepSearch = getIntent().getBooleanExtra(IS_DEEP_SEARCH, false);
         downloadToPath = getIntent().getStringExtra(DOWNLOAD_TO_PATH_INITIAL);
+        workingFolderPath = getIntent().getStringExtra(WORKING_FOLDER_PATH);
     }
 
     private void fill() {
@@ -144,7 +147,7 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
     public void onSearchFinished(Exception ex) {
         if (ex == null) {
             for (GoogleItem item : files) {
-                item.setIsNew(downloadToPath);
+                item.setIsNew(downloadToPath, workingFolderPath);
             }
 
             adapter = new GoogleArrayAdapter(this, com.andreaak.common.R.layout.shared_list_item_google_files_chooser, files);

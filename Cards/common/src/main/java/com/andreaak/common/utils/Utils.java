@@ -9,11 +9,16 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Utils {
 
     private static final String TITL_FMT = "yyMMdd-HHmmss";
+    private final static String BETWEEN_LOWER_AND_UPPER = "(?<=\\p{Ll})(?=\\p{Lu})";
+    private final static String BEFORE_UPPER_AND_LOWER = "(?<=\\p{L})(?=\\p{Lu}\\p{Ll})";
 
     public static Context acx;
 
@@ -82,6 +87,30 @@ public class Utils {
 
     public static String getFileNameWithoutExtensions(String fileName) {
         return fileName.replaceFirst("[.][^.]+$", "");
+    }
+
+    static Pattern SPLIT_CAMEL_CASE = Pattern.compile(
+            BETWEEN_LOWER_AND_UPPER +"|"+ BEFORE_UPPER_AND_LOWER + "|" + "_"
+    );
+
+    public static String[] splitCamelCaseString(String s) {
+        return SPLIT_CAMEL_CASE.split(s);
+    }
+
+    public static String getDisplayName(String fileName, String prefix) {
+        String[] res =
+                Utils.splitCamelCaseString(
+                        Utils.getFileNameWithoutExtensions(fileName)
+                                .replace(prefix, ""));
+
+        StringBuilder sb = new StringBuilder();
+        for (String str : res) {
+            if(sb.length() != 0) {
+                sb.append(" ");
+            }
+            sb.append(str.substring(0, 1).toUpperCase() + str.substring(1));
+        }
+        return sb.toString();
     }
 
     public static boolean checkOrCreateFolder(File file) {

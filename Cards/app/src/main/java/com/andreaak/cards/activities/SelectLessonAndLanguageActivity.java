@@ -12,12 +12,12 @@ import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
 import com.andreaak.cards.adapters.LangSpinAdapter;
 import com.andreaak.cards.adapters.LessonsSpinAdapter;
 import com.andreaak.cards.model.LanguageItem;
+import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,14 +74,14 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
         }
     }
 
-    private void initializeLessonsSpinner(File[] lessons) {
+    private void initializeLessonsSpinner(LessonItem[] lessons) {
 
         lessonsAdapter = new LessonsSpinAdapter(SelectLessonAndLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
                 lessons);
         spinnerLessons.setAdapter(lessonsAdapter);
         if (helper.isRestore) {
-            int position = lessonsAdapter.getPosition(helper.lessonFile);
+            int position = lessonsAdapter.getPosition(helper.lessonItem);
             spinnerLessons.setSelected(false);  // must
             spinnerLessons.setSelection(position, true);  //must
             initializeLanguageSpinner(helper.lessonItem.getWords());
@@ -93,9 +93,8 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
             public void onItemSelected(AdapterView<?> adapterView, View view,
                                        int position, long id) {
 
-                File lessonFile = lessonsAdapter.getItem(position);
-                helper.lessonFile = lessonFile;
-                helper.lessonItem = XmlParser.parseLesson(lessonFile);
+                LessonItem lessonItem = lessonsAdapter.getItem(position);
+                helper.lessonItem = XmlParser.parseLesson(lessonItem);
                 initializeLanguageSpinner(helper.lessonItem.getWords());
             }
 
@@ -108,7 +107,6 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
     private void initializeLanguageSpinner(ArrayList<WordItem> words) {
 
         List<LanguageItem> langs = AppUtils.getLangs(words);
-        ;
 
         langAdapter = new LangSpinAdapter(SelectLessonAndLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,

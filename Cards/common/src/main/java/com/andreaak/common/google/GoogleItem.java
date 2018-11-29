@@ -54,10 +54,17 @@ public class GoogleItem implements Serializable {
         return mime != null && GoogleDriveHelper.MIME_FLDR.equalsIgnoreCase(mime);
     }
 
-    public void setIsNew(String directoryPath) {
+    public void setIsNew(String directoryPath, String workingFolderPath) {
+        isNewItem = isNewItem(directoryPath) && isNewItem(workingFolderPath);
+    }
+
+    private boolean isNewItem(String directoryPath) {
+        if(directoryPath == null) {
+            return true;
+        }
         String filePath = directoryPath + "/" + title;
         java.io.File file = new java.io.File(filePath);
-        isNewItem = new Date(file.exists() ? file.lastModified() : 0).getTime() < date.getTime();
+        return new Date(file.exists() ? file.lastModified() : 0).getTime() < date.getTime();
     }
 
     //public String getFormattedDate() { return dateFormat.format(date); }

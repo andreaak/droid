@@ -12,12 +12,20 @@ import java.util.Queue;
 
 public class MediaPlayerHelper {
 
+    public static final int DELAY_BETWEEN_WORDS = 500;
+
     private MediaPlayer mediaPlayer;
     private Context context;
     private Queue<String> files;
     public boolean IsActive;
+    private int delay;
 
     public void playSound(Context context, Queue<String> files) {
+
+        playSound(context, files, 0);
+    }
+
+    public void playSound(Context context, Queue<String> files, int delay) {
 
         if (IsActive) {
             return;
@@ -25,7 +33,7 @@ public class MediaPlayerHelper {
         IsActive = true;
         this.files = files;
         this.context = context;
-
+        this.delay = delay > 0 ? delay : DELAY_BETWEEN_WORDS;
         playSound(files.poll());
     }
 
@@ -33,7 +41,7 @@ public class MediaPlayerHelper {
         try {
             Uri sound = Uri.parse("file://" + filePath);
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);
             mediaPlayer.setOnCompletionListener(onCompletionListener);
             mediaPlayer.setDataSource(context, sound);
             mediaPlayer.prepare(); // might take long! (for buffering, etc)
@@ -55,7 +63,7 @@ public class MediaPlayerHelper {
             } else {
                 reset();
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

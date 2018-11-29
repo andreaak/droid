@@ -1,8 +1,7 @@
 package com.andreaak.cards.activities.helpers;
 
-import java.io.File;
+import com.andreaak.cards.model.LessonItem;
 
 public class SelectLessonAndLanguageHelper extends SelectLanguageHelper implements java.io.Serializable {
-    public File[] lessons;
-    public File lessonFile;
+    public LessonItem[] lessons;
 }

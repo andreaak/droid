@@ -400,14 +400,14 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
     @Override
     public void onConnectionOK() {
         menu.setGroupVisible(R.id.groupGoogle, true);
-        //setTitle(helper.lessonItem.getName());
+        //setTitle(helper.lessonItem.getDisplayName());
     }
 
     @Override
     public void onConnectionFail(Exception ex) {
         menu.setGroupVisible(R.id.groupGoogle, false);
         showText(this, R.string.google_error);
-        //setTitle(helper.lessonItem.getName());
+        //setTitle(helper.lessonItem.getDisplayName());
         Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
     }
 

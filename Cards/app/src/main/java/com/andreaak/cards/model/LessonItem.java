@@ -1,34 +1,41 @@
 package com.andreaak.cards.model;
 
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.utils.Utils;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class LessonItem implements Serializable {
 
-    private String name;
+    private String displayName;
     private String fileName;
     private String path;
+    private File file;
 
     private LanguageItem languageItem;
     private String currentLanguage;
     private ArrayList<WordItem> words = new ArrayList<>();
 
-    public LessonItem(String fileName, String path) {
-        this.fileName = fileName;
-        this.name = Utils.getFileNameWithoutExtensions(fileName);
-        this.path = path;
+    public LessonItem(File lessonFile) {
+        this.fileName = lessonFile.getName();
+        this.displayName = Utils.getDisplayName(fileName, AppConfigs.getInstance().LessonsPrefix);
+        this.path = lessonFile.getAbsolutePath();
+        this.file = lessonFile;
     }
 
     public ArrayList<WordItem> getWords() {
         return words;
     }
 
+    public void clear() {
+        words.clear();
+    }
+
     public void add(WordItem word) {
         words.add(word);
     }
-
 
     public LanguageItem getLanguageItem() {
         return languageItem;
@@ -39,8 +46,8 @@ public class LessonItem implements Serializable {
         currentLanguage = languageItem.getPrimaryLanguage();
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getFileName() {
@@ -78,5 +85,9 @@ public class LessonItem implements Serializable {
                 break;
             }
         }
+    }
+
+    public File getFile() {
+        return file;
     }
 }

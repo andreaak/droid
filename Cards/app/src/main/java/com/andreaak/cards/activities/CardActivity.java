@@ -117,7 +117,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             helper = (CardActivityHelper) getIntent()
                     .getSerializableExtra(CardActivity.HELPER);
 
-            setTitle(helper.lessonItem.getName());
+            setTitle(helper.lessonItem.getDisplayName());
         }
 
         googleDriveHelper = GoogleDriveHelper.getInstance();
@@ -142,7 +142,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         spinnerWords = (android.widget.Spinner) item.getActionView();
         spinnerWords.setVisibility(View.GONE);
         if (helper.lessonItem.isContainsWords()) {
-            setTitle(helper.lessonItem.getName());
+            setTitle(helper.lessonItem.getDisplayName());
             helper.lessonItem.resetLanguage();
             initializeWordsSpinner(helper.lessonItem.getWords(), helper.lessonItem.getCurrentLanguage());
         }
@@ -471,14 +471,14 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     @Override
     public void onConnectionOK() {
         menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, true);
-        setTitle(helper.lessonItem.getName());
+        setTitle(helper.lessonItem.getDisplayName());
     }
 
     @Override
     public void onConnectionFail(Exception ex) {
         menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false);
         showText(this, com.andreaak.cards.R.string.google_error);
-        setTitle(helper.lessonItem.getName());
+        setTitle(helper.lessonItem.getDisplayName());
         Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
     }
 
@@ -541,7 +541,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         Utils.showText(this, (ex == null) ?
                 R.string.upload_success :
                 R.string.upload_fault);
-        setTitle(helper.lessonItem.getName());
+        setTitle(helper.lessonItem.getDisplayName());
     }
 
     @Override

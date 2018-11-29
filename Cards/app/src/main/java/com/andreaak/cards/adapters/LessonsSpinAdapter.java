@@ -6,17 +6,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.andreaak.cards.model.LessonItem;
 import com.andreaak.common.utils.Utils;
 
-import java.io.File;
-
-public class LessonsSpinAdapter extends ArrayAdapter<File> {
+public class LessonsSpinAdapter extends ArrayAdapter<LessonItem> {
 
     private Context context;
-    private File[] values;
+    private LessonItem[] values;
 
     public LessonsSpinAdapter(Context context, int textViewResourceId,
-                              File[] values) {
+                              LessonItem[] values) {
         super(context, textViewResourceId, values);
         this.context = context;
         this.values = values;
@@ -28,7 +27,7 @@ public class LessonsSpinAdapter extends ArrayAdapter<File> {
     }
 
     @Override
-    public File getItem(int position) {
+    public LessonItem getItem(int position) {
         return values[position];
     }
 
@@ -40,7 +39,7 @@ public class LessonsSpinAdapter extends ArrayAdapter<File> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(Utils.getFileNameWithoutExtensions(values[position].getName()));
+        label.setText(Utils.getFileNameWithoutExtensions(values[position].getDisplayName()));
         label.setTextSize(20);
         label.setPadding(2, 5, 2, 2);
 
@@ -51,7 +50,7 @@ public class LessonsSpinAdapter extends ArrayAdapter<File> {
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(Utils.getFileNameWithoutExtensions(values[position].getName()));
+        label.setText(Utils.getFileNameWithoutExtensions(values[position].getDisplayName()));
         label.setTextSize(20);
         label.setPadding(2, 5, 2, 2);
 

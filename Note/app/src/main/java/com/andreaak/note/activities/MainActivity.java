@@ -185,7 +185,8 @@ public class MainActivity extends Activity implements IGoogleActivity {
         intent.putExtra(GoogleFilesChooserActivity.PREDICATE, new DatabaseNamePredicate());
         intent.putExtra(GoogleFilesChooserActivity.TITLE, getString(com.andreaak.note.R.string.app_name));
         intent.putExtra(GoogleFilesChooserActivity.GOOGLE_DRIVE_PATH, AppConfigs.getInstance().GoogleDir);
-        intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().WorkingDir);
+        intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().DownloadDir);
+        intent.putExtra(GoogleFilesChooserActivity.WORKING_FOLDER_PATH, AppConfigs.getInstance().WorkingDir);
         startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);
     }
 
