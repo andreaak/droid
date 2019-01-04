@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.CardActivityHelper;
-import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
@@ -117,9 +116,9 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
         switch (requestCode) {
             case REQUEST_LESSON_AND_LANGUAGE_CHOOSER:
                 if (resultCode == RESULT_OK) {
-                    SelectLessonAndLanguageHelper selectHelper = (SelectLessonAndLanguageHelper) data.getSerializableExtra(SelectLessonAndLanguageActivity.HELPER);
-                    if (selectHelper.lessonItem.isContainsWords()) {
-                        openCard(selectHelper.lessonItem);
+                    LessonItem lessonItem = (LessonItem) data.getSerializableExtra(SelectLessonAndLanguageActivity.LESSON);
+                    if (lessonItem.isContainsWords()) {
+                        openCard(lessonItem);
                     }
                 }
                 break;

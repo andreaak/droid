@@ -35,17 +35,24 @@ public class AppUtils {
     public static List<LanguageItem> getLangs(ArrayList<WordItem> words) {
 
         List<LanguageItem> langItems = new ArrayList<LanguageItem>();
-        WordItem word = words.get(words.size() - 1);
 
-        String[] langs = word.getLangs();
-        for (int i = 0; i < langs.length - 1; i++) {
-            for (int j = i + 1; j < word.getLangs().length; j++) {
-                langItems.add(new LanguageItem(langs[i], langs[j]));
-                langItems.add(new LanguageItem(langs[j], langs[i]));
+        for (WordItem word: words ) {
+            String[] langs = word.getLangs();
+            for (int i = 0; i < langs.length - 1; i++) {
+                for (int j = i + 1; j < word.getLangs().length; j++) {
+                    LanguageItem item = new LanguageItem(langs[i], langs[j]);
+                    if(!langItems.contains(item)) {
+                        langItems.add(item);
+                    }
+                    item = new LanguageItem(langs[j], langs[i]);
+                    if(!langItems.contains(item)) {
+                        langItems.add(item);
+                    }
+                }
             }
         }
 
-        return langItems;
+       return langItems;
     }
 
     public static List<String> getWords(String item) {

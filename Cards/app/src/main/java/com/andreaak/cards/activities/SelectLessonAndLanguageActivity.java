@@ -24,7 +24,7 @@ import java.util.List;
 public class SelectLessonAndLanguageActivity extends HandleExceptionActivity implements View.OnClickListener {
 
     public static final String DIRECTORY = "Directory";
-    public static final String HELPER = "Helper";
+    public static final String LESSON = "Helper";
 
     private Spinner spinnerLessons;
     private Spinner spinnerLang;
@@ -150,7 +150,7 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
 
     private void onOkClick() {
         Intent intent = new Intent();
-        intent.putExtra(HELPER, helper);
+        intent.putExtra(LESSON, helper.lessonItem);
         setResult(RESULT_OK, intent);
         finish();
     }

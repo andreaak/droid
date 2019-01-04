@@ -25,6 +25,13 @@ public class LanguageItem implements java.io.Serializable {
         return primaryLanguage + SEPARATOR + secondaryLanguage;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        LanguageItem other = (LanguageItem) object;
+        return this.primaryLanguage.equals(other.primaryLanguage)
+                && this.secondaryLanguage.equals(other.secondaryLanguage);
+    }
+
     public static LanguageItem getItem(String lang) {
         String[] langs = lang.split(SEPARATOR);
         return new LanguageItem(langs[0], langs[1]);
