@@ -1,6 +1,7 @@
 package com.andreaak.common.fileSystemItems;
 
 import android.content.Context;
+import android.os.Environment;
 
 import com.andreaak.common.R;
 import com.andreaak.common.predicates.DirectoryPredicate;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class FilesHelper {
 
@@ -42,6 +44,19 @@ public class FilesHelper {
         currentDirectory = getDirectoryItem(current, dateModify);
 
         File[] dirs = current.listFiles();
+        if(dirs == null && isRootDirectory(current) ){
+//            if(ExternalStorage.isAvailable()) {
+//                File external = Environment.getExternalStorageDirectory();
+//                dirs = external.listFiles();
+//            }
+
+            Map<String, File> storages = ExternalStorage.getAllStorageLocations();
+            dirs = storages.values().toArray(new File[storages.size()]);
+
+//            current = new File("/storage");
+//            dirs = current.listFiles();
+        }
+
         if (dirs != null) {
             try {
                 for (File file : dirs) {
@@ -64,10 +79,14 @@ public class FilesHelper {
         Collections.sort(directories);
         Collections.sort(files);
         directories.addAll(files);
-        if (!current.getName().equalsIgnoreCase(ROOT_DIRECTORY)) {
+        if (!isRootDirectory(current)) {
             directories.add(0, new FileItem("", context.getString(R.string.parentDirectory), "", current.getParent(), ItemType.ParentDirectory));
         }
         return directories;
+    }
+
+    private boolean isRootDirectory(File current) {
+        return current.getName().equalsIgnoreCase(ROOT_DIRECTORY);
     }
 
     private String getDateModify(File file) {

@@ -54,7 +54,7 @@ public class Utils {
     }
 
     public static boolean saveToFile(InputStream is, File file) {
-        if (!checkOrCreateFolder(file)) {
+        if (!checkOrCreateFolderForFile(file)) {
             return false;
         }
 
@@ -113,18 +113,28 @@ public class Utils {
         return sb.toString();
     }
 
-    public static boolean checkOrCreateFolder(File file) {
-        File parent = file.getParentFile();
-        if (!parent.exists()) {
-            try {
-                parent.mkdir();
-            } catch (Exception ex) {
-                Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-                ex.printStackTrace();
-                return false;
-            }
+    public static boolean checkOrCreateFolderForFile(File file) {
+        File folder = file.getParentFile();
+        return checkOrCreateFolder_(folder);
+    }
+
+    private static boolean checkOrCreateFolder_(File folder) {
+        if(folder.exists()) {
+            return true;
         }
-        return true;
+
+        File parent = folder.getParentFile();
+        if(!parent.exists()) {
+            checkOrCreateFolder_(parent);
+        }
+
+        try {
+            return folder.mkdir();
+        } catch (Exception ex) {
+            Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+            ex.printStackTrace();
+            return false;
+        }
     }
 }
 
