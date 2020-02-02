@@ -2,3 +2,25 @@ cd C:\Program Files\Java\jdk1.8.0_181\bin
 keytool -exportcert -keystore "C:\Users\akulikov\.android\debug.keystore" -list -v
 
 https://console.cloud.google.com/apis/credentials?project=androidproj-155813
+
+
+Android client Card Home
+9A:98:AF:51:75:C7:DD:6C:E2:14:89:2C:DD:EB:EC:A4:A3:C3:7A:E3
+650768443623-r99bdpuo4hr0bh7cslb4v25u6s1jbooe.apps.googleusercontent.com
+Android client Card Notebook Dell
+40:9F:F0:23:1A:FE:EB:D1:78:02:AA:14:08:CB:12:79:B0:18:EE:F7
+650768443623-gf6m3e6fq6g3k65dhg7fq0s4od1akued.apps.googleusercontent.com
+Android client Card Work
+04:2A:03:DD:F3:8D:86:D2:12:D6:19:36:43:13:9F:39:0A:D0:F2:3E
+650768443623-nlhuqffv4l7a2k3el9tupriill7c8n1u.apps.googleusercontent.com
+
+
+Android client Note Home
+9A:98:AF:51:75:C7:DD:6C:E2:14:89:2C:DD:EB:EC:A4:A3:C3:7A:E3
+650768443623-g2nblm238v6vvbbqpkll7sjh5bti5ts5.apps.googleusercontent.com
+Android client Note Notebook Dell
+40:9F:F0:23:1A:FE:EB:D1:78:02:AA:14:08:CB:12:79:B0:18:EE:F7
+650768443623-pnl2vqf2hmnr88esipndln4b6fevavg3.apps.googleusercontent.com
+Android client Note Work
+04:2A:03:DD:F3:8D:86:D2:12:D6:19:36:43:13:9F:39:0A:D0:F2:3E
+650768443623-lgnflgclpl5p78c9dinjmht3qu8a78gc.apps.googleusercontent.com
