@@ -108,7 +108,7 @@ public class EntityChooserActivity extends ListActivity implements SearchView.On
     }
 
     private void fill(int currentId) {
-        List<EntityItem> dir = helper.getEntities(currentId);
+        List<EntityItem> dir = helper.getChildEntities(currentId);
         SetTilte(helper.getDescriptions(currentId));
         adapter = new EntityArrayAdapter(EntityChooserActivity.this, R.layout.activity_entity_chooser, dir);
         this.setListAdapter(adapter);

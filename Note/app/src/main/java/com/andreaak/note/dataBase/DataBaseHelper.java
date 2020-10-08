@@ -15,6 +15,7 @@ import com.andreaak.note.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.andreaak.common.utils.Utils.showText;
@@ -70,10 +71,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteException e) {
             Logger.d(Constants.LOG_TAG, "Database error!!!");
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-        }
-
-        if (checkDB != null) {
-            checkDB.close();
+        } finally {
+            if (checkDB != null) {
+                checkDB.close();
+            }
         }
 
         return res;
@@ -86,26 +87,38 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<EntityItem> GetEntities(int parentId) {
+    public List<EntityItem> getChildEntities(int parentId) {
         List<EntityItem> items = new ArrayList<EntityItem>();
-        Cursor cursor = database.query(ENTITY, new String[]{ID, ENTITY_DESCRIPTION, ENTITY_TYPE},
-                ENTITY_PARENT_ID + "=?", new String[]{String.valueOf(parentId)},
-                null, null, ENTITY_ORDER_POSITION);
-        while (cursor.moveToNext()) {
-            int idIndex = cursor.getColumnIndex(DataBaseHelper.ID);
-            int id = cursor.getInt(idIndex);
 
-            int descriptionIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION);
-            String description = cursor.getString(descriptionIndex);
+        Cursor cursor = null;
 
-            int typeIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_TYPE);
-            ItemType type = cursor.getInt(typeIndex) == 0 ? ItemType.Directory : ItemType.File;
+        try {
+            cursor = database.query(ENTITY, new String[]{ID, ENTITY_DESCRIPTION, ENTITY_TYPE, ENTITY_ORDER_POSITION},
+                    ENTITY_PARENT_ID + "=?", new String[]{String.valueOf(parentId)},
+                    null, null, ENTITY_ORDER_POSITION);
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ID));
+                String description = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION));
+                ItemType type = gerItemType(cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_TYPE)));
+                int position = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_ORDER_POSITION));
 
-            EntityItem item = new EntityItem(id, description, type);
-            items.add(item);
+                EntityItem item = new EntityItem(id, description, type, position);
+                items.add(item);
+            }
+        } catch (Exception ex) {
+            Logger.e("getChildEntities fault", ex.getMessage(), ex);
+            showText(context, "getChildEntities fault" + ex.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
+
         return items;
+    }
+
+    private ItemType gerItemType(int type){
+        return  type == 0 ? ItemType.Directory : ItemType.File;
     }
 
     public List<FindNoteItem> findNotes(String text) {
@@ -115,53 +128,68 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String sql = "SELECT Entity.id, Entity.description " +
                 "FROM Entity, EntityData " +
                 "WHERE Entity.id=EntityData.id AND EntityData.TextData LIKE ? ESCAPE '#'";
-        Cursor cursor = database.rawQuery(sql, new String[]{"%" + text + "%"});
-        while (cursor.moveToNext()) {
-            int idIndex = cursor.getColumnIndex(DataBaseHelper.ID);
-            int id = cursor.getInt(idIndex);
 
-            int descriptionIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION);
-            String description = cursor.getString(descriptionIndex);
+        Cursor cursor = null;
 
-            FindNoteItem item = new FindNoteItem(id, description, ItemType.File,
-                    Utils.getSeparatedText("/", GetDescriptions(id)));
-            items.add(item);
+        try {
+            cursor = database.rawQuery(sql, new String[]{"%" + text + "%"});
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ID));
+                String description = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION));
+
+                FindNoteItem item = new FindNoteItem(id, description, ItemType.File,
+                        Utils.getSeparatedText("/", getDescriptions(id)));
+                items.add(item);
+            }
+        } catch (Exception ex) {
+            Logger.e("findNotes fault", ex.getMessage(), ex);
+            showText(context, "findNotes fault" + ex.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
+
         Collections.sort(items);
         return items;
     }
 
-    public List<String> GetDescriptions(int currentId) {
+    public List<String> getDescriptions(int currentId) {
 
         List<String> items = new ArrayList<String>();
 
         while (true) {
 
-            Cursor cursor = database.query(ENTITY, new String[]{ENTITY_DESCRIPTION, ENTITY_PARENT_ID},
+            Cursor cursor = null;
+
+            try {
+                cursor = database.query(ENTITY, new String[]{ENTITY_DESCRIPTION, ENTITY_PARENT_ID},
                     ID + "=?", new String[]{String.valueOf(currentId)},
                     null, null, ENTITY_ORDER_POSITION);
 
-            if (cursor.moveToNext()) {
+                if (cursor.moveToNext()) {
 
-                int descriptionIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION);
-                String description = cursor.getString(descriptionIndex);
+                    String description = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION));
+                    currentId = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID));
 
-                int parentIdIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID);
-                currentId = cursor.getInt(parentIdIndex);
-
-                items.add(description);
-                cursor.close();
-            } else {
-                cursor.close();
-                break;
+                    items.add(description);
+                }else {
+                    break;
+                }
+            } catch (Exception ex) {
+                Logger.e("getDescriptions fault", ex.getMessage(), ex);
+                showText(context, "getDescriptions fault" + ex.getMessage());
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         }
         Collections.reverse(items);
         return items;
     }
 
-    public String GetEntityDataText(int id) {
+    public String getEntityDataText(int id) {
 
         Cursor cursor = null;
         String text = "";
@@ -174,7 +202,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 text = cursor.getString(textIndex);
             }
         } catch (Exception ex) {
-            Logger.e("Text getString fault", ex.getMessage(), ex);
+            Logger.e("getEntityDataText fault", ex.getMessage(), ex);
             text = ex.getMessage();
         } finally {
             if (cursor != null) {
@@ -185,7 +213,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return text;
     }
 
-    public String GetEntityDataHtml(int id) {
+    public String getEntityDataHtml(int id) {
 
         Cursor cursor = null;
         String text = "";
@@ -198,9 +226,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 text = cursor.getString(textIndex);
             }
         } catch (Exception ex) {
-            Logger.e("Html getString fault", ex.getMessage(), ex);
-            showText(context, R.string.html_read_fault);
-            text = GetEntityDataText(id);
+            Logger.e("getEntityDataHtml fault", ex.getMessage(), ex);
+            showText(context, "getEntityDataHtml fault");
+            text = getEntityDataText(id);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -210,17 +238,169 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return text;
     }
 
-    public int GetParentId(int id) {
-        Cursor cursor = database.query(ENTITY, new String[]{ENTITY_PARENT_ID},
-                ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
-        int parentId = 0;
-        if (cursor.moveToNext()) {
-            int parentIdIndex = cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID);
-            parentId = cursor.getInt(parentIdIndex);
+    public EntityItem getNextEntity(int id) {
+
+        Cursor cursor = null;
+
+        try {
+            cursor = database.query(ENTITY, new String[]{ENTITY_PARENT_ID, ENTITY_ORDER_POSITION},
+                    ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+            if (cursor.moveToNext()) {
+                int parentId = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID));
+                int position = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_ORDER_POSITION));
+
+                List<EntityItem> entities = getChildEntities(parentId);
+
+                return getNextEntity(entities, position);
+            }
+        } catch (Exception ex) {
+            Logger.e("getNextEntity fault", ex.getMessage(), ex);
+            showText(context, "getNextEntity fault");
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
-        cursor.close();
+        return null;
+    }
+
+    private EntityItem getNextEntity(List<EntityItem> entities, int position) {
+        class SortAscending implements Comparator<EntityItem>
+        {
+            public int compare(EntityItem a, EntityItem b)
+            {
+                return a.getPosition() - b.getPosition();
+            }
+        }
+
+        Collections.sort(entities, new SortAscending());
+        for(EntityItem item : entities) {
+            if(item.getPosition() > position) {
+                if (item.getType() == ItemType.File) {
+                    return item;
+                }
+                List<EntityItem> folderEntities = getChildEntities(item.getId());
+                return getNextEntity(folderEntities, -1);
+            }
+        }
+
+        //up
+        int parentId = getParentId(entities.get(0).getId());
+        if(parentId == EntityHelper.ROOT) {
+            return null;
+        }
+        EntityItem parentEntity = getEntity(parentId);
+        List<EntityItem> folderEntities = getChildEntities(parentEntity.getParentId());
+        return getNextEntity(folderEntities, parentEntity.getPosition());
+    }
+
+    public EntityItem getPreviousEntity(int id) {
+
+        Cursor cursor = null;
+
+        try {
+            cursor = database.query(ENTITY, new String[]{ENTITY_PARENT_ID, ENTITY_ORDER_POSITION},
+                    ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+            if (cursor.moveToNext()) {
+                int parentId = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID));
+                int position = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_ORDER_POSITION));
+
+                List<EntityItem> entities = getChildEntities(parentId);
+                return getPreviousEntity(entities, position);
+            }
+        } catch (Exception ex) {
+            Logger.e("GetNextEntity fault", ex.getMessage(), ex);
+            showText(context, R.string.html_read_fault);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return null;
+    }
+
+    private EntityItem getPreviousEntity(List<EntityItem> entities, int position) {
+        class SortDescending implements Comparator<EntityItem>
+        {
+            public int compare(EntityItem a, EntityItem b)
+            {
+                return b.getPosition() - a.getPosition();
+            }
+        }
+
+        Collections.sort(entities, new SortDescending());
+        for(EntityItem item : entities) {
+            if(item.getPosition() < position) {
+                if (item.getType() == ItemType.File) {
+                    return item;
+                }
+                List<EntityItem> folderEntities = getChildEntities(item.getId());
+                Collections.sort(folderEntities, new SortDescending());
+                return getPreviousEntity(folderEntities, folderEntities.get(0).getPosition() + 1);
+            }
+        }
+
+        //up
+        int parentId = getParentId(entities.get(0).getId());
+        if(parentId == EntityHelper.ROOT) {
+            return null;
+        }
+        EntityItem parentEntity = getEntity(parentId);
+        List<EntityItem> folderEntities = getChildEntities(parentEntity.getParentId());
+        return getPreviousEntity(folderEntities, parentEntity.getPosition());
+    }
+
+    public int getParentId(int id) {
+
+        Cursor cursor = null;
+        int parentId = EntityHelper.ROOT;
+
+        try {
+            cursor = database.query(ENTITY, new String[]{ENTITY_PARENT_ID},
+                    ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+
+            if (cursor.moveToNext()) {
+                parentId = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID));
+            }
+        } catch (Exception ex) {
+            Logger.e("GetParentId fault", ex.getMessage(), ex);
+            showText(context, R.string.html_read_fault);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
         return parentId;
+    }
+
+    private EntityItem getEntity(int id) {
+
+        Cursor cursor = null;
+
+        try {
+            cursor = database.query(ENTITY, new String[]{ENTITY_PARENT_ID, ENTITY_DESCRIPTION, ENTITY_TYPE, ENTITY_ORDER_POSITION},
+                    ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+
+            if (cursor.moveToNext()) {
+                int parentId = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_PARENT_ID));
+                String description = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ENTITY_DESCRIPTION));
+                ItemType type = gerItemType(cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_TYPE)));
+                int position = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ENTITY_ORDER_POSITION));
+                return new EntityItem(id, description, type, position, parentId);
+            }
+        } catch (Exception ex) {
+            Logger.e("getEntity fault", ex.getMessage(), ex);
+            showText(context, "getEntity fault" + ex.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return null;
     }
 
     @Override

@@ -21,7 +21,10 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -288,12 +291,13 @@ public class GoogleDriveHelper {
         return rsId;
     }
 
-    public boolean saveToFile(String resId, java.io.File file) {
+    public boolean saveToFile2(String resId, java.io.File file) {
         if (service != null && isConnected && resId != null)
             try {
                 File googleFile = service.files().get(resId).setFields("downloadUrl").execute();
                 if (googleFile != null) {
                     String strUrl = googleFile.getDownloadUrl();
+                    long size = googleFile.getFileSize();
                     return Utils.saveToFile(service.getRequestFactory().buildGetRequest(new GenericUrl(strUrl)).execute().getContent(), file);
                 }
             } catch (Exception ex) {
@@ -302,6 +306,41 @@ public class GoogleDriveHelper {
             }
         return false;
     }
+//
+//    public static boolean saveToFile(long size, InputStream is, java.io.File file) {
+//        if (!Utils.checkOrCreateFolderForFile(file)) {
+//            return false;
+//        }
+//
+//        BufferedInputStream bufferedStream = null;
+//        if (is != null) try {
+//            int bufferSize = 4096;
+//            FileOutputStream fileOutput = new FileOutputStream(file);
+//            bufferedStream = new BufferedInputStream(is);
+//            byte[] buffer = new byte[bufferSize];
+//            int bufferLength = 0;
+//
+//            long downloadSize = 0;
+//            while ((bufferLength = bufferedStream. read(buffer)) > 0) {
+//                fileOutput.write(buffer, 0, bufferLength);
+//                downloadSize += bufferSize;
+//                //publishProgress(activity.getString(R.string.download_file) + " " + item.getTitle());
+//            }
+//            fileOutput.close();
+//            return true;
+//        } catch (Exception ex) {
+//            Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+//            ex.printStackTrace();
+//        } finally {
+//            try {
+//                if (bufferedStream != null) bufferedStream.close();
+//            } catch (Exception ex) {
+//                Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+//                ex.printStackTrace();
+//            }
+//        }
+//        return false;
+//    }
 
     /************************************************************************************************
      * update file in GOODrive,  see https://youtu.be/r2dr8_Mxr2M (WRONG?)
@@ -367,7 +406,7 @@ public class GoogleDriveHelper {
                     for (GoogleItem item : items.getItems()) {
                         publishProgress(activity.getString(R.string.download_file) + " " + item.getTitle());
                         java.io.File targetFile = new java.io.File(path + "/" + item.getTitle());
-                        res = saveToFile(item.getId(), targetFile) && res;
+                        res = saveToFile(item.getTitle(), item.getId(), targetFile) && res;
                     }
                     isDownload[0] = res;
                 } catch (Exception ex) {
@@ -394,6 +433,57 @@ public class GoogleDriveHelper {
                     Exception e = ex != null ? ex : new Exception(activity.getString(R.string.download_fault));
                     operationGoogleDrive.onOperationFinished(e);
                 }
+            }
+
+            public boolean saveToFile(String fileName, String resId, java.io.File file) {
+                if (service != null && isConnected && resId != null)
+                    try {
+                        File googleFile = service.files().get(resId).setFields("downloadUrl, fileSize").execute();
+                        if (googleFile != null) {
+                            String strUrl = googleFile.getDownloadUrl();
+                            long size = googleFile.getFileSize();
+                            return saveToFile(fileName, size, service.getRequestFactory().buildGetRequest(new GenericUrl(strUrl)).execute().getContent(), file);
+                        }
+                    } catch (Exception ex) {
+                        Logger.e(LOG_TAG, ex.getMessage(), ex);
+                        ex.printStackTrace();
+                    }
+                return false;
+            }
+
+            public boolean saveToFile(String fileName, long size, InputStream is, java.io.File file) {
+                if (!Utils.checkOrCreateFolderForFile(file)) {
+                    return false;
+                }
+
+                BufferedInputStream bufferedStream = null;
+                if (is != null) try {
+                    int bufferSize = 4096;
+                    FileOutputStream fileOutput = new FileOutputStream(file);
+                    bufferedStream = new BufferedInputStream(is);
+                    byte[] buffer = new byte[bufferSize];
+                    int bufferLength = 0;
+
+                    long downloadSize = 0;
+                    while ((bufferLength = bufferedStream. read(buffer)) > 0) {
+                        fileOutput.write(buffer, 0, bufferLength);
+                        downloadSize += bufferSize;
+                        publishProgress(fileName + " " + (int)((double)downloadSize/size*100)+ "%");
+                    }
+                    fileOutput.close();
+                    return true;
+                } catch (Exception ex) {
+                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                    ex.printStackTrace();
+                } finally {
+                    try {
+                        if (bufferedStream != null) bufferedStream.close();
+                    } catch (Exception ex) {
+                        Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+                        ex.printStackTrace();
+                    }
+                }
+                return false;
             }
         }.execute();
     }

@@ -7,6 +7,7 @@ public class AppConfigs extends Configs {
     //
     public static final String SP_DOWNLOAD_DIRECTORY_PATH = "SP_DOWNLOAD_DIRECTORY_PATH";
     //
+    public static final String SP_TEXT_BACK = "SP_TEXT_BACK";
     public static final String SP_TEXT_ZOOM = "SP_TEXT_ZOOM";
     //
     private static final String SP_DATABASE_EXTENSION = "SP_DATABASE_EXTENSION";

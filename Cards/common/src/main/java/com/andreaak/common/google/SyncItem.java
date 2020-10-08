@@ -84,7 +84,7 @@ public class SyncItem extends FileSystemItem implements Serializable {
                 if (item.isFolder()) {
                     res &= item.synchronize();
                 } else if (item.isNeedDownload()) {
-                    res &= GoogleDriveHelper.getInstance().saveToFile(item.googleItem.getId(), item.file);
+                    res &= GoogleDriveHelper.getInstance().saveToFile2(item.googleItem.getId(), item.file);
                 }
             } else {
                 delete(item.file);

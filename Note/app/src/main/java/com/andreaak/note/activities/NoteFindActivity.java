@@ -34,11 +34,6 @@ public class NoteFindActivity extends ListActivity {
         helper = (EntityHelper) getLastNonConfigurationInstance();
         if (helper == null) {
             helper = new EntityHelper(this);
-            if (!helper.openDatabase()) {
-                Utils.showText(this, R.string.db_fault);
-                finishWithFault();
-                return;
-            }
         }
 
         if (helper.getCurrentText() != null)

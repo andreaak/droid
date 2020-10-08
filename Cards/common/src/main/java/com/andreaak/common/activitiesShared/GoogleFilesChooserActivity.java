@@ -193,8 +193,13 @@ public class GoogleFilesChooserActivity extends Activity implements View.OnClick
         if (adapter == null) {
             return;
         }
+
+        int allCount = adapter.getCount();
+        int checkedCount =   listView.getCheckedItemCount();
+        boolean flag = allCount != checkedCount;
+
         for (int i = 0; i < adapter.getCount(); i++) {
-            listView.setItemChecked(i, true);
+            listView.setItemChecked(i, flag);
         }
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class EntityHelper {
 
-    private static final int ROOT = -1;
+    public static final int ROOT = -1;
 
     private Context context;
     private DataBaseHelper dataBaseHelper;
@@ -22,22 +22,28 @@ public class EntityHelper {
     public EntityHelper(Context context) {
         this.context = context;
         currentId = ROOT;
+
+        dataBaseHelper = DataBaseHelper.getInstance();
     }
 
     public int getCurrentId() {
         return currentId;
     }
 
+    public void setCurrentId(int currentId) {
+        this.currentId = currentId;
+    }
+
     public String getCurrentText() {
         return currentText;
     }
 
-    public List<EntityItem> getEntities(int currentId) {
+    public List<EntityItem> getChildEntities(int currentId) {
 
-        List<EntityItem> items = dataBaseHelper.GetEntities(currentId);
+        List<EntityItem> items = dataBaseHelper.getChildEntities(currentId);
         if (currentId != ROOT) {
-            int parentId = dataBaseHelper.GetParentId(currentId);
-            EntityItem item = new EntityItem(parentId, context.getString(R.string.parentDirectory), ItemType.ParentDirectory);
+            int parentId = dataBaseHelper.getParentId(currentId);
+            EntityItem item = new EntityItem(parentId, context.getString(R.string.parentDirectory), ItemType.ParentDirectory, 0);
             items.add(0, item);
         }
         this.currentId = currentId;
@@ -50,16 +56,24 @@ public class EntityHelper {
     }
 
     public List<String> getDescriptions(int currentId) {
-        return dataBaseHelper.GetDescriptions(currentId);
+        return dataBaseHelper.getDescriptions(currentId);
+    }
+
+    public EntityItem getNextEntity(int currentId) {
+        return dataBaseHelper.getNextEntity(currentId);
+    }
+
+    public EntityItem getPreviousEntity(int currentId) {
+        return dataBaseHelper.getPreviousEntity(currentId);
+    }
+
+    public String getEntityDataHtml(int currentId) {
+        return dataBaseHelper.getEntityDataHtml(currentId);
     }
 
     public boolean openDatabase() {
 
         boolean res = false;
-        if (dataBaseHelper != null) {
-            dataBaseHelper.close();
-        }
-        dataBaseHelper = DataBaseHelper.getInstance();
         try {
             dataBaseHelper.openDataBase();
             res = true;

@@ -7,7 +7,7 @@ public class FindNoteItem extends EntityItem implements Comparable<FindNoteItem>
     private String path;
 
     public FindNoteItem(int id, String description, ItemType type, String path) {
-        super(id, description, type);
+        super(id, description, type, 0);
         this.path = path;
     }
 

@@ -1,5 +1,5 @@
 cd C:\Program Files\Java\jdk1.8.0_181\bin
-keytool -exportcert -keystore "C:\Users\akulikov\.android\debug.keystore" -list -v
+keytool -exportcert -keystore "C:\Users\Andrea\.android\debug.keystore" -list -v
 
 https://console.cloud.google.com/apis/credentials?project=androidproj-155813
 

@@ -66,7 +66,7 @@ public class Utils {
             byte[] buffer = new byte[4096];
             int bufferLength = 0;
 
-            while ((bufferLength = bufferedStream.read(buffer)) > 0) {
+            while ((bufferLength = bufferedStream. read(buffer)) > 0) {
                 fileOutput.write(buffer, 0, bufferLength);
             }
             fileOutput.close();
