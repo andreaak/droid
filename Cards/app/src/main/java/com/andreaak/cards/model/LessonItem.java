@@ -6,6 +6,9 @@ import com.andreaak.common.utils.Utils;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 public class LessonItem implements Serializable {
 
@@ -27,6 +30,23 @@ public class LessonItem implements Serializable {
 
     public ArrayList<WordItem> getWords() {
         return words;
+    }
+
+    public ArrayList<WordItem> getLessonWords() {
+        ArrayList<WordItem> list = new ArrayList<WordItem>(words);
+
+        for (Iterator<WordItem> it = list.iterator(); it.hasNext();) {
+            WordItem wi = it.next();
+
+            List<String> langs = Arrays.asList(wi.getLangs());
+
+            if (!langs.contains(languageItem.getPrimaryLanguage())
+                || !langs.contains(languageItem.getSecondaryLanguage()))
+            {
+                it.remove(); // NOTE: Iterator's remove method, not ArrayList's, is used.
+            }
+        }
+        return list;
     }
 
     public void clear() {

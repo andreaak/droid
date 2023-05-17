@@ -172,7 +172,7 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
     private void openCard(LessonItem lessonItem) {
         CardActivityHelper helper = new CardActivityHelper();
         helper.lessonItem = lessonItem;
-        helper.currentWord = helper.lessonItem.getWords().get(0);
+        helper.currentWord = helper.lessonItem.getLessonWords().get(0);
 
         saveLastLesson(lessonItem);
 

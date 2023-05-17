@@ -22,6 +22,7 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.adapters.WordsSpinAdapter;
 import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
@@ -57,9 +58,11 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     //in
     public static final String HELPER = "Helper";
 
+    private ImageButton buttonStudy;
     private ImageButton buttonToggle;
     private ImageButton buttonSound;
 
+    private TextView textViewStudyWord;
     private TextView textViewWord;
     private TextView textViewTrans;
     private LinearLayout texts;
@@ -75,6 +78,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     private WordsSpinAdapter wordsAdapter;
     private VelocityTracker mVelocityTracker = null;
     private float x;
+    private boolean isStudy;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,12 +94,16 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
         setContentView(R.layout.activity_card);
 
+        buttonStudy = (ImageButton) findViewById(R.id.buttonStudy);
+        buttonStudy.setOnClickListener(this);
+
         buttonToggle = (ImageButton) findViewById(R.id.buttonToggle);
         buttonToggle.setOnClickListener(this);
 
         buttonSound = (ImageButton) findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
 
+        textViewStudyWord = (TextView) findViewById(R.id.textViewStudyWord);
         textViewWord = (TextView) findViewById(R.id.textViewWord);
         textViewTrans = (TextView) findViewById(R.id.textViewTrans);
         texts = (LinearLayout) findViewById(R.id.texts);
@@ -144,7 +152,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         if (helper.lessonItem.isContainsWords()) {
             setTitle(helper.lessonItem.getDisplayName());
             helper.lessonItem.resetLanguage();
-            initializeWordsSpinner(helper.lessonItem.getWords(), helper.lessonItem.getCurrentLanguage());
+            initializeWordsSpinner(helper.lessonItem.getLessonWords(), helper.lessonItem.getCurrentLanguage());
         }
 
         this.menu = menu;
@@ -246,6 +254,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         float size = textViewWord.getTextSize();
         float newSize = size * factor;
         setTextSize(textViewWord, newSize);
+        setTextSize(textViewStudyWord, newSize);
 
         size = textViewTrans.getTextSize();
         newSize = size * factor;
@@ -315,8 +324,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     private void setInitialCardVisibility() {
 
         int flag = View.INVISIBLE;
+        textViewStudyWord.setVisibility(flag);
         textViewWord.setVisibility(flag);
         textViewTrans.setVisibility(flag);
+        buttonStudy.setVisibility(flag);
         buttonToggle.setVisibility(flag);
         buttonSound.setVisibility(flag);
         texts.setVisibility(flag);
@@ -327,6 +338,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
         spinnerWords.setVisibility(flag);
         textViewWord.setVisibility(flag);
+        buttonStudy.setVisibility(flag);
         buttonToggle.setVisibility(flag);
         buttonSound.setVisibility(flag);
         texts.setVisibility(flag);
@@ -342,11 +354,19 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             case R.id.buttonSound:
                 playSound();
                 break;
+            case R.id.buttonStudy:
+                showStudy();
+                break;
         }
     }
 
     private void activateWord(WordItem word) {
+        if(isStudy) {
+            activateStudyWord(word);
+            return;
+        }
 
+        textViewStudyWord.setVisibility(View.INVISIBLE);
         textViewWord.setText(word.getValue(helper.lessonItem.getCurrentLanguage()));
 
         String transcription = word.getTranscription(helper.lessonItem.getCurrentLanguage());
@@ -357,7 +377,31 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             textViewTrans.setText(transcription);
         }
 
-        Queue<String> files = getSoundFiles();
+        Queue<String> files = getSoundFiles(helper.lessonItem.getCurrentLanguage());
+        boolean isVisible = !files.isEmpty();
+        int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
+        buttonSound.setVisibility(flag);
+    }
+
+    private void activateStudyWord(WordItem word) {
+
+        textViewStudyWord.setVisibility(View.VISIBLE);
+        LanguageItem languageItem = helper.lessonItem.getLanguageItem();
+        String destLanguage = helper.lessonItem.getCurrentLanguage();
+
+        textViewStudyWord.setText(word.getValue(languageItem.getPrimaryLanguage()));
+
+        textViewWord.setText(word.getValue(languageItem.getSecondaryLanguage()));
+
+        String transcription = word.getTranscription(languageItem.getSecondaryLanguage());
+        if (transcription == null) {
+            textViewTrans.setVisibility(View.INVISIBLE);
+        } else {
+            textViewTrans.setVisibility(View.VISIBLE);
+            textViewTrans.setText(transcription);
+        }
+
+        Queue<String> files = getSoundFiles(languageItem.getSecondaryLanguage());
         boolean isVisible = !files.isEmpty();
         int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
         buttonSound.setVisibility(flag);
@@ -365,6 +409,11 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
     private void toggle() {
         helper.lessonItem.ToggleLanguage();
+        activateWord(helper.currentWord);
+    }
+
+    private void showStudy() {
+        isStudy = !isStudy;
         activateWord(helper.currentWord);
     }
 
@@ -376,7 +425,15 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             return;
         }
 
-        Queue<String> files = getSoundFiles();
+        String language;
+        if(isStudy){
+            LanguageItem languageItem = helper.lessonItem.getLanguageItem();
+            language = languageItem.getSecondaryLanguage();
+        }else {
+            language = helper.lessonItem.getCurrentLanguage();
+        }
+
+        Queue<String> files = getSoundFiles(language);
         if (files.isEmpty()) {
             return;
         }
@@ -386,11 +443,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         mediaHelper.playSound(this, files);
     }
 
-    private Queue<String> getSoundFiles() {
+    private Queue<String> getSoundFiles(String language) {
 
         Queue<String> files = new ArrayDeque<String>();
 
-        String language = helper.lessonItem.getCurrentLanguage();
         List<String> words = AppUtils.getWords(helper.currentWord.getValue(language));
 
         for (String word : words) {

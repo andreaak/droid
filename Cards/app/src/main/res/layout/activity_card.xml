@@ -29,6 +29,15 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/textViewStudyWord"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="TEST"
+                    android:textColor="@color/colorGreen"
+                    android:textSize="40dp" />
+
+                <TextView
                     android:id="@+id/textViewWord"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -63,11 +72,20 @@
         android:background="@drawable/rotate" />
 
     <ImageButton
-        android:id="@+id/buttonSound"
+        android:id="@+id/buttonStudy"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="30dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/file" />
+
+    <ImageButton
+        android:id="@+id/buttonSound"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="70dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/sound48" />
 
