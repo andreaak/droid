@@ -13,6 +13,10 @@ import java.util.List;
 
 public class AppUtils {
 
+    private static final ReplaceItem[] NORMALIZATION = {new ReplaceItem("ä", "!a") ,
+            new ReplaceItem("ö", "!o"),
+            new ReplaceItem("ü", "!u")};
+
     public static LessonItem[] getLessons(String path) {
         File directory = new File(path);
         File[] files = directory.listFiles(new FilenameFilter() {
@@ -70,6 +74,7 @@ public class AppUtils {
             }
             if (normalized.startsWith("(")) {
                 isBracket = true;
+
             }
             if (isBracket) {
                 if (normalized.endsWith(")")) {
@@ -82,30 +87,59 @@ public class AppUtils {
         return result;
     }
 
-    public static String getSoundFile(String language, String word, String soundFormat) {
+    public static String getSoundFile(String language, String word) {
 
         String region;
+        String suffix;
         if ("en".equals(language.toLowerCase())) {
             region = "uk";
+            suffix = "_uk";
         } else {
             region = language;
+            suffix = "";
         }
 
-        return AppConfigs.getInstance().SoundsDir + String.format("/%1$s_%5$s/%3$s_%2$s/%4$s_%2$s.%5$s",
-                region.toLowerCase(), region.toLowerCase(), word.charAt(0), word, soundFormat);
+        word = Normalize(word);
+        return AppConfigs.getInstance().SoundsDir + String.format("/%1$s/%3$s%2$s/%4$s%2$s.",
+                region.toLowerCase(), suffix, word.charAt(0), word);
     }
 
-    public static String getVerbSoundFile(String language, String word, String soundFormat) {
+    private static String Normalize(String word) {
+        word = word.toLowerCase();
+        for (ReplaceItem symbol : NORMALIZATION) {
+            if(word.contains(symbol.Source)) {
+                word = word.replaceAll(symbol.Source, symbol.Dest);
+            }
+        }
+        return word;
+    }
+
+    public static String getVerbSoundFile(String language, String word) {
 
         String region;
+        String suffix;
         if ("en".equals(language.toLowerCase())) {
             region = "uk";
+            suffix = "_uk";
         } else {
             region = language;
+            suffix = "";
         }
 
-        return AppConfigs.getInstance().SoundsDir + String.format("/Irregular/%1$s/%2$s_%1$s.%3$s",
-                region.toLowerCase(), word, soundFormat);
+        word = Normalize(word);
+        return AppConfigs.getInstance().SoundsDir + String.format("/Irregular/%1$s/%3$s%2$s.",
+                region.toLowerCase(), suffix, word);
+    }
+}
+
+class ReplaceItem {
+    public String Source;
+    public String Dest;
+
+
+    public ReplaceItem(String source, String dest) {
+        Source = source;
+        Dest = dest;
     }
 }
 

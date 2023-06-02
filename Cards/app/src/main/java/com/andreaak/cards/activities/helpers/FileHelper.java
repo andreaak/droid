@@ -7,6 +7,9 @@ import com.andreaak.common.fileSystemItems.ItemType;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class FileHelper {
@@ -41,7 +44,10 @@ public class FileHelper {
             FileItem item = new FileItem(parentPath, context.getString(R.string.parentDirectory), ItemType.ParentDirectory);
             items.add(0, item);
         }
-        for (File subFile : file.listFiles()) {
+
+        File[] files = file.listFiles();
+        Arrays.sort(files, new SortByName());
+        for (File subFile : files) {
             ItemType type = subFile.isDirectory() ? ItemType.Directory : ItemType.File;
             FileItem item = new FileItem(subFile.getAbsolutePath(), subFile.getName(), type);
             items.add(item);
@@ -57,5 +63,14 @@ public class FileHelper {
             return "Not found";
         }
         return file.getName();
+    }
+}
+
+class SortByName implements Comparator<File> {
+    // Used for sorting in ascending order of
+    // roll number
+    public int compare(File a, File b)
+    {
+        return a.getName().compareTo(b.getName());
     }
 }

@@ -48,7 +48,7 @@ import static com.andreaak.common.utils.Utils.showText;
 public class VerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
         IOperationGoogleDrive, IGoogleActivity, View.OnClickListener {
 
-    private static final String SOUND_FORMAT = "mp3";
+    private static final String[] SOUND_FORMATS = {"mp3", "wav"};
     private static final String LANGUAGE = "en";
 
     private static final int REQUEST_UPDATE_WORD = 1;
@@ -326,7 +326,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
         textViewPastParticipleTrans.setText(word.pastParticipleTrans);
         textViewTranslation.setText(word.translation);
 
-        Queue<String> files = getSoundFiles();
+        Queue<String> files = getSoundFiles(LANGUAGE);
         boolean isVisible = !files.isEmpty();
         int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
         buttonSound.setVisibility(flag);
@@ -479,7 +479,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
             return;
         }
 
-        Queue<String> files = getSoundFiles();
+        Queue<String> files = getSoundFiles(LANGUAGE);
         if (files.isEmpty()) {
             return;
         }
@@ -489,7 +489,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
         mediaHelper.playSound(this, files);
     }
 
-    private Queue<String> getSoundFiles() {
+    private Queue<String> getSoundFiles(String language) {
 
         Queue<String> files = new ArrayDeque<String>();
 
@@ -498,13 +498,22 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
         words.addAll(AppUtils.getWords(helper.currentWord.pastParticiple));
 
         for (String word : words) {
-            String filePath = AppUtils.getVerbSoundFile(LANGUAGE, word, SOUND_FORMAT);
+            String fileTemplate = AppUtils.getVerbSoundFile(language, word);
+            addSoundFile(files, fileTemplate);
+        }
+        return files;
+    }
+
+    private void addSoundFile(Queue<String> files, String fileTemplate) {
+
+        for (String soundFormat : SOUND_FORMATS) {
+            String filePath = fileTemplate + soundFormat;
             File file = new File(filePath);
             if (file.exists()) {
                 files.add(filePath);
+                break;
             }
         }
-        return files;
     }
 
     @Override

@@ -47,7 +47,7 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_card_choose);
+        setContentView(R.layout.activity_lesson_choose);
 
         buttonOpenLastLesson = (ImageButton) findViewById(R.id.buttonOpenLastLesson);
         buttonOpenLastLesson.setOnClickListener(this);

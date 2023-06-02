@@ -52,7 +52,7 @@ public class EditWordActivity extends HandleExceptionActivity implements View.On
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_word);
+        setContentView(R.layout.activity_edit_word);
 
         buttonOk = (Button) findViewById(R.id.buttonSave);
         buttonOk.setOnClickListener(this);
