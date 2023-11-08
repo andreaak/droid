@@ -5,18 +5,37 @@ import java.util.ArrayList;
 
 public class VerbLessonItem implements Serializable {
 
+    public static final String English = "en";
+    public static final String Deutsch = "de";
+
     private String fileName;
     private String path;
+    private String language;
 
     private ArrayList<VerbItem> words = new ArrayList<>();
 
     public VerbLessonItem(String fileName, String path) {
         this.fileName = fileName;
+        language = getLanguage(fileName);
         this.path = path;
     }
 
     public ArrayList<VerbItem> getWords() {
         return words;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    private String getLanguage(String fileName) {
+        if(fileName.contains("_en")) {
+            return English;
+        } else if(fileName.contains("_de")) {
+            return Deutsch;
+        }
+
+        return English;
     }
 
     public void add(VerbItem word) {

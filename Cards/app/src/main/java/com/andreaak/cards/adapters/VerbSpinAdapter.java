@@ -41,7 +41,7 @@ public class VerbSpinAdapter extends ArrayAdapter<VerbItem> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         TextView label = new TextView(context);
-        label.setText(values.get(position).infinitive);
+        label.setText(values.get(position)._1);
         label.setTextSize(15);
         label.setPadding(2, 2, 2, 2);
 
@@ -52,7 +52,7 @@ public class VerbSpinAdapter extends ArrayAdapter<VerbItem> {
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(values.get(position).infinitive);
+        label.setText(values.get(position)._1);
         label.setTextSize(15);
         label.setPadding(2, 2, 2, 2);
 

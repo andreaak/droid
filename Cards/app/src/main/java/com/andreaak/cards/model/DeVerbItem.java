@@ -1,25 +1,9 @@
 package com.andreaak.cards.model;
 
-public class VerbItem implements java.io.Serializable {
+public class DeVerbItem extends VerbItem{
 
-    private int id;
-
-    public String _1;
-    public String _1_Trans;
-    public String _2;
-    public String _2_Trans;
-    public String _3;
-    public String _3_Trans;
-    public String _4;
-    public String _4_Trans;
-    public String translation;
-
-    public VerbItem(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
+    public DeVerbItem(int id) {
+        super(id);
     }
 
     public void addTag(String tag, String value) {
@@ -30,22 +14,27 @@ public class VerbItem implements java.io.Serializable {
             case "infinitive_tr":
                 _1_Trans = value;
                 break;
-            case "pastSimple":
+            case "prasens":
                 _2 = value;
                 break;
-            case "pastSimple_tr":
+            case "prasens_tr":
                 _2_Trans = value;
                 break;
-            case "pastParticiple":
+            case "prateritum":
                 _3 = value;
                 break;
-            case "pastParticiple_tr":
+            case "prateritum_tr":
                 _3_Trans = value;
+                break;
+            case "partizip":
+                _4 = value;
+                break;
+            case "partizip_tr":
+                _4_Trans = value;
                 break;
             case "translation":
                 translation = value;
                 break;
         }
     }
-
 }

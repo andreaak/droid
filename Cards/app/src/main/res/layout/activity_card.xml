@@ -29,7 +29,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textViewStudyWord"
+                    android:id="@+id/textViewWord1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal|center_vertical"
@@ -39,7 +39,7 @@
                     android:visibility="gone" />
 
                 <TextView
-                    android:id="@+id/textViewStudyWordTrans"
+                    android:id="@+id/textViewTrans1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal|center_vertical"
@@ -49,7 +49,7 @@
                     android:visibility="gone" />
 
                 <TextView
-                    android:id="@+id/textViewWord"
+                    android:id="@+id/textViewWord2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal|center_vertical"
@@ -60,7 +60,7 @@
 
                 <!--android:background="@drawable/customborder"-->
                 <TextView
-                    android:id="@+id/textViewTrans"
+                    android:id="@+id/textViewTrans2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal|center_vertical"

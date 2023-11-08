@@ -10,8 +10,11 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Queue;
 
 public class AppUtils {
+
+    private static final String[] SOUND_FORMATS = {"mp3", "wav"};
 
     private static final ReplaceItem[] NORMALIZATION = {new ReplaceItem("ä", "!a") ,
             new ReplaceItem("ö", "!o"),
@@ -87,8 +90,40 @@ public class AppUtils {
         return result;
     }
 
+    public static boolean addSoundFile(Queue<String> files, String fileTemplate) {
+
+        for (String soundFormat : SOUND_FORMATS) {
+            String filePath = fileTemplate + soundFormat;
+            File file = new File(filePath);
+            if (file.exists()) {
+                files.add(filePath);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static String getSoundFile(String language, String word) {
 
+        SoundFileData data = getSoundFileData(language);
+
+        word = Normalize(word);
+        return AppConfigs.getInstance().SoundsDir + String.format("/%1$s/%3$s%2$s/%4$s%2$s.",
+                data.Region.toLowerCase(), data.Suffix,
+                word.startsWith("!") ? word.substring(0, 1) : word.charAt(0), word);
+    }
+
+    public static String getVerbSoundFile(String language, String word) {
+
+        SoundFileData data = getSoundFileData(language);
+
+        word = Normalize(word);
+
+        return AppConfigs.getInstance().SoundsDir + String.format("/Irregular/%1$s/%3$s%2$s.",
+                data.Region.toLowerCase(), data.Suffix, word);
+    }
+
+    private static SoundFileData getSoundFileData(String language) {
         String region;
         String suffix;
         if ("en".equals(language.toLowerCase())) {
@@ -98,11 +133,9 @@ public class AppUtils {
             region = language;
             suffix = "";
         }
-
-        word = Normalize(word);
-        return AppConfigs.getInstance().SoundsDir + String.format("/%1$s/%3$s%2$s/%4$s%2$s.",
-                region.toLowerCase(), suffix, word.charAt(0), word);
+        return new SoundFileData(region, suffix);
     }
+
 
     private static String Normalize(String word) {
         word = word.toLowerCase();
@@ -113,22 +146,15 @@ public class AppUtils {
         }
         return word;
     }
+}
 
-    public static String getVerbSoundFile(String language, String word) {
+class SoundFileData {
+    public String Region;
+    public String Suffix;
 
-        String region;
-        String suffix;
-        if ("en".equals(language.toLowerCase())) {
-            region = "uk";
-            suffix = "_uk";
-        } else {
-            region = language;
-            suffix = "";
-        }
-
-        word = Normalize(word);
-        return AppConfigs.getInstance().SoundsDir + String.format("/Irregular/%1$s/%3$s%2$s.",
-                region.toLowerCase(), suffix, word);
+    public SoundFileData(String region, String suffix) {
+        Region = region;
+        Suffix = suffix;
     }
 }
 

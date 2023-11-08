@@ -48,21 +48,22 @@ import static com.andreaak.common.utils.Utils.showText;
 public class VerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
         IOperationGoogleDrive, IGoogleActivity, View.OnClickListener {
 
-    private static final String[] SOUND_FORMATS = {"mp3", "wav"};
-    private static final String LANGUAGE = "en";
-
     private static final int REQUEST_UPDATE_WORD = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     //in
     public static final String HELPER = "Helper";
 
-    private TextView textViewIndefinite;
-    private TextView textViewIndefiniteTrans;
-    private TextView textViewPastSimple;
-    private TextView textViewPastSimpleTrans;
-    private TextView textViewPastParticiple;
-    private TextView textViewPastParticipleTrans;
+    private TextView textView_1;
+    private TextView textView_1_Trans;
+    private TextView textView_2;
+    private TextView textView_2_Trans;
+    private TextView textView_3;
+    private TextView textView_3_Trans;
+    private TextView textView_4;
+    private TextView textView_4_Trans;
+    private LinearLayout layout_4;
     private TextView textViewTranslation;
+
     private ImageButton buttonSound;
 
     private LinearLayout texts;
@@ -92,13 +93,17 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
 
         setContentView(R.layout.activity_verb);
 
-        textViewIndefinite = (TextView) findViewById(R.id.textViewIndefinite);
-        textViewIndefiniteTrans = (TextView) findViewById(R.id.textViewIndefiniteTrans);
-        textViewPastSimple = (TextView) findViewById(R.id.textViewPastSimple);
-        textViewPastSimpleTrans = (TextView) findViewById(R.id.textViewPastSimpleTrans);
-        textViewPastParticiple = (TextView) findViewById(R.id.textViewPastParticiple);
-        textViewPastParticipleTrans = (TextView) findViewById(R.id.textViewPastParticipleTrans);
+        textView_1 = (TextView) findViewById(R.id.textViewIndefinite);
+        textView_1_Trans = (TextView) findViewById(R.id.textViewIndefiniteTrans);
+        textView_2 = (TextView) findViewById(R.id.textViewPastSimple);
+        textView_2_Trans = (TextView) findViewById(R.id.textViewPastSimpleTrans);
+        textView_3 = (TextView) findViewById(R.id.textViewPastParticiple);
+        textView_3_Trans = (TextView) findViewById(R.id.textViewPastParticipleTrans);
+        textView_4 = (TextView) findViewById(R.id.textView_4);
+        textView_4_Trans = (TextView) findViewById(R.id.textView_4_Trans);
+        layout_4 = (LinearLayout) findViewById(R.id._4);
         textViewTranslation = (TextView) findViewById(R.id.textViewTranslation);
+
         buttonSound = (ImageButton) findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
 
@@ -235,29 +240,37 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
 
     private void setTextSize(float factor) {
 
-        float size = textViewIndefinite.getTextSize();
+        float size = textView_1.getTextSize();
         float newSize = size * factor;
-        setTextSize(textViewIndefinite, newSize);
+        setTextSize(textView_1, newSize);
 
-        size = textViewIndefiniteTrans.getTextSize();
+        size = textView_1_Trans.getTextSize();
         newSize = size * factor;
-        setTextSize(textViewIndefiniteTrans, newSize);
+        setTextSize(textView_1_Trans, newSize);
 
-        size = textViewPastSimple.getTextSize();
+        size = textView_2.getTextSize();
         newSize = size * factor;
-        setTextSize(textViewPastSimple, newSize);
+        setTextSize(textView_2, newSize);
 
-        size = textViewPastSimpleTrans.getTextSize();
+        size = textView_2_Trans.getTextSize();
         newSize = size * factor;
-        setTextSize(textViewPastSimpleTrans, newSize);
+        setTextSize(textView_2_Trans, newSize);
 
-        size = textViewPastParticiple.getTextSize();
+        size = textView_3.getTextSize();
         newSize = size * factor;
-        setTextSize(textViewPastParticiple, newSize);
+        setTextSize(textView_3, newSize);
 
-        size = textViewPastParticipleTrans.getTextSize();
+        size = textView_3_Trans.getTextSize();
         newSize = size * factor;
-        setTextSize(textViewPastParticipleTrans, newSize);
+        setTextSize(textView_3_Trans, newSize);
+
+        size = textView_4.getTextSize();
+        newSize = size * factor;
+        setTextSize(textView_4, newSize);
+
+        size = textView_4_Trans.getTextSize();
+        newSize = size * factor;
+        setTextSize(textView_4_Trans, newSize);
 
         //saveFontSize();
     }
@@ -318,15 +331,22 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
 
     private void activateWord(VerbItem word) {
 
-        textViewIndefinite.setText(word.infinitive);
-        textViewIndefiniteTrans.setText(word.infinitiveTrans);
-        textViewPastSimple.setText(word.pastSimple);
-        textViewPastSimpleTrans.setText(word.pastSimpleTrans);
-        textViewPastParticiple.setText(word.pastParticiple);
-        textViewPastParticipleTrans.setText(word.pastParticipleTrans);
+        textView_1.setText(word._1);
+        textView_1_Trans.setText(word._1_Trans);
+        textView_2.setText(word._2);
+        textView_2_Trans.setText(word._2_Trans);
+        textView_3.setText(word._3);
+        textView_3_Trans.setText(word._3_Trans);
+
+        if(!Utils.isEmpty(word._4)) {
+            textView_4.setText(word._4);
+            textView_4_Trans.setText(word._4_Trans);
+        } else {
+            layout_4.setVisibility(View.GONE);
+        }
         textViewTranslation.setText(word.translation);
 
-        Queue<String> files = getSoundFiles(LANGUAGE);
+        Queue<String> files = getSoundFiles(helper.lessonItem.getLanguage());
         boolean isVisible = !files.isEmpty();
         int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
         buttonSound.setVisibility(flag);
@@ -479,7 +499,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
             return;
         }
 
-        Queue<String> files = getSoundFiles(LANGUAGE);
+        Queue<String> files = getSoundFiles(helper.lessonItem.getLanguage());
         if (files.isEmpty()) {
             return;
         }
@@ -493,27 +513,25 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
 
         Queue<String> files = new ArrayDeque<String>();
 
-        List<String> words = AppUtils.getWords(helper.currentWord.infinitive);
-        words.addAll(AppUtils.getWords(helper.currentWord.pastSimple));
-        words.addAll(AppUtils.getWords(helper.currentWord.pastParticiple));
+        List<String> words = AppUtils.getWords(helper.currentWord._1);
+        words.addAll(AppUtils.getWords(helper.currentWord._2));
+        words.addAll(AppUtils.getWords(helper.currentWord._3));
+        if(!Utils.isEmpty(helper.currentWord._4)){
+            words.addAll(AppUtils.getWords(helper.currentWord._4));
+        }
 
         for (String word : words) {
             String fileTemplate = AppUtils.getVerbSoundFile(language, word);
-            addSoundFile(files, fileTemplate);
-        }
-        return files;
-    }
+            boolean added = AppUtils.addSoundFile(files, fileTemplate);
 
-    private void addSoundFile(Queue<String> files, String fileTemplate) {
-
-        for (String soundFormat : SOUND_FORMATS) {
-            String filePath = fileTemplate + soundFormat;
-            File file = new File(filePath);
-            if (file.exists()) {
-                files.add(filePath);
-                break;
+            if(!added) {
+                fileTemplate = AppUtils.getSoundFile(language, word);
+                AppUtils.addSoundFile(files, fileTemplate);
             }
         }
+
+
+        return files;
     }
 
     @Override

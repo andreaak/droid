@@ -1,6 +1,7 @@
 package com.andreaak.cards.utils;
 
 import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.cards.model.DeVerbItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.model.VerbLessonItem;
@@ -306,7 +307,10 @@ public class XmlParser {
             NodeList words = doc.getElementsByTagName("verb");
             for (int i = 0; i < words.getLength(); i++) {
                 Node node = words.item(i);
-                VerbItem word = parseVerb(node, i);
+
+                VerbItem word = getVerbItem(lesson.getLanguage(), i);
+
+                parseVerb(node, word);
                 lesson.add(word);
             }
 
@@ -317,9 +321,16 @@ public class XmlParser {
         return lesson;
     }
 
-    private static VerbItem parseVerb(Node node, int id) {
+    private static VerbItem getVerbItem(String language, int id) {
+        if(language == VerbLessonItem.English) {
+            return new VerbItem(id);
+        } else if(language == VerbLessonItem.Deutsch) {
+            return new DeVerbItem(id);
+        }
+        return new VerbItem(id);
+    }
 
-        VerbItem verb = new VerbItem(id);
+    private static VerbItem parseVerb(Node node, VerbItem verb) {
 
         NodeList items = node.getChildNodes();
         for (int i = 0; i < items.getLength(); i++) {
@@ -328,30 +339,7 @@ public class XmlParser {
             if (type == 1) {
                 String tag = item.getNodeName();
                 String value = item.getFirstChild().getNodeValue();
-
-                switch (tag) {
-                    case "infinitive":
-                        verb.infinitive = value;
-                        break;
-                    case "infinitive_tr":
-                        verb.infinitiveTrans = value;
-                        break;
-                    case "pastSimple":
-                        verb.pastSimple = value;
-                        break;
-                    case "pastSimple_tr":
-                        verb.pastSimpleTrans = value;
-                        break;
-                    case "pastParticiple":
-                        verb.pastParticiple = value;
-                        break;
-                    case "pastParticiple_tr":
-                        verb.pastParticipleTrans = value;
-                        break;
-                    case "translation":
-                        verb.translation = value;
-                        break;
-                }
+                verb.addTag(tag, value);
             }
         }
         return verb;
