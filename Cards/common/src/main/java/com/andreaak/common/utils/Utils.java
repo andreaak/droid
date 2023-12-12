@@ -89,6 +89,14 @@ public class Utils {
         return fileName.replaceFirst("[.][^.]+$", "");
     }
 
+    public static String normalize(String fileName) {
+        return fileName
+                .replace("!a", "ä")
+                .replace("!o", "ö")
+                .replace("!u", "ü")
+                .replace("!s", "ß");
+    }
+
     static Pattern SPLIT_CAMEL_CASE = Pattern.compile(
             BETWEEN_LOWER_AND_UPPER +"|"+ BEFORE_UPPER_AND_LOWER + "|" + "_"
     );

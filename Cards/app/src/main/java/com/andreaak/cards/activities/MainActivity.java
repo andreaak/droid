@@ -32,6 +32,7 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
     private ImageButton buttonOpenCards;
     private ImageButton buttonOpenVerbCards;
     private ImageButton buttonOpenGrammar;
+    private ImageButton buttonOpenVerbForm;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,9 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
         buttonOpenGrammar = (ImageButton) findViewById(R.id.buttonOpenGrammar);
         buttonOpenGrammar.setOnClickListener(this);
+
+        buttonOpenVerbForm = (ImageButton) findViewById(R.id.buttonOpenVerbForm);
+        buttonOpenVerbForm.setOnClickListener(this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -113,6 +117,9 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
             case R.id.buttonOpenGrammar:
                 openGrammar();
                 break;
+            case R.id.buttonOpenVerbForm:
+                openVerbForm();
+                break;
         }
     }
 
@@ -148,6 +155,12 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
     private void openGrammar() {
         Intent intent = new Intent(this, GrammarChooseActivity.class);
         intent.putExtra(GrammarChooseActivity.PATH, AppConfigs.getInstance().getGrammarDir());
+        startActivity(intent);
+    }
+
+    private void openVerbForm() {
+        Intent intent = new Intent(this, SelectVerbFormActivity.class);
+        intent.putExtra(SelectVerbFormActivity.PATH, AppConfigs.getInstance().getVerbFormDir());
         startActivity(intent);
     }
 }

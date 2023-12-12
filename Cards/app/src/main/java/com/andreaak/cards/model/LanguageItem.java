@@ -15,6 +15,10 @@ public class LanguageItem implements java.io.Serializable {
         return secondaryLanguage;
     }
 
+    public String getSoundLanguage() {
+        return secondaryLanguage == "ru" ? primaryLanguage : secondaryLanguage;
+    }
+
     public LanguageItem(String primaryLanguage, String secondaryLanguage) {
         this.primaryLanguage = primaryLanguage;
         this.secondaryLanguage = secondaryLanguage;
@@ -32,7 +36,7 @@ public class LanguageItem implements java.io.Serializable {
                 && this.secondaryLanguage.equals(other.secondaryLanguage);
     }
 
-    public static LanguageItem getItem(String lang) {
+    public static LanguageItem getLanguageItem(String lang) {
         String[] langs = lang.split(SEPARATOR);
         return new LanguageItem(langs[0], langs[1]);
     }

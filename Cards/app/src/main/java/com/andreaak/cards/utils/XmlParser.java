@@ -3,6 +3,8 @@ package com.andreaak.cards.utils;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.DeVerbItem;
 import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.VerbForm;
+import com.andreaak.cards.model.VerbFormItem;
 import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.model.VerbLessonItem;
 import com.andreaak.cards.model.WordItem;
@@ -71,6 +73,35 @@ public class XmlParser {
             e.printStackTrace();
         }
         return lesson;
+    }
+
+    public static boolean parseVerbForm(VerbForm verbForm) {
+
+        verbForm.clear();
+        try {
+            InputSource input = new InputSource(new FileReader(verbForm.getFile()));
+            Document doc = getXMLDocument(input);
+            NodeList rus = doc.getElementsByTagName("ru");
+            String ru = "";
+            if(rus.getLength() > 0) {
+                Node firstChild = rus.item(0).getFirstChild();
+                if(firstChild != null) {
+                    ru = firstChild.getNodeValue();
+                }
+            }
+            NodeList verbFormItems = doc.getElementsByTagName("VerbForm");
+            for (int i = 0; i < verbFormItems.getLength(); i++) {
+                Node node = verbFormItems.item(i);
+                VerbFormItem verbFormItem = parseVerbForm(node, i, ru);
+                verbForm.add(verbFormItem);
+            }
+
+        } catch (FileNotFoundException e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     public static ArrayList<LessonItem> parseLessons(String path) {
@@ -181,7 +212,6 @@ public class XmlParser {
         saxParser.parse(file, handler);    // specify handler
     }
 
-
     private static WordItem parseWord(Node node, int id) {
 
         WordItem word = new WordItem(id);
@@ -191,13 +221,35 @@ public class XmlParser {
             Node item = items.item(i);
             short type = item.getNodeType();
             if (type == 1) {
-                String language = item.getNodeName();
+                String nodeTag = item.getNodeName();
                 String value = item.getFirstChild().getNodeValue();
-                word.addItem(language, value);
+                word.addItem(nodeTag, value);
             }
         }
         return word;
     }
+
+    private static VerbFormItem parseVerbForm(Node node, int id, String ru) {
+
+        VerbFormItem verbFormItem = new VerbFormItem(id, ru);
+
+        NodeList items = node.getChildNodes();
+        for (int i = 0; i < items.getLength(); i++) {
+            Node item = items.item(i);
+            short type = item.getNodeType();
+            if (type == 1) {
+                String nodeTag = item.getNodeName();
+                Node firstChild = item.getFirstChild();
+                if(firstChild == null) {
+                    continue;
+                }
+                String value = firstChild.getNodeValue();
+                verbFormItem.addItem(nodeTag, value);
+            }
+        }
+        return verbFormItem;
+    }
+
 
     private static Document getXMLDocument(InputSource source) {
         try {

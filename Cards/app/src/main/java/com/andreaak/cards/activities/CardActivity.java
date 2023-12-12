@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -75,6 +76,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
     private CardActivityHelper helper;
     private WordsSpinAdapter wordsAdapter;
+    private WordsSpinAdapter wordsSpinAdapter;
     private VelocityTracker mVelocityTracker = null;
     private float x;
     private boolean isStudy;
@@ -152,7 +154,16 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         if (helper.lessonItem.isContainsWords()) {
             setTitle(helper.lessonItem.getDisplayName());
             helper.lessonItem.resetLanguage();
-            initializeWordsSpinner(helper.lessonItem.getLessonWords(), helper.lessonItem.getCurrentLanguage());
+            wordsAdapter = new WordsSpinAdapter(CardActivity.this,
+                    android.R.layout.simple_spinner_item,
+                    helper.lessonItem.getLessonWords(), helper.lessonItem.getCurrentLanguage());
+
+            initializeWordsSpinner(helper.lessonItem.getSortedLessonWords(), helper.lessonItem.getCurrentLanguage());
+
+            if(helper.currentWord == null) {
+                helper.currentWord = wordsAdapter.getItem(0);
+            }
+            activateWord(helper.currentWord);
         }
 
         this.menu = menu;
@@ -223,41 +234,35 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     }
 
     private void setFontSize() {
-        int fontSize = SharedPreferencesHelper.getInstance().getInt(AppConfigs.SP_TEXT_FONT_SIZE);
-        if (fontSize > 0) {
-            textViewWord2.setTextSize(fontSize);
-        }
-        fontSize = SharedPreferencesHelper.getInstance().getInt(AppConfigs.SP_TRANS_FONT_SIZE);
-        if (fontSize > 0) {
-            textViewTrans2.setTextSize(fontSize);
+        float fontSize1 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
+        float fontSize2 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TRANS_FONT_SIZE);
+        if (fontSize1 > 0 && fontSize2 > 0) {
+            setTextSize(fontSize1, fontSize2, 1);
         }
     }
 
     private void saveFontSize() {
-//        SharedPreferencesHelper.getInstance().save(Configs.SP_TEXT_FONT_SIZE, (int) textViewWord.getTextSize());
-//        SharedPreferencesHelper.getInstance().save(Configs.SP_TRANS_FONT_SIZE, (int) textViewTrans.getTextSize());
+        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TEXT_FONT_SIZE, textViewWord1. getTextSize());
+        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TRANS_FONT_SIZE, textViewTrans1.getTextSize());
     }
 
     private void textSmaller() {
 
         float factor = 0.95f;
-        setTextSize(factor);
+        setTextSize(textViewWord2.getTextSize(), textViewTrans2.getTextSize(), factor);
     }
 
     private void textBigger() {
         float factor = 1.05f;
-        setTextSize(factor);
+        setTextSize(textViewWord2.getTextSize(), textViewTrans2.getTextSize(), factor);
     }
 
-    private void setTextSize(float factor) {
-
-        float size = textViewWord2.getTextSize();
-        float newSize = size * factor;
+    private void setTextSize(float wordSize, float transSize, float factor) {
+        float newSize = wordSize * factor;
         setTextSize(textViewWord2, newSize);
         setTextSize(textViewWord1, newSize);
 
-        size = textViewTrans2.getTextSize();
-        newSize = size * factor;
+        newSize = transSize * factor;
         setTextSize(textViewTrans2, newSize);
         setTextSize(textViewTrans1, newSize);
 
@@ -265,14 +270,15 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     }
 
     private void setTextSize(TextView textView, float size) {
-        android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+        android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(Math.round(0), Math.round(0), Math.round(0), Math.round(0));
 
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
         textView.setLayoutParams(params);
+        textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
         textView.setPadding(0, 0, 0, 0);
-        textView.setHeight((int) size + 20);
+        //textView.setHeight((int) size + 20);
     }
 
     private void editWord() {
@@ -287,16 +293,16 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
     private void initializeWordsSpinner(ArrayList<WordItem> words, String language) {
 
-        wordsAdapter = new WordsSpinAdapter(CardActivity.this,
+        wordsSpinAdapter = new WordsSpinAdapter(CardActivity.this,
                 android.R.layout.simple_spinner_item,
                 words, language);
 
-        spinnerWords.setAdapter(wordsAdapter);
+        spinnerWords.setAdapter(wordsSpinAdapter);
 
         //setCardVisibility(!words.isEmpty());
 
         if (helper.isRestore) {
-            int position = wordsAdapter.getPosition(helper.currentWord);
+            int position = wordsSpinAdapter.getPosition(helper.currentWord);
             spinnerWords.setSelected(false);// must
             spinnerWords.setSelection(position, true);  //must
             activateWord(helper.currentWord);
@@ -309,7 +315,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             public void onItemSelected(AdapterView<?> adapterView, View view,
                                        int position, long id) {
 
-                WordItem word = wordsAdapter.getItem(position);
+                WordItem word = wordsSpinAdapter.getItem(position);
                 helper.currentWord = word;
                 helper.lessonItem.resetLanguage();
 
@@ -408,7 +414,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         text = getText(transcription, info);
         SetTranscriptionAndVisibility(textViewTrans2, text);
 
-        Queue<String> files = getSoundFiles(languageItem.getSecondaryLanguage());
+        Queue<String> files = getSoundFiles(languageItem.getSoundLanguage());
         boolean isVisible = !files.isEmpty();
         int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
         buttonSound.setVisibility(flag);
@@ -499,13 +505,22 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     }
 
     private void previousWord() {
-        int position = wordsAdapter.getPosition(helper.currentWord);
-        spinnerWords.setSelection(position - 1);
+        setWord(-1);
     }
 
     private void nextWord() {
+        setWord(1);
+    }
+
+    private void setWord(int index) {
         int position = wordsAdapter.getPosition(helper.currentWord);
-        spinnerWords.setSelection(position + 1);
+        WordItem word = wordsAdapter.getItem(position + index);
+        helper.currentWord = word;
+
+        position = wordsSpinAdapter.getPosition(helper.currentWord);
+        spinnerWords.setSelected(false);// must
+        spinnerWords.setSelection(position, true);
+        activateWord(word);
     }
 
     @Override

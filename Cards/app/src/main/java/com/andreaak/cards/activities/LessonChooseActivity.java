@@ -154,7 +154,7 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
         String lastLanguage = SharedPreferencesHelper.getInstance().getString(AppConfigs.SP_LAST_LESSON_LANGUAGE);
         LessonItem lessonItem = XmlParser.parseLesson(lastLesson);
 
-        LanguageItem languageItem = LanguageItem.getItem(lastLanguage);
+        LanguageItem languageItem = LanguageItem.getLanguageItem(lastLanguage);
         lessonItem.setLanguageItem(languageItem);
         openCard(lessonItem);
     }

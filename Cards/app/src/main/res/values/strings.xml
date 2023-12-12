@@ -31,4 +31,7 @@
     <string name="irregular_verbs_en">English irregular verbs</string>
     <string name="select_sounds_folder">Select sounds\'s folder</string>
     <string name="grammar">Grammar</string>
+    <string name="select_verb">Select verb</string>
+    <string name="select_form">Select form</string>
+    <string name="open_form">Open verb form</string>
 </resources>

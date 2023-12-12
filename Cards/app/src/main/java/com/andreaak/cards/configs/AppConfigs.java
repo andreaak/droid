@@ -16,13 +16,14 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     private static final String LESSONS_DIR = "Lessons";
     private static final String IRREGULAR_VERB_DIR = "IrregularVerbs";
     private static final String GRAMMAR_DIR = "Grammar";
+    private static final String VERB_FORMS_DIR = "VerbForms";
     // Google
     private static final String SP_GOOGLE_DIR_DEFAULT = "Eng";
     //irregular
     public static final String SP_IRR_VERB_EN_DEFAULT = "irregular_en";
     //
-    public static final String SP_TEXT_FONT_SIZE = "SP_TEXT_FONT_SIZE";
-    public static final String SP_TRANS_FONT_SIZE = "SP_TRANS_FONT_SIZE";
+    public static final String SP_TEXT_FONT_SIZE = "SP_TEXT_FONT_SIZE1";
+    public static final String SP_TRANS_FONT_SIZE = "SP_TRANS_FONT_SIZE1";
     public static final String SP_TRANS_SCALE = "SP_TRANS_SCALE";
 
 
@@ -92,6 +93,10 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
     public String getRemoteGrammarDir() {
         return GoogleDir + "/" + GRAMMAR_DIR;
+    }
+
+    public String getVerbFormDir() {
+        return WorkingDir + "/" + VERB_FORMS_DIR;
     }
 
     protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {

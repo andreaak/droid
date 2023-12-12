@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,9 +45,34 @@ public class LessonItem implements Serializable {
             if (!langs.contains(languageItem.getPrimaryLanguage())
                 || !langs.contains(languageItem.getSecondaryLanguage()))
             {
-                it.remove(); // NOTE: Iterator's remove method, not ArrayList's, is used.
+                it.remove();
             }
         }
+        return list;
+    }
+
+    public ArrayList<WordItem> getSortedLessonWords() {
+        ArrayList<WordItem> list = getLessonWords();
+
+        Collections.sort(list, new Comparator<WordItem>() {
+            @Override
+            public int compare(WordItem word1, WordItem word2)
+            {
+                String value1 =  normalize(word1.getValue(currentLanguage));
+                String value2 =  normalize(word2.getValue(currentLanguage));
+                return  value1.compareTo(value2);
+            }
+
+            private String normalize(String value) {
+
+                return value.replace("der ", "")
+                        .replace("die ", "")
+                        .replace("das ", "")
+                        .replace("der(die) ", "")
+                        .replace("die(der) ", "")
+                        .replace("der(das) ", "");
+            }
+        });
         return list;
     }
 

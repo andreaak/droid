@@ -3,12 +3,17 @@ package com.andreaak.cards.utils;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.VerbForm;
+import com.andreaak.cards.model.VerbFormItem;
+import com.andreaak.cards.model.VerbFormType;
 import com.andreaak.cards.model.WordItem;
+import com.andreaak.common.utils.Utils;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
 
@@ -39,6 +44,25 @@ public class AppUtils {
         return res.toArray(new LessonItem[0]);
     }
 
+    public static ArrayList<VerbForm> getVerbForms(String path) {
+        File directory = new File(path);
+        File[] files = directory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                return true;
+            }
+        });
+        ArrayList<VerbForm> res = new ArrayList<>();
+        if (files != null) {
+            Arrays.sort(files, new SortByFileName());
+            for (File file : files) {
+                res.add(new VerbForm(file));
+            }
+        }
+
+        return res;
+    }
+
     public static List<LanguageItem> getLangs(ArrayList<WordItem> words) {
 
         List<LanguageItem> langItems = new ArrayList<LanguageItem>();
@@ -60,6 +84,17 @@ public class AppUtils {
         }
 
        return langItems;
+    }
+
+    public static List<VerbFormType> getVerbFormTypes(VerbFormItem[] words) {
+
+        ArrayList<VerbFormType> items = new ArrayList<>();
+
+        for (VerbFormItem word: words) {
+            items.add(word.FormType);
+        }
+
+        return items;
     }
 
     public static List<String> getWords(String item) {
@@ -166,6 +201,15 @@ class ReplaceItem {
     public ReplaceItem(String source, String dest) {
         Source = source;
         Dest = dest;
+    }
+}
+
+class SortByFileName implements Comparator<File> {
+    // Used for sorting in ascending order of
+    // roll number
+    public int compare(File a, File b)
+    {
+        return Utils.normalize(a.getName()).compareTo(Utils.normalize(b.getName()));
     }
 }
 

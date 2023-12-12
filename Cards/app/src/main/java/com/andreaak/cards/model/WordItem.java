@@ -1,10 +1,12 @@
 package com.andreaak.cards.model;
 
+import android.support.annotation.NonNull;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class WordItem implements java.io.Serializable {
+public class WordItem implements java.io.Serializable, Comparable<WordItem> {
 
     public static final String TranscriptionSuffix = "_tr";
     public static final String InfoSuffix = "_info";
@@ -52,5 +54,10 @@ public class WordItem implements java.io.Serializable {
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public int compareTo(@NonNull WordItem o) {
+        return 0;
     }
 }
