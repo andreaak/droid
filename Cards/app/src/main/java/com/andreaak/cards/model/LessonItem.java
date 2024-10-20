@@ -1,5 +1,7 @@
 package com.andreaak.cards.model;
 
+import android.text.Html;
+
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.utils.Utils;
 
@@ -17,16 +19,18 @@ public class LessonItem implements Serializable {
     private String displayName;
     private String fileName;
     private String path;
+    private String prefix;
     private File file;
 
     private LanguageItem languageItem;
     private String currentLanguage;
     private ArrayList<WordItem> words = new ArrayList<>();
 
-    public LessonItem(File lessonFile) {
+    public LessonItem(File lessonFile, String prefix) {
         this.fileName = lessonFile.getName();
-        this.displayName = Utils.getDisplayName(fileName, AppConfigs.getInstance().LessonsPrefix);
+        this.displayName = Utils.getDisplayName(fileName, prefix);
         this.path = lessonFile.getAbsolutePath();
+        this.prefix = prefix;
         this.file = lessonFile;
     }
 
@@ -64,6 +68,8 @@ public class LessonItem implements Serializable {
             }
 
             private String normalize(String value) {
+
+                value = Html.fromHtml(value).toString();
 
                 return value.replace("der ", "")
                         .replace("die ", "")
@@ -103,6 +109,10 @@ public class LessonItem implements Serializable {
 
     public String getPath() {
         return path;
+    }
+
+    public String getPrefix() {
+        return prefix;
     }
 
     public String getCurrentLanguage() {

@@ -38,6 +38,7 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
     ImageButton buttonOpenLastLesson;
     TextView textViewLastLesson;
     ImageButton buttonOpenLesson;
+    ImageButton buttonOpenVerb;
 
     private Menu menu;
     private GoogleDriveHelper googleDriveHelper;
@@ -60,6 +61,9 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
 
         buttonOpenLesson = (ImageButton) findViewById(R.id.buttonOpenLesson);
         buttonOpenLesson.setOnClickListener(this);
+
+        buttonOpenVerb = (ImageButton) findViewById(R.id.buttonOpenVerb);
+        buttonOpenVerb.setOnClickListener(this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -116,7 +120,7 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
         switch (requestCode) {
             case REQUEST_LESSON_AND_LANGUAGE_CHOOSER:
                 if (resultCode == RESULT_OK) {
-                    LessonItem lessonItem = (LessonItem) data.getSerializableExtra(SelectLessonAndLanguageActivity.LESSON);
+                    LessonItem lessonItem = (LessonItem) data.getSerializableExtra(CardActivity.HELPER);
                     if (lessonItem.isContainsWords()) {
                         openCard(lessonItem);
                     }
@@ -146,13 +150,17 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
             case R.id.buttonOpenLesson:
                 openLesson();
                 break;
+            case R.id.buttonOpenVerb:
+                openVerb();
+                break;
         }
     }
 
     private void openLastLesson() {
         String lastLesson = SharedPreferencesHelper.getInstance().getString(AppConfigs.SP_LAST_LESSON_PATH);
         String lastLanguage = SharedPreferencesHelper.getInstance().getString(AppConfigs.SP_LAST_LESSON_LANGUAGE);
-        LessonItem lessonItem = XmlParser.parseLesson(lastLesson);
+        String lastPrefix = SharedPreferencesHelper.getInstance().getString(AppConfigs.SP_LAST_LESSON_PREFIX);
+        LessonItem lessonItem = XmlParser.parseLesson(lastLesson, lastPrefix);
 
         LanguageItem languageItem = LanguageItem.getLanguageItem(lastLanguage);
         lessonItem.setLanguageItem(languageItem);
@@ -160,12 +168,17 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
     }
 
     private void openLesson() {
-        selectLessonAndLanguage(AppConfigs.getInstance().getLessonsDir());
+        selectLessonAndLanguage(AppConfigs.getInstance().getLessonsDir(), AppConfigs.getInstance().LessonsPrefix);
     }
 
-    private void selectLessonAndLanguage(String path) {
+    private void openVerb() {
+        selectLessonAndLanguage(AppConfigs.getInstance().getVerbDir(), AppConfigs.getInstance().VerbPrefix);
+    }
+
+    private void selectLessonAndLanguage(String path, String prefix) {
         Intent intent = new Intent(this, SelectLessonAndLanguageActivity.class);
         intent.putExtra(SelectLessonAndLanguageActivity.DIRECTORY, path);
+        intent.putExtra(SelectLessonAndLanguageActivity.PREFIX, prefix);
         startActivityForResult(intent, REQUEST_LESSON_AND_LANGUAGE_CHOOSER);
     }
 
@@ -176,8 +189,15 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
 
         saveLastLesson(lessonItem);
 
-        Intent intent = new Intent(this, CardActivity.class);
-        intent.putExtra(CardActivity.HELPER, helper);
+        Intent intent;
+        if(lessonItem.getFileName().contains("_html")) {
+            intent = new Intent(this, CardHtmlActivity.class);
+            intent.putExtra(CardHtmlActivity.HELPER, helper);
+
+        } else {
+            intent = new Intent(this, CardActivity.class);
+            intent.putExtra(CardActivity.HELPER, helper);
+        }
         startActivity(intent);
     }
 
@@ -185,6 +205,8 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
         SharedPreferencesHelper.getInstance().save(AppConfigs.SP_LAST_LESSON_PATH, lessonItem.getPath());
         SharedPreferencesHelper.getInstance().save(AppConfigs.SP_LAST_LESSON_LANGUAGE,
                 lessonItem.getLanguageItem().toString());
+        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_LAST_LESSON_PREFIX,
+                lessonItem.getPrefix());
     }
 
     private void chooseFilesForDownload() {

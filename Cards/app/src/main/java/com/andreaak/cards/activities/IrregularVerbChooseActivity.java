@@ -30,7 +30,7 @@ import com.google.android.gms.common.AccountPicker;
 
 import java.util.List;
 
-public class VerbChooseActivity extends ListActivity implements IGoogleActivity {
+public class IrregularVerbChooseActivity extends ListActivity implements IGoogleActivity {
 
     //in
     public static final String PATH = "path";
@@ -138,7 +138,7 @@ public class VerbChooseActivity extends ListActivity implements IGoogleActivity 
     private void fill(String currentPath) {
         List<FileItem> dir = fileHelper.getEntities(currentPath);
         setTitle(fileHelper.getDescriptions(currentPath));
-        adapter = new FileArrayAdapter(VerbChooseActivity.this, R.layout.activity_file_chooser, dir);
+        adapter = new FileArrayAdapter(IrregularVerbChooseActivity.this, R.layout.activity_file_chooser, dir);
         this.setListAdapter(adapter);
     }
 
@@ -148,7 +148,7 @@ public class VerbChooseActivity extends ListActivity implements IGoogleActivity 
         helper.lessonItem = lessonItem;
         helper.currentWord = helper.lessonItem.getWords().get(0);
 
-        Intent intent = new Intent(this, VerbActivity.class);
+        Intent intent = new Intent(this, IrregularVerbActivity.class);
         intent.putExtra(CardActivity.HELPER, helper);
         startActivity(intent);
     }

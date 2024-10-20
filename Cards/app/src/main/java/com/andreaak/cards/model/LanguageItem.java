@@ -16,7 +16,7 @@ public class LanguageItem implements java.io.Serializable {
     }
 
     public String getSoundLanguage() {
-        return secondaryLanguage == "ru" ? primaryLanguage : secondaryLanguage;
+        return "ru".equals(secondaryLanguage) ? primaryLanguage : secondaryLanguage;
     }
 
     public LanguageItem(String primaryLanguage, String secondaryLanguage) {

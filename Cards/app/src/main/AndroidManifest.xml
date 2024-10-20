@@ -60,6 +60,14 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
+            android:name=".activities.CardHtmlActivity"
+            android:label=""
+            android:theme="@style/Theme.AppCompat.DayNight">
+            <action android:name="com.andreaak.cards.activities.CardHtmlActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
             android:name=".activities.SelectLessonAndLanguageActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo">
@@ -72,14 +80,6 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo">
             <action android:name="com.andreaak.cards.activities.SelectVerbFormActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-        </activity>
-        <activity
-            android:name=".activities.SelectLanguageActivity"
-            android:label="@string/select_language"
-            android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.activities.SelectLanguageActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
@@ -100,18 +100,18 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activities.VerbActivity"
+            android:name=".activities.IrregularVerbActivity"
             android:label=""
             android:theme="@style/Theme.AppCompat.DayNight">
-            <action android:name="com.andreaak.cards.activities.VerbActivity" />
+            <action android:name="com.andreaak.cards.activities.IrregularVerbActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
-            android:name=".activities.VerbChooseActivity"
+            android:name=".activities.IrregularVerbChooseActivity"
             android:label="@string/select_lesson"
             android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.activities.VerbChooseActivity" />
+            <action android:name="com.andreaak.cards.activities.IrregularVerbChooseActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>

@@ -8,15 +8,19 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     //Lessons
     public static final String SP_LAST_LESSON_PATH = "SP_LAST_LESSON_PATH";
     public static final String SP_LAST_LESSON_LANGUAGE = "SP_LAST_LESSON_LANGUAGE";
+    public static final String SP_LAST_LESSON_PREFIX = "SP_LAST_LESSON_PREFIX";
     //
     private static final String SP_LESSONS_EXTENSION = "SP_LESSONS_EXTENSION";
     private static final String SP_LESSONS_EXTENSION_DEFAULT = ".xml";
     private static final String SP_LESSONS_PREFFIX = "SP_LESSONS_PREFFIX";
     private static final String SP_LESSONS_PREFFIX_DEFAULT = "lesson_";
+    private static final String SP_VERB_PREFFIX = "SP_VERB_PREFFIX";
+    private static final String SP_VERB_PREFFIX_DEFAULT = "verb_";
     private static final String LESSONS_DIR = "Lessons";
     private static final String IRREGULAR_VERB_DIR = "IrregularVerbs";
     private static final String GRAMMAR_DIR = "Grammar";
     private static final String VERB_FORMS_DIR = "VerbForms";
+    private static final String VERB_DIR = "Verb";
     // Google
     private static final String SP_GOOGLE_DIR_DEFAULT = "Eng";
     //irregular
@@ -31,6 +35,7 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     public String SoundsDir;
     public String LessonsExtension;
     public String LessonsPrefix;
+    public String VerbPrefix;
     public float Scale;
 
     public static AppConfigs getInstance() {
@@ -59,6 +64,9 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
         Scale = getConfig(helper, SP_TRANS_SCALE,
                 1f);
+
+        VerbPrefix = getConfig(helper, SP_VERB_PREFFIX,
+                SP_VERB_PREFFIX_DEFAULT);
     }
 
     public boolean saveSoundsDirectory(String path) {
@@ -97,6 +105,10 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
     public String getVerbFormDir() {
         return WorkingDir + "/" + VERB_FORMS_DIR;
+    }
+
+    public String getVerbDir() {
+        return WorkingDir + "/" + VERB_DIR;
     }
 
     protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {

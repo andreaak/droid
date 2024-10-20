@@ -85,8 +85,12 @@ public class Utils {
         return false;
     }
 
-    public static String getFileNameWithoutExtensions(String fileName) {
+    private static String getFileNameWithoutExtensions(String fileName) {
         return fileName.replaceFirst("[.][^.]+$", "");
+    }
+
+    public static String getNormalizedFileNameWithoutExtensions(String fileName) {
+        return getFileNameWithoutExtensions(normalize(fileName));
     }
 
     public static String normalize(String fileName) {
@@ -95,6 +99,14 @@ public class Utils {
                 .replace("!o", "ö")
                 .replace("!u", "ü")
                 .replace("!s", "ß");
+    }
+
+    public static String normalizeForComparator(String fileName) {
+        return fileName.toLowerCase()
+                .replace("ä", "a")
+                .replace("ö", "o")
+                .replace("ü", "u")
+                .replace("ß", "ss");
     }
 
     static Pattern SPLIT_CAMEL_CASE = Pattern.compile(
@@ -108,7 +120,7 @@ public class Utils {
     public static String getDisplayName(String fileName, String prefix) {
         String[] res =
                 Utils.splitCamelCaseString(
-                        Utils.getFileNameWithoutExtensions(fileName)
+                        Utils.getNormalizedFileNameWithoutExtensions(fileName)
                                 .replace(prefix, ""));
 
         StringBuilder sb = new StringBuilder();

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
 
@@ -24,9 +25,9 @@ import java.util.List;
 public class SelectLessonAndLanguageActivity extends HandleExceptionActivity implements View.OnClickListener {
 
     public static final String DIRECTORY = "Directory";
-    public static final String LESSON = "Helper";
+    public static final String PREFIX = "Prefix";
 
-    private Spinner spinnerLessons;
+    private AutoCompleteTextView autoCompleteTextViewLessons;
     private Spinner spinnerLang;
 
     private Button buttonOk;
@@ -46,7 +47,7 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
         buttonCancel = (Button) findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(this);
 
-        spinnerLessons = (Spinner) findViewById(R.id.spinnerLessons);
+        autoCompleteTextViewLessons = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewLessons);
         spinnerLang = (Spinner) findViewById(R.id.spinnerLang);
 
         setTitle(getString(R.string.select_lesson));
@@ -67,39 +68,43 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
         } else {
             helper = new SelectLessonAndLanguageHelper();
             String directory = getIntent().getStringExtra(DIRECTORY);
-            helper.lessons = AppUtils.getLessons(directory);
-            if (helper.lessons.length != 0) {
+            String prefix = getIntent().getStringExtra(PREFIX);
+            helper.lessons = AppUtils.getLessons(directory, prefix);
+            if (helper.lessons.size() != 0) {
                 initializeLessonsSpinner(helper.lessons);
             }
         }
     }
 
-    private void initializeLessonsSpinner(LessonItem[] lessons) {
+    private void initializeLessonsSpinner(ArrayList<LessonItem> lessons) {
 
         lessonsAdapter = new LessonsSpinAdapter(SelectLessonAndLanguageActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
                 lessons);
-        spinnerLessons.setAdapter(lessonsAdapter);
+        autoCompleteTextViewLessons.setAdapter(lessonsAdapter);
+
         if (helper.isRestore) {
             int position = lessonsAdapter.getPosition(helper.lessonItem);
-            spinnerLessons.setSelected(false);  // must
-            spinnerLessons.setSelection(position, true);  //must
+            autoCompleteTextViewLessons.setSelected(false);  // must
+            autoCompleteTextViewLessons.setSelection(position);  //must
             initializeLanguageSpinner(helper.lessonItem.getWords());
         }
 
-        spinnerLessons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        autoCompleteTextViewLessons.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View arg0) {
+                autoCompleteTextViewLessons.showDropDown();
+            }
+        });
+
+        autoCompleteTextViewLessons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
-
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
                 LessonItem lessonItem = lessonsAdapter.getItem(position);
                 helper.lessonItem = XmlParser.parseLesson(lessonItem);
                 initializeLanguageSpinner(helper.lessonItem.getWords());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
             }
         });
     }
@@ -150,7 +155,7 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
 
     private void onOkClick() {
         Intent intent = new Intent();
-        intent.putExtra(LESSON, helper.lessonItem);
+        intent.putExtra(CardActivity.HELPER, helper.lessonItem);
         setResult(RESULT_OK, intent);
         finish();
     }

@@ -45,7 +45,7 @@ import java.util.Queue;
 
 import static com.andreaak.common.utils.Utils.showText;
 
-public class VerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
+public class IrregularVerbActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
         IOperationGoogleDrive, IGoogleActivity, View.OnClickListener {
 
     private static final int REQUEST_UPDATE_WORD = 1;
@@ -91,7 +91,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
             recreate();
         }
 
-        setContentView(R.layout.activity_verb);
+        setContentView(R.layout.activity_irregular_verb);
 
         textView_1 = (TextView) findViewById(R.id.textViewIndefinite);
         textView_1_Trans = (TextView) findViewById(R.id.textViewIndefiniteTrans);
@@ -121,7 +121,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
             helper.isRestore = true;
         } else {
             helper = (VerbActivityHelper) getIntent()
-                    .getSerializableExtra(VerbActivity.HELPER);
+                    .getSerializableExtra(IrregularVerbActivity.HELPER);
         }
 
         googleDriveHelper = GoogleDriveHelper.getInstance();
@@ -297,7 +297,7 @@ public class VerbActivity extends HandleExceptionAppCompatActivity implements IC
 
     private void initializeWordsSpinner(ArrayList<VerbItem> words) {
 
-        wordsAdapter = new VerbSpinAdapter(VerbActivity.this,
+        wordsAdapter = new VerbSpinAdapter(IrregularVerbActivity.this,
                 android.R.layout.simple_spinner_item,
                 words);
 

@@ -22,12 +22,17 @@
             android:textColor="@color/colorWhite"
             android:textSize="25dp" />
 
-        <Spinner
-            android:id="@+id/spinnerLessons"
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextViewLessons"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="left|center_vertical" />
+            android:layout_height="wrap_content"/>
+
+<!--        <Spinner-->
+<!--            android:id="@+id/spinnerLessons"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:gravity="left|center_vertical" />-->
 
         <TextView
             android:layout_width="match_parent"

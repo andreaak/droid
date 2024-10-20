@@ -20,6 +20,7 @@
     <string name="open_file">Open file</string>
     <string name="select_lesson">Select lesson</string>
     <string name="open_lesson">Open lesson</string>
+    <string name="open_verb">Open verb</string>
     <string name="open_last_lesson">Open last lesson</string>
     <string name="select_language">Select language</string>
     <string name="select_log">Select log file folder</string>

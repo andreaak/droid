@@ -147,8 +147,8 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
     }
 
     private void chooseIrregularVerbs() {
-        Intent intent = new Intent(this, VerbChooseActivity.class);
-        intent.putExtra(VerbChooseActivity.PATH, AppConfigs.getInstance().getIrregularVerbDir());
+        Intent intent = new Intent(this, IrregularVerbChooseActivity.class);
+        intent.putExtra(IrregularVerbChooseActivity.PATH, AppConfigs.getInstance().getIrregularVerbDir());
         startActivity(intent);
     }
 

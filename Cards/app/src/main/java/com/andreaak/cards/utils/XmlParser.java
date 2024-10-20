@@ -43,14 +43,14 @@ import javax.xml.transform.stream.StreamResult;
 
 public class XmlParser {
 
-    public static LessonItem parseLesson(String path) {
+    public static LessonItem parseLesson(String path, String prefix) {
 
-        return parseLesson(new File(path));
+        return parseLesson(new File(path), prefix);
     }
 
-    public static LessonItem parseLesson(File lessonFile) {
+    public static LessonItem parseLesson(File lessonFile, String prefix) {
 
-        LessonItem lesson = new LessonItem(lessonFile);
+        LessonItem lesson = new LessonItem(lessonFile, prefix);
         parseLesson(lesson);
         return lesson;
     }
@@ -104,7 +104,7 @@ public class XmlParser {
         return true;
     }
 
-    public static ArrayList<LessonItem> parseLessons(String path) {
+    public static ArrayList<LessonItem> parseLessons(String path, String prefix) {
 
         ArrayList<LessonItem> lessons = new ArrayList<>();
         File directory = new File(path);
@@ -118,7 +118,7 @@ public class XmlParser {
         for (File lessonFile : files) {
             try {
 
-                LessonItem lesson = new LessonItem(lessonFile);
+                LessonItem lesson = new LessonItem(lessonFile, prefix);
 
                 InputSource input = new InputSource(new FileReader(lessonFile));
                 Document doc = getXMLDocument(input);

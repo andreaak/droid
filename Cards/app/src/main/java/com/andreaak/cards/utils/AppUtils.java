@@ -25,23 +25,23 @@ public class AppUtils {
             new ReplaceItem("ö", "!o"),
             new ReplaceItem("ü", "!u")};
 
-    public static LessonItem[] getLessons(String path) {
+    public static ArrayList<LessonItem> getLessons(String path, final String prefix) {
         File directory = new File(path);
         File[] files = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
-                return s.startsWith(AppConfigs.getInstance().LessonsPrefix);
+                return s.startsWith(prefix);
             }
         });
         ArrayList<LessonItem> res = new ArrayList<>();
         if (files != null) {
             Arrays.sort(files);
             for (File file : files) {
-                res.add(new LessonItem(file));
+                res.add(new LessonItem(file, prefix));
             }
         }
 
-        return res.toArray(new LessonItem[0]);
+        return res;
     }
 
     public static ArrayList<VerbForm> getVerbForms(String path) {

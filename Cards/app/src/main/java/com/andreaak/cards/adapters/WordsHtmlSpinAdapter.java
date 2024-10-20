@@ -11,14 +11,14 @@ import com.andreaak.cards.model.WordItem;
 
 import java.util.List;
 
-public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
+public class WordsHtmlSpinAdapter extends ArrayAdapter<WordItem> {
 
     private Context context;
     private List<WordItem> values;
     private String language;
 
-    public WordsSpinAdapter(Context context, int textViewResourceId,
-                            List<WordItem> values, String language) {
+    public WordsHtmlSpinAdapter(Context context, int textViewResourceId,
+                                List<WordItem> values, String language) {
         super(context, textViewResourceId, values);
         this.context = context;
         this.values = values;
@@ -46,7 +46,8 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
 
 
         TextView label = new TextView(context);
-        label.setText(values.get(position).getValue(language));
+        String t = Html.fromHtml(values.get(position).getValue(language)).toString();
+        label.setText(t);
         label.setTextSize(15);
         label.setPadding(2, 2, 2, 2);
 
@@ -57,7 +58,8 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(values.get(position).getValue(language));
+        String t = Html.fromHtml(values.get(position).getValue(language)).toString();
+        label.setText(t);
         label.setTextSize(15);
         label.setPadding(2, 2, 2, 2);
 

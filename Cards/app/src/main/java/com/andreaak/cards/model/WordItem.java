@@ -10,6 +10,8 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
 
     public static final String TranscriptionSuffix = "_tr";
     public static final String InfoSuffix = "_info";
+    public static final String LevelSuffix = "_level";
+    public static final String WordClassSuffix = "_wordclass";
     public static final String Rank = "rank";
 
 
@@ -19,6 +21,8 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
 
     private int id;
     private String rank;
+    private String wordClass;
+    private String level;
 
     public WordItem(int id) {
         this.id = id;
@@ -40,15 +44,29 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
         return info.get(language + InfoSuffix);
     }
 
-    public void addItem(String language, String value) {
-        if (language.endsWith(TranscriptionSuffix)) {
-            transcriptions.put(language, value);
-        } else if (language.endsWith(InfoSuffix)) {
-            info.put(language, value);
-        }  else if (Rank.equals(language)) {
+    public String getWordClass() {
+        return wordClass;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void addItem(String tag, String value) {
+        if (tag.endsWith(TranscriptionSuffix)) {
+            transcriptions.put(tag, value);
+        } else if (tag.endsWith(InfoSuffix)) {
+            info.put(tag, value);
+        }  else if (Rank.equals(tag)) {
             rank = value;
+        } else if (tag.endsWith(WordClassSuffix)) {
+            wordClass = value;
+        } else if (tag.endsWith(LevelSuffix)) {
+            level = value;
+        } else if (tag.contains("_")) {
+
         } else {
-            words.put(language, value);
+            words.put(tag, value);
         }
     }
 

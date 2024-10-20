@@ -12,7 +12,7 @@ import java.util.Queue;
 
 public class MediaPlayerHelper {
 
-    public static final int DELAY_BETWEEN_WORDS = 500;
+    public static final int DELAY_BETWEEN_WORDS = 100;
 
     private MediaPlayer mediaPlayer;
     private Context context;
@@ -62,11 +62,11 @@ public class MediaPlayerHelper {
                 clean();
             } else {
                 reset();
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    Thread.sleep(delay);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 playSound(files.poll());
             }
         }

@@ -39,7 +39,7 @@ public class VerbFormSpinAdapter extends ArrayAdapter<VerbForm> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(Utils.getFileNameWithoutExtensions(values[position].getDisplayName()));
+        label.setText(Utils.getNormalizedFileNameWithoutExtensions(values[position].getDisplayName()));
         label.setTextSize(20);
         label.setPadding(2, 5, 2, 2);
 
@@ -50,7 +50,7 @@ public class VerbFormSpinAdapter extends ArrayAdapter<VerbForm> {
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(Utils.getFileNameWithoutExtensions(values[position].getDisplayName()));
+        label.setText(Utils.getNormalizedFileNameWithoutExtensions(values[position].getDisplayName()));
         label.setTextSize(20);
         label.setPadding(2, 5, 2, 2);
 
