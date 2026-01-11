@@ -9,50 +9,45 @@ import android.widget.Filter;
 import android.widget.TextView;
 
 import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.SimpleWordItem;
+import com.andreaak.cards.model.WordItem;
 import com.andreaak.common.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class LessonsSpinAdapter extends ArrayAdapter<LessonItem> {
+public class SearchTextViewAdapter extends ArrayAdapter<WordItem> {
 
-    private ArrayList<LessonItem> items;
-    private ArrayList<LessonItem> itemsAll;
-    private ArrayList<LessonItem> suggestions;
+    private ArrayList<WordItem> items;
+    private ArrayList<WordItem> itemsAll;
+    private ArrayList<WordItem> suggestions;
+    private String lang;
     private int viewResourceId;
 
-    public LessonsSpinAdapter(Context context, int viewResourceId,
-                              ArrayList<LessonItem> values) {
-        super(context, viewResourceId, values);
-        Collections.sort(values, new Comparator<LessonItem>() {
-            @Override
-            public int compare(LessonItem a, LessonItem b)
-            {
-                String namea = Utils.normalizeForComparator(a.getDisplayName());
-                String nameb = Utils.normalizeForComparator(b.getDisplayName());
-                return namea.compareTo(nameb);
-            }
-        });
-
-        this.items = values;
-        this.itemsAll = (ArrayList<LessonItem>) items.clone();
-        this.suggestions = new ArrayList<LessonItem>();
+    @SuppressWarnings("unchecked")
+    public SearchTextViewAdapter(Context context, int viewResourceId,
+                                 ArrayList<WordItem> items, String lang) {
+        super(context, viewResourceId, items);
+        this.items = items;
+        this.itemsAll = (ArrayList<WordItem>) items.clone();
+        this.suggestions = new ArrayList<>();
         this.viewResourceId = viewResourceId;
+        this.lang = lang;
     }
 
-   public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
         if (v == null) {
             LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
                     Context.LAYOUT_INFLATER_SERVICE);
             v = vi.inflate(viewResourceId, null);
         }
-        LessonItem product = items.get(position);
+        WordItem product = items.get(position);
         if (product != null) {
             TextView productLabel = (TextView)  v.findViewById(android.R.id.text1);
             if (productLabel != null) {
-                productLabel.setText(product.getDisplayName());
+                productLabel.setText(product.getDisplayName(lang));
                 productLabel.setTextSize(20);
             }
         }
@@ -66,7 +61,7 @@ public class LessonsSpinAdapter extends ArrayAdapter<LessonItem> {
 
     Filter nameFilter = new Filter() {
         public String convertResultToString(Object resultValue) {
-            String str = ((LessonItem) (resultValue)).getDisplayName();
+            String str = ((SimpleWordItem) (resultValue)).getDisplayName(lang);
             return str;
         }
 
@@ -74,17 +69,25 @@ public class LessonsSpinAdapter extends ArrayAdapter<LessonItem> {
         protected FilterResults performFiltering(CharSequence constraint) {
             if (constraint != null) {
                 suggestions.clear();
-                String ct = Utils.normalizeForComparator(constraint.toString().toLowerCase());
-                for (LessonItem item : itemsAll) {
-
-                    if (Utils.normalizeForComparator(item.getDisplayName().toLowerCase())
+                String ct = Utils.normalizeForComparatorAndRemoveArtikles(constraint.toString());
+                for (WordItem item : itemsAll) {
+                    if (Utils.normalizeForComparatorAndRemoveArtikles(item.getDisplayName(lang))
                             .contains(ct)) {
                         suggestions.add(item);
-                        if(suggestions.size() >= 20) {
+                        if(suggestions.size() >= 100) {
                             break;
                         }
                     }
                 }
+
+                Collections.sort(suggestions, new Comparator<WordItem>() {
+                    @Override
+                    public int compare(WordItem a, WordItem b)
+                    {
+                        return a.getValue("de").compareTo(b.getValue("de"));
+                    }
+                });
+
                 FilterResults filterResults = new FilterResults();
                 filterResults.values = suggestions;
                 filterResults.count = suggestions.size();
@@ -98,10 +101,10 @@ public class LessonsSpinAdapter extends ArrayAdapter<LessonItem> {
         protected void publishResults(CharSequence constraint,
                                       FilterResults results) {
             @SuppressWarnings("unchecked")
-            ArrayList<LessonItem> filteredList = (ArrayList<LessonItem>) results.values;
+            ArrayList<SimpleWordItem> filteredList = (ArrayList<SimpleWordItem>) results.values;
             if (results != null && results.count > 0) {
                 clear();
-                for (LessonItem c : filteredList) {
+                for (SimpleWordItem c : filteredList) {
                     add(c);
                 }
                 notifyDataSetChanged();

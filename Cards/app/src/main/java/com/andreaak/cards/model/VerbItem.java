@@ -13,6 +13,7 @@ public class VerbItem implements java.io.Serializable {
     public String _4;
     public String _4_Trans;
     public String translation;
+    public String level;
 
     public VerbItem(int id) {
         this.id = id;
@@ -44,6 +45,9 @@ public class VerbItem implements java.io.Serializable {
                 break;
             case "translation":
                 translation = value;
+                break;
+            case "level":
+                level = value;
                 break;
         }
     }

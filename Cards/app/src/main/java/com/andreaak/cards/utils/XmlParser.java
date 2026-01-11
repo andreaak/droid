@@ -1,8 +1,8 @@
 package com.andreaak.cards.utils;
 
-import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.DeVerbItem;
 import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.model.VerbForm;
 import com.andreaak.cards.model.VerbFormItem;
 import com.andreaak.cards.model.VerbItem;
@@ -22,7 +22,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,12 +44,7 @@ public class XmlParser {
 
     public static LessonItem parseLesson(String path, String prefix) {
 
-        return parseLesson(new File(path), prefix);
-    }
-
-    public static LessonItem parseLesson(File lessonFile, String prefix) {
-
-        LessonItem lesson = new LessonItem(lessonFile, prefix);
+        LessonItem lesson = new LessonItem(new File(path), prefix, true);
         parseLesson(lesson);
         return lesson;
     }
@@ -70,6 +64,23 @@ public class XmlParser {
 
         } catch (FileNotFoundException e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return lesson;
+    }
+
+    public static LessonItem parseSimpleLesson(File lessonFile, String prefix) {
+
+        LessonItem lesson = new LessonItem(lessonFile, prefix, false);
+        lesson.clear();
+        try {
+
+            ArrayList<SimpleWordItem> words = getSimpleWordItems(lesson.getFile().getPath());
+            lesson.addAll(words);
+        } catch (FileNotFoundException e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return lesson;
@@ -104,113 +115,41 @@ public class XmlParser {
         return true;
     }
 
-    public static ArrayList<LessonItem> parseLessons(String path, String prefix) {
-
-        ArrayList<LessonItem> lessons = new ArrayList<>();
-        File directory = new File(path);
-        File[] files = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.startsWith(AppConfigs.getInstance().LessonsPrefix);
-            }
-        });
-
-        for (File lessonFile : files) {
-            try {
-
-                LessonItem lesson = new LessonItem(lessonFile, prefix);
-
-                InputSource input = new InputSource(new FileReader(lessonFile));
-                Document doc = getXMLDocument(input);
-                NodeList words = doc.getElementsByTagName("word");
-
-                for (int i = 0; i < words.getLength(); i++) {
-                    Node node = words.item(i);
-                    WordItem word = parseWord(node, i);
-                    lesson.add(word);
-                }
-                if (!lesson.getWords().isEmpty()) {
-                    lessons.add(lesson);
-                }
-            } catch (FileNotFoundException e) {
-                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-        }
-        return lessons;
-    }
-
-    public static void parse() throws ParserConfigurationException, SAXException, IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setValidating(true);
-        SAXParser saxParser = factory.newSAXParser();
-        File file = new File("test.xml");
-
-        DefaultHandler handler = new DefaultHandler() {
-
-            boolean bfname = false;
-            boolean blname = false;
-            boolean bnname = false;
-            boolean bsalary = false;
-
-            public void startElement(String uri, String localName, String qName,
-                                     Attributes attributes) throws SAXException {
-
-                System.out.println("Start Element :" + qName);
-
-                if (qName.equalsIgnoreCase("FIRSTNAME")) {
-                    bfname = true;
-                }
-
-                if (qName.equalsIgnoreCase("LASTNAME")) {
-                    blname = true;
-                }
-
-                if (qName.equalsIgnoreCase("NICKNAME")) {
-                    bnname = true;
-                }
-
-                if (qName.equalsIgnoreCase("SALARY")) {
-                    bsalary = true;
-                }
-
-            }
-
-            public void endElement(String uri, String localName,
-                                   String qName) throws SAXException {
-
-                System.out.println("End Element :" + qName);
-
-            }
-
-            public void characters(char ch[], int start, int length) throws SAXException {
-
-                if (bfname) {
-                    System.out.println("First Name : " + new String(ch, start, length));
-                    bfname = false;
-                }
-
-                if (blname) {
-                    System.out.println("Last Name : " + new String(ch, start, length));
-                    blname = false;
-                }
-
-                if (bnname) {
-                    System.out.println("Nick Name : " + new String(ch, start, length));
-                    bnname = false;
-                }
-
-                if (bsalary) {
-                    System.out.println("Salary : " + new String(ch, start, length));
-                    bsalary = false;
-                }
-
-            }
-
-        };
-
-        saxParser.parse(file, handler);    // specify handler
-    }
+//    public static ArrayList<LessonItem> parseLessons(String path, String prefix) {
+//
+//        ArrayList<LessonItem> lessons = new ArrayList<>();
+//        File directory = new File(path);
+//        File[] files = directory.listFiles(new FilenameFilter() {
+//            @Override
+//            public boolean accept(File file, String s) {
+//                return s.startsWith(AppConfigs.getInstance().LessonsPrefix);
+//            }
+//        });
+//
+//        for (File lessonFile : files) {
+//            try {
+//
+//                LessonItem lesson = new LessonItem(lessonFile, prefix);
+//
+//                InputSource input = new InputSource(new FileReader(lessonFile));
+//                Document doc = getXMLDocument(input);
+//                NodeList words = doc.getElementsByTagName("word");
+//
+//                for (int i = 0; i < words.getLength(); i++) {
+//                    Node node = words.item(i);
+//                    WordItem word = parseWord(node, i);
+//                    lesson.add(word);
+//                }
+//                if (!lesson.getWords().isEmpty()) {
+//                    lessons.add(lesson);
+//                }
+//            } catch (FileNotFoundException e) {
+//                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+//                e.printStackTrace();
+//            }
+//        }
+//        return lessons;
+//    }
 
     private static WordItem parseWord(Node node, int id) {
 
@@ -249,6 +188,119 @@ public class XmlParser {
         }
         return verbFormItem;
     }
+
+    public static ArrayList<SimpleWordItem> getSimpleWordItems(String path) throws Exception {
+        SAXParserFactory fabrique = SAXParserFactory.newInstance();
+        SAXParser parser = fabrique.newSAXParser();
+
+        File file = new File(path);
+        BookHandler handler = new BookHandler(path);
+        parser.parse(file, handler);
+
+        return handler.words;
+    }
+
+    public static class BookHandler extends DefaultHandler {
+
+        private StringBuilder buffer;
+        private SimpleWordItem word;
+        private String path;
+
+        public ArrayList<SimpleWordItem> words = new ArrayList<>();
+
+        BookHandler(String path){
+            this.path = path;
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName,
+                                 Attributes attributes) throws SAXException {
+            switch (qName) {
+                case "word":
+                    word = new SimpleWordItem(path);
+                    break;
+                case "ru":
+                case "en":
+                case "de":
+                case "de_wordclass":
+                case "de_info":
+                    if(buffer == null) {
+                        buffer = new StringBuilder();
+                    } else {
+                        buffer.setLength(0);
+                    }
+
+                    break;
+            }
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length)
+                throws SAXException {
+            String content = new String(ch, start, length);
+            if (buffer != null)
+                buffer.append(content);
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName)
+                throws SAXException {
+            switch (qName) {
+                case "word":
+                    words.add(word);
+                    break;
+                case "ru":
+                case "en":
+                case "de":
+                case "de_wordclass":
+                case "de_info":
+                    word.addItem(qName, buffer.toString());
+                    break;
+            }
+        }
+
+        @Override
+        public void endDocument() throws SAXException {
+
+        }
+    }
+
+//    public static void main(String file) throws Exception {
+//        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+//        InputStream in = new FileInputStream(file);
+//        XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);
+//        streamReader.nextTag(); // Advance to "book" element
+//        streamReader.nextTag(); // Advance to "person" element
+//
+//        int persons = 0;
+//        while (streamReader.hasNext()) {
+//            if (streamReader.isStartElement()) {
+//                switch (streamReader.getLocalName()) {
+//                    case "first": {
+//                        System.out.print("First Name : ");
+//                        System.out.println(streamReader.getElementText());
+//                        break;
+//                    }
+//                    case "last": {
+//                        System.out.print("Last Name : ");
+//                        System.out.println(streamReader.getElementText());
+//                        break;
+//                    }
+//                    case "age": {
+//                        System.out.print("Age : ");
+//                        System.out.println(streamReader.getElementText());
+//                        break;
+//                    }
+//                    case "person" : {
+//                        persons ++;
+//                    }
+//                }
+//            }
+//            streamReader.next();
+//        }
+//        System.out.print(persons);
+//        System.out.println(" persons");
+//    }
 
 
     private static Document getXMLDocument(InputSource source) {

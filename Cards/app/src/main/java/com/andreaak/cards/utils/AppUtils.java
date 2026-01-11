@@ -3,6 +3,7 @@ package com.andreaak.cards.utils;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.model.VerbForm;
 import com.andreaak.cards.model.VerbFormItem;
 import com.andreaak.cards.model.VerbFormType;
@@ -14,8 +15,11 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 public class AppUtils {
 
@@ -25,7 +29,7 @@ public class AppUtils {
             new ReplaceItem("ö", "!o"),
             new ReplaceItem("ü", "!u")};
 
-    public static ArrayList<LessonItem> getLessons(String path, final String prefix) {
+    public static ArrayList<LessonItem> getLessons(String path, final String prefix, boolean sortItems) {
         File directory = new File(path);
         File[] files = directory.listFiles(new FilenameFilter() {
             @Override
@@ -37,7 +41,7 @@ public class AppUtils {
         if (files != null) {
             Arrays.sort(files);
             for (File file : files) {
-                res.add(new LessonItem(file, prefix));
+                res.add(new LessonItem(file, prefix, sortItems));
             }
         }
 
@@ -63,12 +67,68 @@ public class AppUtils {
         return res;
     }
 
+    public static ArrayList<WordItem> getSimpleWortItems(String paths, String prefixes, LanguageItem lg) {
+
+        String[] ps = paths.split("\\|");
+        String[] px = prefixes.split("\\|");
+
+        ArrayList<DirectoryItem> res = new ArrayList<>();
+
+        for (int i = 0; i < ps.length; i++) {
+            res.add(new DirectoryItem(ps[i], px[i]));
+        }
+        return getSimpleWortItems(res, lg);
+    }
+
+    private static HashMap<String, ArrayList<WordItem>> items = new HashMap<>();
+
+
+
+    private static ArrayList<WordItem> getSimpleWortItems(ArrayList<DirectoryItem> paths, LanguageItem lg) {
+
+        Set<WordItem> res = new HashSet<>();
+        for(DirectoryItem di : paths) {
+            ArrayList<WordItem> allItems = items.get(di.path);
+
+            if(allItems != null){
+                res.addAll(allItems);
+                continue;
+            }
+
+            File directory = new File(di.path);
+            File[] files = directory.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    return true;
+                }
+            });
+
+            if (files != null) {
+                for (File file : files) {
+                    if(file.getPath().toLowerCase().contains("_all")) {
+                        continue;
+                    }
+
+                    LessonItem li = XmlParser.parseSimpleLesson(file, di.filePrefix);
+                    li.setLanguageItem(lg);
+
+                    res.addAll(li.getLessonWords());
+                }
+            }
+            items.put(di.path, new ArrayList<>(res));
+        }
+
+        return new ArrayList<>(res);
+    }
+
     public static List<LanguageItem> getLangs(ArrayList<WordItem> words) {
 
         List<LanguageItem> langItems = new ArrayList<LanguageItem>();
 
         for (WordItem word: words ) {
             String[] langs = word.getLangs();
+            Arrays.sort(langs);
+
             for (int i = 0; i < langs.length - 1; i++) {
                 for (int j = i + 1; j < word.getLangs().length; j++) {
                     LanguageItem item = new LanguageItem(langs[i], langs[j]);
@@ -143,9 +203,10 @@ public class AppUtils {
         SoundFileData data = getSoundFileData(language);
 
         word = Normalize(word);
-        return AppConfigs.getInstance().SoundsDir + String.format("/%1$s/%3$s%2$s/%4$s%2$s.",
-                data.Region.toLowerCase(), data.Suffix,
-                word.startsWith("!") ? word.substring(0, 1) : word.charAt(0), word);
+        return AppConfigs.getInstance().SoundsDir + String.format("/%1$s/%2$s/%3$s.",
+                data.Region.toLowerCase(),
+                word.startsWith("!") ? word.substring(0, 2) : word.charAt(0),
+                word);
     }
 
     public static String getVerbSoundFile(String language, String word) {
@@ -154,16 +215,16 @@ public class AppUtils {
 
         word = Normalize(word);
 
-        return AppConfigs.getInstance().SoundsDir + String.format("/Irregular/%1$s/%3$s%2$s.",
-                data.Region.toLowerCase(), data.Suffix, word);
+        return AppConfigs.getInstance().SoundsDir + String.format("/Irregular/%1$s/%2$s.",
+                data.Region.toLowerCase(), word);
     }
 
     private static SoundFileData getSoundFileData(String language) {
         String region;
         String suffix;
         if ("en".equals(language.toLowerCase())) {
-            region = "uk";
-            suffix = "_uk";
+            region = "us";
+            suffix = "";
         } else {
             region = language;
             suffix = "";
@@ -185,11 +246,11 @@ public class AppUtils {
 
 class SoundFileData {
     public String Region;
-    public String Suffix;
+    //public String Suffix;
 
     public SoundFileData(String region, String suffix) {
         Region = region;
-        Suffix = suffix;
+        //Suffix = suffix;
     }
 }
 

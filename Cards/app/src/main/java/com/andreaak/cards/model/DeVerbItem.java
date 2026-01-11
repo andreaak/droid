@@ -35,6 +35,9 @@ public class DeVerbItem extends VerbItem{
             case "translation":
                 translation = value;
                 break;
+            case "level":
+                level = value;
+                break;
         }
     }
 }

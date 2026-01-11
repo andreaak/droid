@@ -151,7 +151,7 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
         getMenuInflater().inflate(R.menu.menu_card, menu);
         menu.setGroupVisible(R.id.groupGoogle, googleDriveHelper.isConnected());
 
-        MenuItem item = menu.findItem(R.id.spinner);
+        MenuItem item = menu.findItem(R.id.spinnerWords);
         spinnerWords = (Spinner) item.getActionView();
         spinnerWords.setVisibility(View.GONE);
         if (helper.lessonItem.isContainsWords()) {
@@ -159,7 +159,7 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
             helper.lessonItem.resetLanguage();
             wordsAdapter = new WordsSpinAdapter(CardHtmlActivity.this,
                     android.R.layout.simple_spinner_item,
-                    helper.lessonItem.getLessonWords(), helper.lessonItem.getCurrentLanguage());
+                    helper.lessonItem.getLessonWords(), false, helper.lessonItem.getCurrentLanguage());
 
             initializeWordsSpinner(helper.lessonItem.getSortedLessonWords(), helper.lessonItem.getCurrentLanguage());
 
@@ -207,10 +207,10 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
                 textSmaller();
                 return true;
             }
-            case R.id.menu_edit_word: {
-                editWord();
-                return true;
-            }
+//            case R.id.menu_edit_word: {
+//                editWord();
+//                return true;
+//            }
             case R.id.menu_select_account: {
                 try {
                     startActivityForResult(AccountPicker.newChooseAccountIntent(

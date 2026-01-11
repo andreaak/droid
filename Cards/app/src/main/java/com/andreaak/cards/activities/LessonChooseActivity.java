@@ -13,6 +13,7 @@ import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.WordType;
 import com.andreaak.cards.predicates.LessonFileNamePredicate;
 import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.GoogleFilesChooserActivity;
@@ -30,7 +31,7 @@ import com.google.android.gms.common.AccountPicker;
 
 public class LessonChooseActivity extends HandleExceptionActivity implements IGoogleActivity, View.OnClickListener {
 
-    private static final int REQUEST_LESSON_AND_LANGUAGE_CHOOSER = 1;
+    public static final int REQUEST_LESSON_AND_LANGUAGE_CHOOSER = 1;
 
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     private static final int REQUEST_GOOGLE_FILES_CHOOSER = 3;
@@ -38,7 +39,6 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
     ImageButton buttonOpenLastLesson;
     TextView textViewLastLesson;
     ImageButton buttonOpenLesson;
-    ImageButton buttonOpenVerb;
 
     private Menu menu;
     private GoogleDriveHelper googleDriveHelper;
@@ -61,9 +61,6 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
 
         buttonOpenLesson = (ImageButton) findViewById(R.id.buttonOpenLesson);
         buttonOpenLesson.setOnClickListener(this);
-
-        buttonOpenVerb = (ImageButton) findViewById(R.id.buttonOpenVerb);
-        buttonOpenVerb.setOnClickListener(this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -118,14 +115,14 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_LESSON_AND_LANGUAGE_CHOOSER:
-                if (resultCode == RESULT_OK) {
-                    LessonItem lessonItem = (LessonItem) data.getSerializableExtra(CardActivity.HELPER);
-                    if (lessonItem.isContainsWords()) {
-                        openCard(lessonItem);
-                    }
-                }
-                break;
+//            case REQUEST_LESSON_AND_LANGUAGE_CHOOSER:
+//                if (resultCode == RESULT_OK) {
+//                    LessonItem lessonItem = (LessonItem) data.getSerializableExtra(CardActivity.HELPER);
+//                    if (lessonItem.isContainsWords()) {
+//                        openCard(lessonItem);
+//                    }
+//                }
+//                break;
             case REQUEST_GOOGLE_CONNECT:
                 operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
                 break;
@@ -150,9 +147,6 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
             case R.id.buttonOpenLesson:
                 openLesson();
                 break;
-            case R.id.buttonOpenVerb:
-                openVerb();
-                break;
         }
     }
 
@@ -168,17 +162,10 @@ public class LessonChooseActivity extends HandleExceptionActivity implements IGo
     }
 
     private void openLesson() {
-        selectLessonAndLanguage(AppConfigs.getInstance().getLessonsDir(), AppConfigs.getInstance().LessonsPrefix);
-    }
-
-    private void openVerb() {
-        selectLessonAndLanguage(AppConfigs.getInstance().getVerbDir(), AppConfigs.getInstance().VerbPrefix);
-    }
-
-    private void selectLessonAndLanguage(String path, String prefix) {
         Intent intent = new Intent(this, SelectLessonAndLanguageActivity.class);
-        intent.putExtra(SelectLessonAndLanguageActivity.DIRECTORY, path);
-        intent.putExtra(SelectLessonAndLanguageActivity.PREFIX, prefix);
+        intent.putExtra(SelectLessonAndLanguageActivity.DIRECTORY, AppConfigs.getInstance().getLessonsDir());
+        intent.putExtra(SelectLessonAndLanguageActivity.PREFIX, AppConfigs.getInstance().LessonsPrefix);
+        intent.putExtra(SelectLessonAndLanguageActivity.WORD_TYPE, WordType.Lesson);
         startActivityForResult(intent, REQUEST_LESSON_AND_LANGUAGE_CHOOSER);
     }
 

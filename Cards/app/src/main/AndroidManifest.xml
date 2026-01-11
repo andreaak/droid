@@ -60,6 +60,14 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
         <activity
+            android:name=".activities.SimpleCardActivity"
+            android:label=""
+            android:theme="@style/Theme.AppCompat.DayNight">
+            <action android:name="com.andreaak.cards.activities.SimpleCardActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+        <activity
             android:name=".activities.CardHtmlActivity"
             android:label=""
             android:theme="@style/Theme.AppCompat.DayNight">
@@ -165,6 +173,15 @@
 
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
+        <activity
+            android:name=".activities.SearchActivity"
+            android:label="@string/select_google_file"
+            android:theme="@android:style/Theme.Holo">
+            <action android:name="com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </activity>
+
     </application>
 
 </manifest>

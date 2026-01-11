@@ -14,7 +14,7 @@
         android:layout_marginTop="30dp"
         android:orientation="vertical">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical">
@@ -135,8 +135,8 @@
                         android:id="@+id/textView_4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
                         android:layout_marginRight="2dp"
+                        android:layout_weight="0.5"
                         android:gravity="right|center_vertical"
                         android:text="PastParticiple"
                         android:textColor="@color/colorBlack"

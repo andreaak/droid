@@ -2,15 +2,12 @@ package com.andreaak.cards.activities.helpers;
 
 import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.model.VerbForm;
-import com.andreaak.cards.model.VerbFormItem;
 import com.andreaak.cards.model.WordItem;
 
 import java.util.ArrayList;
 
-public class SelectVerbFormHelper implements java.io.Serializable {
-    public ArrayList<VerbForm> verbForms;
-    public VerbForm verbForm;
-    public VerbFormItem verbFormItem;
+public class SelectSimpleWordHelper implements java.io.Serializable {
+    public ArrayList<WordItem> items;
+    public WordItem currentItem;
     public boolean isRestore;
- }
-
+}

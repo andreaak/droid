@@ -53,6 +53,15 @@ public class Utils {
         return str == null || "".equals(str);
     }
 
+    public static boolean isEqual(String value1, String value2) {
+
+        if(isEmpty(value1)) {
+            return isEmpty(value2);
+        }
+
+        return value1.equals(value2);
+    }
+
     public static boolean saveToFile(InputStream is, File file) {
         if (!checkOrCreateFolderForFile(file)) {
             return false;
@@ -109,6 +118,16 @@ public class Utils {
                 .replace("ß", "ss");
     }
 
+    public static String normalizeForComparatorAndRemoveArtikles(String fileName) {
+        return normalizeForComparator(fileName).trim()
+                .replace("der ", "")
+                .replace("die ", "")
+                .replace("das ", "")
+                .replace("der(die) ", "")
+                .replace("die(der) ", "")
+                .replace("|", "");
+    }
+
     static Pattern SPLIT_CAMEL_CASE = Pattern.compile(
             BETWEEN_LOWER_AND_UPPER +"|"+ BEFORE_UPPER_AND_LOWER + "|" + "_"
     );
@@ -125,6 +144,10 @@ public class Utils {
 
         StringBuilder sb = new StringBuilder();
         for (String str : res) {
+            if(Utils.isEmpty(str)) {
+                continue;
+            }
+
             if(sb.length() != 0) {
                 sb.append(" ");
             }

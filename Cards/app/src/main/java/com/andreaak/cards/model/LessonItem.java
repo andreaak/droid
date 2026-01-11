@@ -21,17 +21,19 @@ public class LessonItem implements Serializable {
     private String path;
     private String prefix;
     private File file;
+    private boolean sortItems;
 
     private LanguageItem languageItem;
     private String currentLanguage;
     private ArrayList<WordItem> words = new ArrayList<>();
 
-    public LessonItem(File lessonFile, String prefix) {
+    public LessonItem(File lessonFile, String prefix, boolean sortItems) {
         this.fileName = lessonFile.getName();
         this.displayName = Utils.getDisplayName(fileName, prefix);
         this.path = lessonFile.getAbsolutePath();
         this.prefix = prefix;
         this.file = lessonFile;
+        this.sortItems = sortItems;
     }
 
     public ArrayList<WordItem> getWords() {
@@ -58,27 +60,8 @@ public class LessonItem implements Serializable {
     public ArrayList<WordItem> getSortedLessonWords() {
         ArrayList<WordItem> list = getLessonWords();
 
-        Collections.sort(list, new Comparator<WordItem>() {
-            @Override
-            public int compare(WordItem word1, WordItem word2)
-            {
-                String value1 =  normalize(word1.getValue(currentLanguage));
-                String value2 =  normalize(word2.getValue(currentLanguage));
-                return  value1.compareTo(value2);
-            }
+        Collections.sort(list, new WordsComparator(currentLanguage)) ;
 
-            private String normalize(String value) {
-
-                value = Html.fromHtml(value).toString();
-
-                return value.replace("der ", "")
-                        .replace("die ", "")
-                        .replace("das ", "")
-                        .replace("der(die) ", "")
-                        .replace("die(der) ", "")
-                        .replace("der(das) ", "");
-            }
-        });
         return list;
     }
 
@@ -86,8 +69,19 @@ public class LessonItem implements Serializable {
         words.clear();
     }
 
+    public void subClear() {
+        WordItem w = words.get(0);
+        w.setId(-1);
+        words.clear();
+        add(w);
+    }
+
     public void add(WordItem word) {
         words.add(word);
+    }
+
+    public void addAll(ArrayList<SimpleWordItem> word) {
+        words.addAll(word);
     }
 
     public LanguageItem getLanguageItem() {
@@ -115,18 +109,30 @@ public class LessonItem implements Serializable {
         return prefix;
     }
 
+    public boolean isSortItems() {
+        return sortItems;
+    }
+
     public String getCurrentLanguage() {
         return currentLanguage;
+    }
+
+    public String getOtherLanguage() {
+        return currentLanguage.equals(languageItem.getPrimaryLanguage()) ?
+                languageItem.getSecondaryLanguage() :
+                languageItem.getPrimaryLanguage();
     }
 
     public boolean isContainsWords() {
         return !words.isEmpty();
     }
 
+    public int wordsCount() {
+        return words.size();
+    }
+
     public void ToggleLanguage() {
-        currentLanguage = currentLanguage.equals(languageItem.getPrimaryLanguage()) ?
-                languageItem.getSecondaryLanguage() :
-                languageItem.getPrimaryLanguage();
+        currentLanguage = getOtherLanguage();
     }
 
     public void resetLanguage() {
@@ -148,3 +154,4 @@ public class LessonItem implements Serializable {
         return file;
     }
 }
+

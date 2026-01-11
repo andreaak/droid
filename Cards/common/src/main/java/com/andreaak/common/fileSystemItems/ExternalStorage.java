@@ -1,7 +1,9 @@
 package com.andreaak.common.fileSystemItems;
 
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +47,27 @@ public class ExternalStorage {
      * @return A map of all storage locations available
      */
     public static Map<String, File> getAllStorageLocations() {
+
+        List<StorageHelper.StorageVolume> volumes = StorageHelper.getStorages(true);
+
+        Map<String, File> map = new HashMap<String, File>(10);
+
+        for(StorageHelper.StorageVolume volume : volumes){
+
+            String key = volume.getType() == StorageHelper.StorageVolume.Type.INTERNAL?
+            "Internal" : "External " + volume.file.getPath();
+
+            map.put(key, volume.file);
+        }
+
+        if(map.isEmpty()){
+            map.put(SD_CARD, Environment.getExternalStorageDirectory());
+        }
+        return map;
+    }
+
+    public static Map<String, File> getAllStorageLocations__Old() {
+
         Map<String, File> map = new HashMap<String, File>(10);
 
         List<String> mMounts = new ArrayList<String>(10);
@@ -158,3 +181,4 @@ public class ExternalStorage {
         return map;
     }
 }
+

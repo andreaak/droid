@@ -8,6 +8,9 @@ import java.io.Serializable;
 public class CardActivityHelper implements Serializable {
     public LessonItem lessonItem;
     public WordItem currentWord;
+    public String currentLevel;
     public boolean isRestore;
+    public boolean isSort;
 }
+
 

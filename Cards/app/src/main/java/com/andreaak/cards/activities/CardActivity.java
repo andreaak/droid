@@ -8,25 +8,30 @@ import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.CardActivityHelper;
+import com.andreaak.cards.adapters.LevelsSpinAdapter;
 import com.andreaak.cards.adapters.WordsSpinAdapter;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
+import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.google.GoogleDriveHelper;
@@ -41,45 +46,54 @@ import com.andreaak.common.utils.logger.Logger;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
-import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+import java.util.TreeSet;
 
-import static com.andreaak.common.utils.Utils.showText;
-
-public class CardActivity extends HandleExceptionAppCompatActivity implements IConnectGoogleDrive,
-        IOperationGoogleDrive, IGoogleActivity, View.OnClickListener {
+public class CardActivity extends HandleExceptionAppCompatActivity implements /*IConnectGoogleDrive,
+        IOperationGoogleDrive, IGoogleActivity,*/ View.OnClickListener {
 
     private static final int REQUEST_UPDATE_WORD = 1;
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     //in
     public static final String HELPER = "Helper";
+    public static final String ALL = "All";
+    public static final String A1B2 = "A1-B2";
 
     private ImageButton buttonStudy;
     private ImageButton buttonToggle;
     private ImageButton buttonSound;
+    private ImageButton buttonExample;
+    private ImageButton buttonDescription;
+    private ImageButton buttonPrap;
 
     private TextView textViewWord1;
     private TextView textViewTrans1;
     private TextView textViewWord2;
     private TextView textViewTrans2;
+    private TextView textViewExample;
     private LinearLayout texts;
 
     private Spinner spinnerWords;
+    private Spinner spinnerLevels;
 
     private Menu menu;
 
-    private GoogleDriveHelper googleDriveHelper;
-    private OperationGoogleDrive operationGoogleDriveHelper;
+//    private GoogleDriveHelper googleDriveHelper;
+//    private OperationGoogleDrive operationGoogleDriveHelper;
 
     private CardActivityHelper helper;
     private WordsSpinAdapter wordsAdapter;
-    private WordsSpinAdapter wordsSpinAdapter;
+    private WordsSpinAdapter spinnerAdapterWords;
+    private LevelsSpinAdapter spinnerAdapterLevels;
     private VelocityTracker mVelocityTracker = null;
     private float x;
     private boolean isStudy;
+    private boolean isExample;
+    private boolean isDescription;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,17 +118,27 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         buttonSound = (ImageButton) findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
 
+        buttonExample = (ImageButton) findViewById(R.id.buttonExample);
+        buttonExample.setOnClickListener(this);
+
+        buttonDescription = (ImageButton) findViewById(R.id.buttonDescription);
+        buttonDescription.setOnClickListener(this);
+
+        buttonPrap = (ImageButton) findViewById(R.id.buttonPrap);
+        buttonPrap.setOnClickListener(this);
+
         textViewWord1 = (TextView) findViewById(R.id.textViewWord1);
         textViewTrans1 = (TextView) findViewById(R.id.textViewTrans1);
         textViewWord2 = (TextView) findViewById(R.id.textViewWord2);
         textViewTrans2 = (TextView) findViewById(R.id.textViewTrans2);
+        textViewExample = (TextView) findViewById(R.id.textViewExample);
         texts = (LinearLayout) findViewById(R.id.texts);
 
         setFontSize();
         //setInitialCardVisibility();
 
-        googleDriveHelper = GoogleDriveHelper.getInstance();
-        googleDriveHelper.setActivity(this, this);
+//        googleDriveHelper = GoogleDriveHelper.getInstance();
+//        googleDriveHelper.setActivity(this, this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -126,16 +150,19 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         } else {
             helper = (CardActivityHelper) getIntent()
                     .getSerializableExtra(CardActivity.HELPER);
-
+            if(helper.lessonItem.wordsCount() == 1 && helper.lessonItem.getWords().get(0).getId() == -1) {
+                XmlParser.parseLesson(helper.lessonItem);
+            }
             setTitle(helper.lessonItem.getDisplayName());
+
         }
 
-        googleDriveHelper = GoogleDriveHelper.getInstance();
-        operationGoogleDriveHelper = new OperationGoogleDrive(
-                this,
-                getString(com.andreaak.cards.R.string.app_name),
-                com.andreaak.cards.R.id.groupGoogle);
-        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
+//        googleDriveHelper = GoogleDriveHelper.getInstance();
+//        operationGoogleDriveHelper = new OperationGoogleDrive(
+//                this,
+//                getString(com.andreaak.cards.R.string.app_name),
+//                com.andreaak.cards.R.id.groupGoogle);
+//        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
     }
 
     @Override
@@ -146,51 +173,149 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_card, menu);
-        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, googleDriveHelper.isConnected());
+        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false /*googleDriveHelper.isConnected()*/);
 
-        MenuItem item = menu.findItem(R.id.spinner);
-        spinnerWords = (android.widget.Spinner) item.getActionView();
-        spinnerWords.setVisibility(View.GONE);
+        MenuItem wordsSpinner = menu.findItem(R.id.spinnerWords);
+        spinnerWords = (android.widget.Spinner) wordsSpinner.getActionView();
+        MenuItem levelsSpinner = menu.findItem(R.id.spinnerLevels);
+        spinnerLevels = (android.widget.Spinner) levelsSpinner.getActionView();
+
         if (helper.lessonItem.isContainsWords()) {
-            setTitle(helper.lessonItem.getDisplayName());
+
             helper.lessonItem.resetLanguage();
             wordsAdapter = new WordsSpinAdapter(CardActivity.this,
                     android.R.layout.simple_spinner_item,
-                    helper.lessonItem.getLessonWords(), helper.lessonItem.getCurrentLanguage());
+                    helper.lessonItem.getLessonWords(), false, helper.lessonItem.getCurrentLanguage());
 
-            initializeWordsSpinner(helper.lessonItem.getSortedLessonWords(), helper.lessonItem.getCurrentLanguage());
+            initializeWordsSpinner(helper.lessonItem.getLessonWords(), helper.isSort/*helper.lessonItem.isSortItems()*/,
+                    helper.lessonItem.getCurrentLanguage());
+
+            if(!helper.isRestore) {
+                helper.currentLevel = wordsAdapter.level;
+            }
 
             if(helper.currentWord == null) {
                 helper.currentWord = wordsAdapter.getItem(0);
             }
             activateWord(helper.currentWord);
+        } else {
+            spinnerWords.setVisibility(View.GONE);
         }
 
         this.menu = menu;
-        operationGoogleDriveHelper.setMenu(menu);
+        //operationGoogleDriveHelper.setMenu(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_UPDATE_WORD:
-                if (resultCode == RESULT_OK) {
-                    Boolean res = data.getBooleanExtra(EditWordActivity.CHANGED, false);
-                    if (res) {
-                        helper.currentWord = (WordItem) data.getSerializableExtra(EditWordActivity.NEWWORD);
-                        helper.lessonItem.changeWord(helper.currentWord);
-                        activateWord(helper.currentWord);
-                    }
-                }
-                break;
-            case REQUEST_GOOGLE_CONNECT:
-                operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
-                break;
+    private void initializeWordsSpinner(ArrayList<WordItem> words, boolean sort, String language) {
 
+        helper.isSort = sort;
+        ArrayList<WordItem> copy = (ArrayList<WordItem>)words.clone();
+        spinnerAdapterWords = new WordsSpinAdapter(CardActivity.this,
+                android.R.layout.simple_spinner_item,
+                copy, sort, language);
+
+        spinnerWords.setAdapter(spinnerAdapterWords);
+
+        setTitle(helper.lessonItem.getDisplayName() + " " + copy.size());
+        List<String> levels = GetLevels(words, language);
+
+        spinnerAdapterLevels = new LevelsSpinAdapter(CardActivity.this,
+                android.R.layout.simple_spinner_item,
+                levels, language);
+
+        spinnerLevels.setAdapter(spinnerAdapterLevels);
+
+        //setCardVisibility(!words.isEmpty());
+
+        if (helper.isRestore) {
+            int position = spinnerAdapterWords.getPosition(helper.currentWord);
+            spinnerWords.setSelected(false);// must
+            spinnerWords.setSelection(position, true);  //must
+
+            wordsAdapter.setLevel(helper.currentLevel);
+
+            position = spinnerAdapterLevels.getPosition(helper.currentLevel);
+            spinnerLevels.setSelected(false);// must
+            spinnerLevels.setSelection(position, true);  //must
+
+            activateWord(helper.currentWord);
+            helper.isRestore = false;
         }
-        super.onActivityResult(requestCode, resultCode, data);
+
+        spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+
+                WordItem word = spinnerAdapterWords.getItem(position);
+                helper.currentWord = word;
+                helper.lessonItem.resetLanguage();
+
+                activateWord(word);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+            }
+        });
+
+        //SET LEVEL
+        spinnerLevels.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+
+                String level = spinnerAdapterLevels.getItem(position);
+
+                if(!wordsAdapter.setLevel(level)) {
+                    return;
+                }
+                setTitle(helper.lessonItem.getDisplayName() + " " + wordsAdapter.getCount());
+                helper.currentLevel = level;
+
+                //spinnerAdapterWords.clear();
+
+                //List<WordItem> filtered = wordsAdapter.GetWords(helper.lessonItem.getCurrentLanguage(), level);
+                spinnerAdapterWords.setLevel(level);
+                //spinnerAdapterWords.addAll(filtered);
+                spinnerAdapterWords.notifyDataSetChanged();
+
+                spinnerWords.setSelected(false);// must
+                spinnerWords.setSelection(0, true);
+
+                helper.currentWord = wordsAdapter.getItem(0);
+                activateWord(helper.currentWord);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+            }
+        });
     }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        switch (requestCode) {
+//            case REQUEST_UPDATE_WORD:
+//                if (resultCode == RESULT_OK) {
+//                    Boolean res = data.getBooleanExtra(EditWordActivity.CHANGED, false);
+//                    if (res) {
+//                        helper.currentWord = (WordItem) data.getSerializableExtra(EditWordActivity.NEWWORD);
+//                        helper.lessonItem.changeWord(helper.currentWord);
+//                        activateWord(helper.currentWord);
+//                    }
+//                }
+//                break;
+//            case REQUEST_GOOGLE_CONNECT:
+//                //operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
+//                break;
+//
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -204,10 +329,14 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
                 textSmaller();
                 return true;
             }
-            case com.andreaak.cards.R.id.menu_edit_word: {
-                editWord();
+            case R.id.menu_sort: {
+                sortSpinner();
                 return true;
             }
+//            case com.andreaak.cards.R.id.menu_edit_word: {
+//                editWord();
+//                return true;
+//            }
             case com.andreaak.cards.R.id.menu_select_account: {
                 try {
                     startActivityForResult(AccountPicker.newChooseAccountIntent(
@@ -221,55 +350,70 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
                 }
                 return true;
             }
-            case com.andreaak.cards.R.id.menu_download: {
-                uploadLesson();
-                return true;
-            }
-            case com.andreaak.cards.R.id.menu_settings: {
-                setSettings();
-                return true;
-            }
+//            case com.andreaak.cards.R.id.menu_download: {
+//                //uploadLesson();
+//                return true;
+//            }
+//            case com.andreaak.cards.R.id.menu_settings: {
+//                //setSettings();
+//                return true;
+//            }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setFontSize() {
-        float fontSize1 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
-        float fontSize2 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TRANS_FONT_SIZE);
-        if (fontSize1 > 0 && fontSize2 > 0) {
-            setTextSize(fontSize1, fontSize2, 1);
-        }
+    private void sortSpinner() {
+        helper.isSort = !helper.isSort;
+        List<WordItem> filtered = spinnerAdapterWords.setSort(helper.isSort);
+
+        spinnerAdapterWords.clear();
+
+        spinnerAdapterWords.addAll(filtered);
+        spinnerAdapterWords.notifyDataSetChanged();
+
+        int position = spinnerAdapterWords.getPosition(helper.currentWord);
+        spinnerWords.setSelected(false);// must
+        spinnerWords.setSelection(position, true);
+
+        //helper.currentWord = wordsAdapter.getItem(0);
+        //activateWord(helper.currentWord);
     }
 
-    private void saveFontSize() {
-        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TEXT_FONT_SIZE, textViewWord1. getTextSize());
-        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TRANS_FONT_SIZE, textViewTrans1.getTextSize());
+    private void setFontSize() {
+        float factor = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
+        setTextSize(factor);
+    }
+
+    private void saveFontSize(float factor) {
+        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TEXT_FONT_SIZE, factor);
     }
 
     private void textSmaller() {
 
         float factor = 0.95f;
-        setTextSize(textViewWord2.getTextSize(), textViewTrans2.getTextSize(), factor);
+        setTextSize(factor);
     }
 
     private void textBigger() {
         float factor = 1.05f;
-        setTextSize(textViewWord2.getTextSize(), textViewTrans2.getTextSize(), factor);
+        setTextSize(factor);
     }
 
-    private void setTextSize(float wordSize, float transSize, float factor) {
-        float newSize = wordSize * factor;
-        setTextSize(textViewWord2, newSize);
-        setTextSize(textViewWord1, newSize);
-
-        newSize = transSize * factor;
-        setTextSize(textViewTrans2, newSize);
-        setTextSize(textViewTrans1, newSize);
-
-        saveFontSize();
+    private void setTextSize(float factor) {
+        setTextSize(textViewWord1, factor);
+        setTextSize(textViewTrans1, factor);
+        setTextSize(textViewWord2, factor);
+        setTextSize(textViewTrans2, factor);
+        setTextSize(textViewExample, factor);
+        saveFontSize(factor);
     }
 
-    private void setTextSize(TextView textView, float size) {
+    private void setTextSize(TextView view, float factor) {
+        float newSize = view.getTextSize() * factor;
+        setViewTextSize(view, newSize);
+    }
+
+    private void setViewTextSize(TextView textView, float size) {
         android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(Math.round(0), Math.round(0), Math.round(0), Math.round(0));
@@ -281,75 +425,26 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         //textView.setHeight((int) size + 20);
     }
 
-    private void editWord() {
-        Intent intent = new Intent(this, EditWordActivity.class);
-        intent.putExtra(EditWordActivity.LESSON, helper.lessonItem);
-        intent.putExtra(EditWordActivity.WORD, helper.currentWord);
-        startActivityForResult(intent, REQUEST_UPDATE_WORD);
-    }
 
-    private void setSettings() {
-    }
 
-    private void initializeWordsSpinner(ArrayList<WordItem> words, String language) {
+    private List<String> GetLevels(ArrayList<WordItem> words, final String language) {
 
-        wordsSpinAdapter = new WordsSpinAdapter(CardActivity.this,
-                android.R.layout.simple_spinner_item,
-                words, language);
+        Set<String> s = new TreeSet<>();
 
-        spinnerWords.setAdapter(wordsSpinAdapter);
-
-        //setCardVisibility(!words.isEmpty());
-
-        if (helper.isRestore) {
-            int position = wordsSpinAdapter.getPosition(helper.currentWord);
-            spinnerWords.setSelected(false);// must
-            spinnerWords.setSelection(position, true);  //must
-            activateWord(helper.currentWord);
-            helper.isRestore = false;
+        for(WordItem w : words) {
+            if(!Utils.isEmpty(w.getLevel(language))) {
+                s.add(w.getLevel(language));
+            } else {
+                s.add("CC");
+            }
         }
 
-        spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
-
-                WordItem word = wordsSpinAdapter.getItem(position);
-                helper.currentWord = word;
-                helper.lessonItem.resetLanguage();
-
-                activateWord(word);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-            }
-        });
+        List<String> list = new ArrayList<>(s);
+        list.add(0, ALL);
+        list.add(A1B2);
+        return list;
     }
 
-//    private void setInitialCardVisibility() {
-//
-//        int flag = View.INVISIBLE;
-//        textViewStudyWord.setVisibility(flag);
-//        textViewWord.setVisibility(flag);
-//        textViewTrans.setVisibility(flag);
-//        buttonStudy.setVisibility(flag);
-//        buttonToggle.setVisibility(flag);
-//        buttonSound.setVisibility(flag);
-//        texts.setVisibility(flag);
-//    }
-
-    private void setCardVisibility(boolean isVisible) {
-
-        int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
-        spinnerWords.setVisibility(flag);
-        textViewWord2.setVisibility(flag);
-        buttonStudy.setVisibility(flag);
-        buttonToggle.setVisibility(flag);
-        buttonSound.setVisibility(flag);
-        texts.setVisibility(flag);
-    }
 
     @Override
     public void onClick(View v) {
@@ -364,6 +459,15 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             case R.id.buttonStudy:
                 showStudy();
                 break;
+            case R.id.buttonExample:
+                showExample();
+                break;
+            case R.id.buttonDescription:
+                showDescription(v);
+                break;
+            case R.id.buttonPrap:
+                showPrap(v);
+                break;
         }
     }
 
@@ -377,16 +481,22 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
 
     private void activateCheckWord(WordItem word) {
 
-        setVisibility(textViewWord1, View.GONE);
-        setVisibility(textViewTrans1, View.GONE);
+        setVisibility(textViewWord2, View.GONE);
+        setVisibility(textViewTrans2, View.GONE);
+        setVisibility(textViewExample, View.GONE);
+        SetTranscriptionAndVisibility(textViewExample, "");
+        buttonExample.setVisibility(View.INVISIBLE);
+        buttonDescription.setVisibility(View.INVISIBLE);
+        buttonPrap.setVisibility(View.INVISIBLE);
 
         String wordText = word.getValue(helper.lessonItem.getCurrentLanguage());
-        SetWordAndVisibility(textViewWord2, wordText);
+        SetWordAndVisibility(textViewWord1, wordText);
 
         String transcription = word.getTranscription(helper.lessonItem.getCurrentLanguage());
         String info = word.getInfo(helper.lessonItem.getCurrentLanguage());
-        String text = combineText(transcription, info);
-        SetTranscriptionAndVisibility(textViewTrans2, text);
+        String level = word.getLevel(helper.lessonItem.getCurrentLanguage());
+        String text = combineText(combineText(transcription, info), level);
+        SetTranscriptionAndVisibility(textViewTrans1, text);
 
         Queue<String> files = getSoundFiles(helper.lessonItem.getCurrentLanguage());
         boolean isVisible = !files.isEmpty();
@@ -397,14 +507,13 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     private void activateStudyWord(WordItem word) {
 
         LanguageItem languageItem = helper.lessonItem.getLanguageItem();
-        String level = word.getLevel();
 
         String wordText = word.getValue(languageItem.getPrimaryLanguage());
         SetWordAndVisibility(textViewWord1, wordText);
 
         String transcription = word.getTranscription(languageItem.getPrimaryLanguage());
         String info = word.getInfo(languageItem.getPrimaryLanguage());
-
+        String level = word.getLevel(languageItem.getPrimaryLanguage());
         String text = combineText(combineText(transcription, info), level);
         SetTranscriptionAndVisibility(textViewTrans1, text);
 
@@ -416,9 +525,34 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         text = combineText(transcription, info);
         SetTranscriptionAndVisibility(textViewTrans2, text);
 
+        String example = word.getExample(helper.lessonItem.getCurrentLanguage());
+        if(Utils.isEmpty(example)) {
+            example = word.getExample(helper.lessonItem.getOtherLanguage());
+        }
+        int flag = !Utils.isEmpty(example) ? View.VISIBLE : View.INVISIBLE;
+        buttonExample.setVisibility(flag);
+
+        String description = getDescription(word);
+        flag = !Utils.isEmpty(description) ? View.VISIBLE : View.INVISIBLE;
+        buttonDescription.setVisibility(flag);
+
+        String prap = getPrap(word);
+        flag = !Utils.isEmpty(prap) ? View.VISIBLE : View.INVISIBLE;
+        buttonPrap.setVisibility(flag);
+
+        if(isExample && !Utils.isEmpty(example)) {
+            textViewExample.setGravity(Gravity.CENTER);
+            SetTranscriptionAndVisibility(textViewExample, example);
+        } else if(isDescription && !Utils.isEmpty(description)) {
+            textViewExample.setGravity(Gravity.LEFT);
+            SetTranscriptionAndVisibility(textViewExample, description);
+        } else {
+            setVisibility(textViewExample, View.GONE);
+        }
+
         Queue<String> files = getSoundFiles(languageItem.getSoundLanguage());
         boolean isVisible = !files.isEmpty();
-        int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
+        flag = isVisible ? View.VISIBLE : View.INVISIBLE;
         buttonSound.setVisibility(flag);
     }
 
@@ -436,7 +570,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             } else if(word.toLowerCase().startsWith("das ")) {
                 textView.setTextColor(getResources().getColor(R.color.colorGreen));
             } else {
-                textView.setTextColor(getResources().getColor(R.color.colorBlack));
+                //textView.setTextColor(getResources().getColor(R.color.colorBlack));
             }
         }
         setVisibility(textView, View.VISIBLE);
@@ -447,7 +581,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
             textView.setText(transcription);
             setVisibility(textView, View.VISIBLE);
         } else {
-            setVisibility(textView, View.INVISIBLE);
+            setVisibility(textView, View.GONE);
         }
     }
 
@@ -465,6 +599,67 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
     private void showStudy() {
         isStudy = !isStudy;
         activateWord(helper.currentWord);
+    }
+
+    private void showExample() {
+        isExample = !isExample;
+        isDescription = false;
+        activateWord(helper.currentWord);
+    }
+
+    PopupWindow popupWindow;
+    View popupView;
+
+    private void showDescription(View v) {
+
+        String info = getDescription(helper.currentWord);
+        showInfo(v, info);
+    }
+
+    private String getDescription(WordItem word) {
+        String info = word.getDescription(helper.lessonItem.getCurrentLanguage());
+        if(Utils.isEmpty(info)) {
+            info = word.getDescription(helper.lessonItem.getOtherLanguage());
+        }
+        return info;
+    }
+
+    private void showPrap(View v) {
+        String info = getPrap(helper.currentWord);
+        showInfo(v, info);
+    }
+
+    private String getPrap(WordItem word) {
+        String info = word.getPrap(helper.lessonItem.getCurrentLanguage());
+        if(Utils.isEmpty(info)) {
+            info = word.getPrap(helper.lessonItem.getOtherLanguage());
+        }
+        return info;
+    }
+
+    private void showInfo(View v, String info) {
+
+        final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        popupView = inflater.inflate(R.layout.popup_design, null, false);
+
+
+        TextView popupTextView = (TextView) popupView.findViewById(R.id.textPopup); // Идентификатор из popup_layout.xml
+
+        popupTextView.setText(info + "\r\n");
+
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+
+        popupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.FILL_PARENT, true);
+        popupWindow.setAnimationStyle(android.R.style.Animation_InputMethod);
+        //popupWindow.showAtLocation(v, Gravity.LEFT, 0, 10);
+        popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0); // Отображает всплывающее окно в центре экрана
     }
 
     MediaPlayerHelper mediaHelper;
@@ -502,6 +697,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         boolean isValid = false;
 
         for (String word : words) {
+            word = word.replace("|" , "");
             String fileTemplate = AppUtils.getSoundFile(language, word);
             boolean res = AppUtils.addSoundFile(files, fileTemplate);
             if(res && !isArtikle(word)) {
@@ -532,7 +728,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         WordItem word = wordsAdapter.getItem(position + index);
         helper.currentWord = word;
 
-        position = wordsSpinAdapter.getPosition(helper.currentWord);
+        position = spinnerAdapterWords.getPosition(helper.currentWord);
         spinnerWords.setSelected(false);// must
         spinnerWords.setSelection(position, true);
         activateWord(word);
@@ -593,84 +789,119 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements IC
         return true;
     }
 
-    @Override
-    public void onConnectionOK() {
-        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, true);
-        setTitle(helper.lessonItem.getDisplayName());
-    }
+//    @Override
+//    public void onConnectionOK() {
+//        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, true);
+//        setTitle(helper.lessonItem.getDisplayName());
+//    }
+//
+//    @Override
+//    public void onConnectionFail(Exception ex) {
+//        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false);
+//        showText(this, com.andreaak.cards.R.string.google_error);
+//        setTitle(helper.lessonItem.getDisplayName());
+//        Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+//    }
+//
+//    @SuppressLint("StaticFieldLeak")
+//    private void uploadLesson() {
+//        final boolean[] isDownload = {false};
+//        final IOperationGoogleDrive act = this;
+//        setTitle(com.andreaak.cards.R.string.search);
+//
+//        new AsyncTask<Void, String, Exception>() {
+//
+//            @Override
+//            protected Exception doInBackground(Void... params) {
+//                try {
+//                    GoogleItem directory = googleDriveHelper.searchFolder("root", AppConfigs.getInstance().GoogleDir);
+//                    if (directory != null) {
+//                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
+//                                helper.lessonItem.getFileName(), null);
+//                        for (GoogleItem file : findFiles) {
+//                            googleDriveHelper.update(file.getId(), null, null, null, new File(helper.lessonItem.getPath()));
+//                            break;
+//                        }
+//                    }
+//                    publishProgress("Upload Completed");
+//                    isDownload[0] = true;
+//                } catch (Exception ex) {
+//                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+//                    ex.printStackTrace();
+//                    return ex;
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onProgressUpdate(String... strings) {
+//                super.onProgressUpdate(strings);
+//                Logger.d(Constants.LOG_TAG, strings[0]);
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Exception ex) {
+//                super.onPostExecute(ex);
+//                if (isDownload[0]) {
+//                    act.onOperationFinished(null);
+//                } else {
+//                    act.onOperationFinished(ex);
+//                }
+//            }
+//        }.execute();
+//    }
+//
+//    @Override
+//    public void onOperationProgress(String message) {
+//        setTitle(message);
+//    }
+//
+//    @Override
+//    public void onOperationFinished(Exception ex) {
+//
+//        Utils.showText(this, (ex == null) ?
+//                R.string.upload_success :
+//                R.string.upload_fault);
+//        setTitle(helper.lessonItem.getDisplayName());
+//    }
+//
+//    @Override
+//    public void onFinished() {
+//
+//    }
 
-    @Override
-    public void onConnectionFail(Exception ex) {
-        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false);
-        showText(this, com.andreaak.cards.R.string.google_error);
-        setTitle(helper.lessonItem.getDisplayName());
-        Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-    }
+    //    private void editWord() {
+//        Intent intent = new Intent(this, EditWordActivity.class);
+//        intent.putExtra(EditWordActivity.LESSON, helper.lessonItem);
+//        intent.putExtra(EditWordActivity.WORD, helper.currentWord);
+//        startActivityForResult(intent, REQUEST_UPDATE_WORD);
+//    }
 
-    @SuppressLint("StaticFieldLeak")
-    private void uploadLesson() {
-        final boolean[] isDownload = {false};
-        final IOperationGoogleDrive act = this;
-        setTitle(com.andreaak.cards.R.string.search);
+//    private void setSettings() {
+//    }
 
-        new AsyncTask<Void, String, Exception>() {
 
-            @Override
-            protected Exception doInBackground(Void... params) {
-                try {
-                    GoogleItem directory = googleDriveHelper.searchFolder("root", AppConfigs.getInstance().GoogleDir);
-                    if (directory != null) {
-                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
-                                helper.lessonItem.getFileName(), null);
-                        for (GoogleItem file : findFiles) {
-                            googleDriveHelper.update(file.getId(), null, null, null, new File(helper.lessonItem.getPath()));
-                            break;
-                        }
-                    }
-                    publishProgress("Upload Completed");
-                    isDownload[0] = true;
-                } catch (Exception ex) {
-                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-                    ex.printStackTrace();
-                    return ex;
-                }
-                return null;
-            }
+//    private void setInitialCardVisibility() {
+//
+//        int flag = View.INVISIBLE;
+//        textViewStudyWord.setVisibility(flag);
+//        textViewWord.setVisibility(flag);
+//        textViewTrans.setVisibility(flag);
+//        buttonStudy.setVisibility(flag);
+//        buttonToggle.setVisibility(flag);
+//        buttonSound.setVisibility(flag);
+//        texts.setVisibility(flag);
+//    }
 
-            @Override
-            protected void onProgressUpdate(String... strings) {
-                super.onProgressUpdate(strings);
-                Logger.d(Constants.LOG_TAG, strings[0]);
-            }
-
-            @Override
-            protected void onPostExecute(Exception ex) {
-                super.onPostExecute(ex);
-                if (isDownload[0]) {
-                    act.onOperationFinished(null);
-                } else {
-                    act.onOperationFinished(ex);
-                }
-            }
-        }.execute();
-    }
-
-    @Override
-    public void onOperationProgress(String message) {
-        setTitle(message);
-    }
-
-    @Override
-    public void onOperationFinished(Exception ex) {
-
-        Utils.showText(this, (ex == null) ?
-                R.string.upload_success :
-                R.string.upload_fault);
-        setTitle(helper.lessonItem.getDisplayName());
-    }
-
-    @Override
-    public void onFinished() {
-
-    }
+//    private void setCardVisibility(boolean isVisible) {
+//
+//        int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
+//        spinnerWords.setVisibility(flag);
+//        textViewWord2.setVisibility(flag);
+//        buttonStudy.setVisibility(flag);
+//        buttonToggle.setVisibility(flag);
+//        buttonSound.setVisibility(flag);
+//        buttonExample.setVisibility(flag);
+//        texts.setVisibility(flag);
+//    }
 }

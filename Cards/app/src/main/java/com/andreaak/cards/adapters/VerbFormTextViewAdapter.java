@@ -8,7 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
+import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.model.VerbForm;
+import com.andreaak.common.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -62,10 +64,14 @@ public class VerbFormTextViewAdapter extends ArrayAdapter<VerbForm> {
         protected FilterResults performFiltering(CharSequence constraint) {
             if (constraint != null) {
                 suggestions.clear();
-                for (VerbForm product : itemsAll) {
-                    if (product.getDisplayName().toLowerCase()
-                            .startsWith(constraint.toString().toLowerCase())) {
-                        suggestions.add(product);
+                String ct = Utils.normalizeForComparator(constraint.toString().toLowerCase());
+                for (VerbForm item : itemsAll) {
+                    if (Utils.normalizeForComparator(item.getDisplayName().toLowerCase())
+                            .contains(ct)) {
+                        suggestions.add(item);
+                        if(suggestions.size() >= 20) {
+                            break;
+                        }
                     }
                 }
                 FilterResults filterResults = new FilterResults();
@@ -92,3 +98,4 @@ public class VerbFormTextViewAdapter extends ArrayAdapter<VerbForm> {
         }
     };
 }
+

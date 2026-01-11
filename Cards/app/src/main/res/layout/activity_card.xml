@@ -15,7 +15,7 @@
         android:background="@drawable/customborder"
         android:orientation="vertical">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical">
@@ -34,7 +34,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal|center_vertical"
                     android:text="TEST"
-                    android:textColor="@color/colorGreen"
+                    android:textColor="@color/colorBlack"
                     android:textSize="40dp"
                     android:visibility="gone" />
 
@@ -45,7 +45,7 @@
                     android:gravity="center_horizontal|center_vertical"
                     android:text="[TEST]"
                     android:textColor="@color/colorTrans"
-                    android:textSize="25dp"
+                    android:textSize="20dp"
                     android:visibility="gone" />
 
                 <TextView
@@ -54,8 +54,8 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal|center_vertical"
                     android:text="TEST"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="40dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="25dp"
                     android:visibility="invisible" />
 
                 <!--android:background="@drawable/customborder"-->
@@ -66,9 +66,19 @@
                     android:gravity="center_horizontal|center_vertical"
                     android:text="[TEST]"
                     android:textColor="@color/colorTrans"
-                    android:textSize="25dp"
+                    android:textSize="20dp"
                     android:visibility="invisible" />
 
+                <TextView
+                    android:id="@+id/textViewExample"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerHorizontal="false"
+                    android:text="[TEST]"
+                    android:textColor="@android:color/holo_green_dark"
+                    android:textSize="20dp"
+                    android:visibility="invisible" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -102,4 +112,30 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/sound48" />
 
+    <ImageButton
+        android:id="@+id/buttonExample"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="110dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edit" />
+
+    <ImageButton
+        android:id="@+id/buttonDescription"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/dwds" />
+
+    <ImageButton
+        android:id="@+id/buttonPrap"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="190dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/prepositions_through" />
 </RelativeLayout>

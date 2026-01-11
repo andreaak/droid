@@ -9,9 +9,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.andreaak.cards.R;
+import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
 import com.andreaak.cards.adapters.LangSpinAdapter;
 import com.andreaak.cards.adapters.LessonsSpinAdapter;
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.WordItem;
@@ -26,12 +28,14 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
 
     public static final String DIRECTORY = "Directory";
     public static final String PREFIX = "Prefix";
+    public static final String WORD_TYPE = "WordType";
 
     private AutoCompleteTextView autoCompleteTextViewLessons;
     private Spinner spinnerLang;
 
     private Button buttonOk;
     private Button buttonCancel;
+    private Button buttonClear;
 
     private SelectLessonAndLanguageHelper helper;
     private LessonsSpinAdapter lessonsAdapter;
@@ -46,6 +50,8 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
         buttonOk.setOnClickListener(this);
         buttonCancel = (Button) findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(this);
+        buttonClear = (Button) findViewById(R.id.buttonClear);
+        buttonClear.setOnClickListener(this);
 
         autoCompleteTextViewLessons = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewLessons);
         spinnerLang = (Spinner) findViewById(R.id.spinnerLang);
@@ -69,7 +75,7 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
             helper = new SelectLessonAndLanguageHelper();
             String directory = getIntent().getStringExtra(DIRECTORY);
             String prefix = getIntent().getStringExtra(PREFIX);
-            helper.lessons = AppUtils.getLessons(directory, prefix);
+            helper.lessons = AppUtils.getLessons(directory, prefix, !AppConfigs.getInstance().VerbPrefix.equals(prefix));
             if (helper.lessons.size() != 0) {
                 initializeLessonsSpinner(helper.lessons);
             }
@@ -88,6 +94,9 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
             autoCompleteTextViewLessons.setSelected(false);  // must
             autoCompleteTextViewLessons.setSelection(position);  //must
             initializeLanguageSpinner(helper.lessonItem.getWords());
+            if( helper.lessonItem.wordsCount() > 200) {
+                helper.lessonItem.subClear();
+            }
         }
 
         autoCompleteTextViewLessons.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +114,9 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
                 LessonItem lessonItem = lessonsAdapter.getItem(position);
                 helper.lessonItem = XmlParser.parseLesson(lessonItem);
                 initializeLanguageSpinner(helper.lessonItem.getWords());
+                if( helper.lessonItem.wordsCount() > 200) {
+                    helper.lessonItem.subClear();
+                }
             }
         });
     }
@@ -150,19 +162,50 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
             case com.andreaak.cards.R.id.buttonCancel:
                 onCancel();
                 break;
+            case R.id.buttonClear:
+                onClear();
+                break;
         }
     }
 
     private void onOkClick() {
-        Intent intent = new Intent();
-        intent.putExtra(CardActivity.HELPER, helper.lessonItem);
-        setResult(RESULT_OK, intent);
-        finish();
+
+        LessonItem lessonItem = helper.lessonItem;
+        if (lessonItem.isContainsWords()) {
+            openCard(lessonItem);
+        }
+
+//        Intent intent = new Intent();
+//
+//        intent.putExtra(CardActivity.HELPER, helper.lessonItem);
+//        setResult(RESULT_OK, intent);
+//        finish();
+    }
+
+    private void openCard(LessonItem lessonItem) {
+        CardActivityHelper helper = new CardActivityHelper();
+        helper.lessonItem = lessonItem;
+        helper.currentWord = helper.lessonItem.getLessonWords().get(0);
+
+        Intent intent;
+        if(lessonItem.getFileName().contains("_html")) {
+            intent = new Intent(this, CardHtmlActivity.class);
+            intent.putExtra(CardHtmlActivity.HELPER, helper);
+
+        } else {
+            intent = new Intent(this, CardActivity.class);
+            intent.putExtra(CardActivity.HELPER, helper);
+        }
+        startActivity(intent);
     }
 
     private void onCancel() {
         Intent intent = new Intent();
         setResult(RESULT_CANCELED, intent);
         finish();
+    }
+
+    private void onClear() {
+        autoCompleteTextViewLessons.setText("");
     }
 }

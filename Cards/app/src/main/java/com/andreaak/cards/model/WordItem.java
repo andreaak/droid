@@ -2,6 +2,8 @@ package com.andreaak.cards.model;
 
 import android.support.annotation.NonNull;
 
+import com.andreaak.common.utils.Utils;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,22 +12,32 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
 
     public static final String TranscriptionSuffix = "_tr";
     public static final String InfoSuffix = "_info";
+    public static final String ExampleSuffix = "_example";
+    public static final String DescriptionSuffix = "_description";
     public static final String LevelSuffix = "_level";
     public static final String WordClassSuffix = "_wordclass";
+    public static final String PrapSuffix = "_prap";
     public static final String Rank = "rank";
 
 
-    private Map<String, String> words = new LinkedHashMap<String, String>();
+    protected Map<String, String> words = new LinkedHashMap<String, String>();
     private Map<String, String> transcriptions = new HashMap<String, String>();
-    private Map<String, String> info = new HashMap<String, String>();
+    protected Map<String, String> info = new HashMap<String, String>();
+    private Map<String, String> level = new HashMap<String, String>();
+    private Map<String, String> example = new HashMap<String, String>();
+    private Map<String, String> descriptions = new HashMap<String, String>();
+    private Map<String, String> praps = new HashMap<String, String>();
 
     private int id;
     private String rank;
-    private String wordClass;
-    private String level;
+    protected String wordClass;
 
     public WordItem(int id) {
         this.id = id;
+    }
+
+    public String getDisplayName(String lang) {
+        return "-----";
     }
 
     public String[] getLangs() {
@@ -44,12 +56,29 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
         return info.get(language + InfoSuffix);
     }
 
+    public String getExample(String language) {
+        return example.get(language + ExampleSuffix);
+    }
+
+    public String getPrap(String language) {
+        return praps.get(language + PrapSuffix);
+    }
+
+    public String getDescription(String language) {
+        return descriptions.get(language + DescriptionSuffix);
+    }
+
     public String getWordClass() {
         return wordClass;
     }
 
-    public String getLevel() {
-        return level;
+    public String getLevel(String language) {
+
+        return level.get(language + LevelSuffix);
+    }
+
+    public String getPath() {
+        return "";
     }
 
     public void addItem(String tag, String value) {
@@ -62,7 +91,13 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
         } else if (tag.endsWith(WordClassSuffix)) {
             wordClass = value;
         } else if (tag.endsWith(LevelSuffix)) {
-            level = value;
+            level.put(tag, value);
+        } else if (tag.endsWith(ExampleSuffix)) {
+            example.put(tag, value);
+        } else if (tag.endsWith(DescriptionSuffix)) {
+            descriptions.put(tag, value);
+        } else if (tag.endsWith(PrapSuffix)) {
+            praps.put(tag, value);
         } else if (tag.contains("_")) {
 
         } else {
@@ -72,6 +107,10 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

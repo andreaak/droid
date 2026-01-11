@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -142,7 +143,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         getMenuInflater().inflate(R.menu.menu_card, menu);
         menu.setGroupVisible(R.id.groupGoogle, googleDriveHelper.isConnected());
 
-        MenuItem item = menu.findItem(R.id.spinner);
+        MenuItem item = menu.findItem(R.id.spinnerWords);
         spinnerWords = (Spinner) item.getActionView();
         spinnerWords.setVisibility(View.GONE);
         if (helper.lessonItem.isContainsWords()) {
@@ -188,10 +189,10 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
                 textSmaller();
                 return true;
             }
-            case R.id.menu_edit_word: {
-                //editWord();
-                return true;
-            }
+//            case R.id.menu_edit_word: {
+//                //editWord();
+//                return true;
+//            }
             case R.id.menu_select_account: {
                 try {
                     startActivityForResult(AccountPicker.newChooseAccountIntent(
@@ -278,11 +279,15 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     private void setTextSize(TextView textView, float size) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
-
+        int w = textView.getWidth();
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
-        textView.setLayoutParams(params);
-        textView.setPadding(0, 0, 0, 0);
+        //textView.setLayoutParams(params);
+        textView.setPadding(2, 0, 0, 0);
+
+
         textView.setHeight((int) size + 20);
+
+        textView.setWidth(w);
     }
 
 //    private void editWord() {
@@ -344,7 +349,14 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         } else {
             layout_4.setVisibility(View.GONE);
         }
-        textViewTranslation.setText(word.translation);
+
+        String translation = Utils.isEmpty(word.translation) ? word.translation :
+                word.translation.replace("\n", "").replace("\r", "");
+
+        String text = Utils.isEmpty(word.level) ? translation :
+                String.format("%s: %s",  word.level, translation);
+
+        textViewTranslation.setText(text);
 
         Queue<String> files = getSoundFiles(helper.lessonItem.getLanguage());
         boolean isVisible = !files.isEmpty();
