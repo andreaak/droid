@@ -1,8 +1,5 @@
 package com.andreaak.cards.model;
 
-import android.text.Html;
-
-import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.utils.Utils;
 
 import java.io.File;
@@ -10,9 +7,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+
+import static com.andreaak.cards.utils.FilesHelper.getWordId;
 
 public class LessonItem implements Serializable {
 
@@ -26,6 +24,7 @@ public class LessonItem implements Serializable {
     private LanguageItem languageItem;
     private String currentLanguage;
     private ArrayList<WordItem> words = new ArrayList<>();
+    private ArrayList<String> ignoredItems = new ArrayList<>();
 
     public LessonItem(File lessonFile, String prefix, boolean sortItems) {
         this.fileName = lessonFile.getName();
@@ -52,6 +51,13 @@ public class LessonItem implements Serializable {
                 || !langs.contains(languageItem.getSecondaryLanguage()))
             {
                 it.remove();
+                continue;
+            }
+
+            String wordId = getWordId(wi, getCurrentLanguage());
+            if (ignoredItems.contains(wordId))
+            {
+                it.remove();
             }
         }
         return list;
@@ -66,7 +72,9 @@ public class LessonItem implements Serializable {
     }
 
     public void clear() {
+
         words.clear();
+        ignoredItems.clear();
     }
 
     public void subClear() {
@@ -152,6 +160,10 @@ public class LessonItem implements Serializable {
 
     public File getFile() {
         return file;
+    }
+
+    public void setIgnoredItems(ArrayList<String> list) {
+        ignoredItems = list;
     }
 }
 

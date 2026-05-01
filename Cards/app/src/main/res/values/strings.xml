@@ -39,4 +39,5 @@
     <string name="select_word">Select word</string>
     <string name="open_form">Verb form</string>
     <string name="sort">Sort</string>
+    <string name="restore">Restore</string>
 </resources>

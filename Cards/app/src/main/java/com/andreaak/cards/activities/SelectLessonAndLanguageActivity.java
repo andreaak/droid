@@ -94,7 +94,7 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
             autoCompleteTextViewLessons.setSelected(false);  // must
             autoCompleteTextViewLessons.setSelection(position);  //must
             initializeLanguageSpinner(helper.lessonItem.getWords());
-            if( helper.lessonItem.wordsCount() > 200) {
+            if( helper.lessonItem.wordsCount() > 100) {
                 helper.lessonItem.subClear();
             }
         }
@@ -114,7 +114,7 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
                 LessonItem lessonItem = lessonsAdapter.getItem(position);
                 helper.lessonItem = XmlParser.parseLesson(lessonItem);
                 initializeLanguageSpinner(helper.lessonItem.getWords());
-                if( helper.lessonItem.wordsCount() > 200) {
+                if( helper.lessonItem.wordsCount() > 1) {
                     helper.lessonItem.subClear();
                 }
             }

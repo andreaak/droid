@@ -9,4 +9,5 @@ public class VerbActivityHelper implements Serializable {
     public VerbLessonItem lessonItem;
     public VerbItem currentWord;
     public boolean isRestore;
+    public String currentLevel;
 }

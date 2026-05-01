@@ -30,21 +30,31 @@ public class AppUtils {
             new ReplaceItem("ü", "!u")};
 
     public static ArrayList<LessonItem> getLessons(String path, final String prefix, boolean sortItems) {
-        File directory = new File(path);
-        File[] files = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.startsWith(prefix);
-            }
-        });
-        ArrayList<LessonItem> res = new ArrayList<>();
-        if (files != null) {
-            Arrays.sort(files);
-            for (File file : files) {
-                res.add(new LessonItem(file, prefix, sortItems));
-            }
-        }
 
+        if(path == null || path.trim().length() == 0) {
+            return null;
+        }
+        ArrayList<LessonItem> res = new ArrayList<>();
+        try {
+            File directory = new File(path);
+            File[] files = directory.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.startsWith(prefix) && s.endsWith(AppConfigs.getInstance().LessonsExtension);
+                }
+            });
+
+            if (files != null) {
+                Arrays.sort(files);
+                for (File file : files) {
+                    res.add(new LessonItem(file, prefix, sortItems));
+                }
+            }
+
+        } catch (Exception ex) {
+            String message = ex.getMessage();
+            return res;
+        }
         return res;
     }
 
@@ -67,7 +77,7 @@ public class AppUtils {
         return res;
     }
 
-    public static ArrayList<WordItem> getSimpleWortItems(String paths, String prefixes, LanguageItem lg) {
+    public static ArrayList<SimpleWordItem> getSimpleWortItems(String paths, String prefixes, LanguageItem lg) {
 
         String[] ps = paths.split("\\|");
         String[] px = prefixes.split("\\|");
@@ -80,15 +90,15 @@ public class AppUtils {
         return getSimpleWortItems(res, lg);
     }
 
-    private static HashMap<String, ArrayList<WordItem>> items = new HashMap<>();
+    private static HashMap<String, ArrayList<SimpleWordItem>> items = new HashMap<>();
 
 
 
-    private static ArrayList<WordItem> getSimpleWortItems(ArrayList<DirectoryItem> paths, LanguageItem lg) {
+    private static ArrayList<SimpleWordItem> getSimpleWortItems(ArrayList<DirectoryItem> paths, LanguageItem lg) {
 
-        Set<WordItem> res = new HashSet<>();
+        ArrayList<SimpleWordItem> res = new ArrayList<>();
         for(DirectoryItem di : paths) {
-            ArrayList<WordItem> allItems = items.get(di.path);
+            ArrayList<SimpleWordItem> allItems = items.get(di.path);
 
             if(allItems != null){
                 res.addAll(allItems);
@@ -105,14 +115,13 @@ public class AppUtils {
 
             if (files != null) {
                 for (File file : files) {
-                    if(file.getPath().toLowerCase().contains("_all")) {
+                    String path = file.getPath().toLowerCase();
+
+                    if(path.contains("_all")
+                    || (!path.contains("no_preffix") && path.contains("_preffix"))) {
                         continue;
                     }
-
-                    LessonItem li = XmlParser.parseSimpleLesson(file, di.filePrefix);
-                    li.setLanguageItem(lg);
-
-                    res.addAll(li.getLessonWords());
+                    res.addAll(XmlParser.getSimpleWordItems(file.getPath()));
                 }
             }
             items.put(di.path, new ArrayList<>(res));

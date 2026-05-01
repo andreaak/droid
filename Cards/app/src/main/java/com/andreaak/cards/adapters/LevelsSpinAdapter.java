@@ -14,14 +14,12 @@ public class LevelsSpinAdapter extends ArrayAdapter<String> {
 
     private Context context;
     private List<String> values;
-    private String language;
 
     public LevelsSpinAdapter(Context context, int textViewResourceId,
-                             List<String> values, String language) {
+                             List<String> values) {
         super(context, textViewResourceId, values);
         this.context = context;
         this.values = values;
-        this.language = language;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.andreaak.cards.model;
 
+import com.andreaak.common.utils.Utils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -11,6 +13,7 @@ public class VerbLessonItem implements Serializable {
     private String fileName;
     private String path;
     private String language;
+    private String displayName;
 
     private ArrayList<VerbItem> words = new ArrayList<>();
 
@@ -18,6 +21,7 @@ public class VerbLessonItem implements Serializable {
         this.fileName = fileName;
         language = getLanguage(fileName);
         this.path = path;
+        this.displayName = Utils.getDisplayName(fileName, "irregular_");
     }
 
     public ArrayList<VerbItem> getWords() {
@@ -36,6 +40,10 @@ public class VerbLessonItem implements Serializable {
         }
 
         return English;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public void add(VerbItem word) {

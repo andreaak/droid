@@ -22,6 +22,7 @@ public class HtmlActivity extends HandleExceptionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_html);
         webView = (WebView) findViewById(R.id.webView);
+        webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDisplayZoomControls(false);
         loadText();

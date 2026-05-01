@@ -51,4 +51,8 @@ public class VerbItem implements java.io.Serializable {
                 break;
         }
     }
+
+    public String getLevel() {
+        return level;
+    }
 }

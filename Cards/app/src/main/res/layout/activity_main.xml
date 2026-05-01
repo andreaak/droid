@@ -18,11 +18,12 @@
 
             <ImageButton
                 android:id="@+id/buttonOpenCards"
-                android:layout_width="75dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
                 android:title="@string/app_name"
-                android:background="@drawable/cards" />
+                android:background="@drawable/tipsandtricks" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -42,11 +43,12 @@
 
             <ImageButton
                 android:id="@+id/buttonOpenVerbs"
-                android:layout_width="75dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
                 android:title="@string/open_verb"
-                android:background="@drawable/cards" />
+                android:background="@drawable/tipsandtricks" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -66,11 +68,12 @@
 
             <ImageButton
                 android:id="@+id/buttonOpenVerbCards"
-                android:layout_width="75dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
                 android:title="@string/app_name"
-                android:background="@drawable/cards" />
+                android:background="@drawable/tipsandtricks" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -90,11 +93,12 @@
 
             <ImageButton
                 android:id="@+id/buttonOpenGrammar"
-                android:layout_width="75dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
                 android:title="@string/app_name"
-                android:background="@drawable/cards" />
+                android:background="@drawable/books" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -114,11 +118,12 @@
 
             <ImageButton
                 android:id="@+id/buttonOpenVerbForm"
-                android:layout_width="75dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
                 android:title="@string/app_name"
-                android:background="@drawable/cards" />
+                android:background="@drawable/creativity" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -138,11 +143,12 @@
 
             <ImageButton
                 android:id="@+id/buttonSearchLesson"
-                android:layout_width="75dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
                 android:title="@string/app_name"
-                android:background="@drawable/cards" />
+                android:background="@drawable/search102" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -162,11 +168,12 @@
 
             <ImageButton
                 android:id="@+id/buttonSearchVerb"
-                android:layout_width="75dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
                 android:title="@string/app_name"
-                android:background="@drawable/cards" />
+                android:background="@drawable/search102" />
 
             <TextView
                 android:layout_width="match_parent"

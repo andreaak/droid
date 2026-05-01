@@ -14,10 +14,8 @@ import com.andreaak.common.utils.logger.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,21 +67,24 @@ public class XmlParser {
         return lesson;
     }
 
-    public static LessonItem parseSimpleLesson(File lessonFile, String prefix) {
+    public static ArrayList<SimpleWordItem> getSimpleWordItems(String path) {
 
-        LessonItem lesson = new LessonItem(lessonFile, prefix, false);
-        lesson.clear();
         try {
+            SAXParserFactory fabrique = SAXParserFactory.newInstance();
+            SAXParser parser = fabrique.newSAXParser();
 
-            ArrayList<SimpleWordItem> words = getSimpleWordItems(lesson.getFile().getPath());
-            lesson.addAll(words);
+            File file = new File(path);
+            SimpleWordItemHandler handler = new SimpleWordItemHandler(path);
+            parser.parse(file, handler);
+
+            return handler.words;
         } catch (FileNotFoundException e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return lesson;
+        return new ArrayList<>();
     }
 
     public static boolean parseVerbForm(VerbForm verbForm) {
@@ -115,6 +116,28 @@ public class XmlParser {
         return true;
     }
 
+
+    public static WordItem getWordItem(SimpleWordItem wordItem, String lang) {
+
+        WordItemHandler handler = new WordItemHandler(wordItem, lang);
+        try {
+
+            SAXParserFactory fabrique = SAXParserFactory.newInstance();
+            SAXParser parser = fabrique.newSAXParser();
+            File file = new File(wordItem.getPath());
+            parser.parse(file, handler);
+
+        } catch (SAXException e) {
+            if (!(e.getCause() instanceof BreakParsingException)) {
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+        } catch (ParserConfigurationException | IOException e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return handler.result;
+    }
 //    public static ArrayList<LessonItem> parseLessons(String path, String prefix) {
 //
 //        ArrayList<LessonItem> lessons = new ArrayList<>();
@@ -189,83 +212,7 @@ public class XmlParser {
         return verbFormItem;
     }
 
-    public static ArrayList<SimpleWordItem> getSimpleWordItems(String path) throws Exception {
-        SAXParserFactory fabrique = SAXParserFactory.newInstance();
-        SAXParser parser = fabrique.newSAXParser();
-
-        File file = new File(path);
-        BookHandler handler = new BookHandler(path);
-        parser.parse(file, handler);
-
-        return handler.words;
-    }
-
-    public static class BookHandler extends DefaultHandler {
-
-        private StringBuilder buffer;
-        private SimpleWordItem word;
-        private String path;
-
-        public ArrayList<SimpleWordItem> words = new ArrayList<>();
-
-        BookHandler(String path){
-            this.path = path;
-        }
-
-        @Override
-        public void startElement(String uri, String localName, String qName,
-                                 Attributes attributes) throws SAXException {
-            switch (qName) {
-                case "word":
-                    word = new SimpleWordItem(path);
-                    break;
-                case "ru":
-                case "en":
-                case "de":
-                case "de_wordclass":
-                case "de_info":
-                    if(buffer == null) {
-                        buffer = new StringBuilder();
-                    } else {
-                        buffer.setLength(0);
-                    }
-
-                    break;
-            }
-        }
-
-        @Override
-        public void characters(char[] ch, int start, int length)
-                throws SAXException {
-            String content = new String(ch, start, length);
-            if (buffer != null)
-                buffer.append(content);
-        }
-
-        @Override
-        public void endElement(String uri, String localName, String qName)
-                throws SAXException {
-            switch (qName) {
-                case "word":
-                    words.add(word);
-                    break;
-                case "ru":
-                case "en":
-                case "de":
-                case "de_wordclass":
-                case "de_info":
-                    word.addItem(qName, buffer.toString());
-                    break;
-            }
-        }
-
-        @Override
-        public void endDocument() throws SAXException {
-
-        }
-    }
-
-//    public static void main(String file) throws Exception {
+    //    public static void main(String file) throws Exception {
 //        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 //        InputStream in = new FileInputStream(file);
 //        XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);
@@ -301,7 +248,6 @@ public class XmlParser {
 //        System.out.print(persons);
 //        System.out.println(" persons");
 //    }
-
 
     private static Document getXMLDocument(InputSource source) {
         try {

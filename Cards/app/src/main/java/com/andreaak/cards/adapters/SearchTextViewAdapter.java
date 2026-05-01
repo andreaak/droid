@@ -8,29 +8,27 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
-import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.SimpleWordItem;
-import com.andreaak.cards.model.WordItem;
 import com.andreaak.common.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class SearchTextViewAdapter extends ArrayAdapter<WordItem> {
+public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
 
-    private ArrayList<WordItem> items;
-    private ArrayList<WordItem> itemsAll;
-    private ArrayList<WordItem> suggestions;
+    private ArrayList<SimpleWordItem> items;
+    private ArrayList<SimpleWordItem> itemsAll;
+    private ArrayList<SimpleWordItem> suggestions;
     private String lang;
     private int viewResourceId;
 
     @SuppressWarnings("unchecked")
     public SearchTextViewAdapter(Context context, int viewResourceId,
-                                 ArrayList<WordItem> items, String lang) {
+                                 ArrayList<SimpleWordItem> items, String lang) {
         super(context, viewResourceId, items);
         this.items = items;
-        this.itemsAll = (ArrayList<WordItem>) items.clone();
+        this.itemsAll = (ArrayList<SimpleWordItem>) items.clone();
         this.suggestions = new ArrayList<>();
         this.viewResourceId = viewResourceId;
         this.lang = lang;
@@ -43,7 +41,7 @@ public class SearchTextViewAdapter extends ArrayAdapter<WordItem> {
                     Context.LAYOUT_INFLATER_SERVICE);
             v = vi.inflate(viewResourceId, null);
         }
-        WordItem product = items.get(position);
+        SimpleWordItem product = items.get(position);
         if (product != null) {
             TextView productLabel = (TextView)  v.findViewById(android.R.id.text1);
             if (productLabel != null) {
@@ -67,11 +65,12 @@ public class SearchTextViewAdapter extends ArrayAdapter<WordItem> {
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults filterResults = new FilterResults();
             if (constraint != null) {
                 suggestions.clear();
                 String ct = Utils.normalizeForComparatorAndRemoveArtikles(constraint.toString());
-                for (WordItem item : itemsAll) {
-                    if (Utils.normalizeForComparatorAndRemoveArtikles(item.getDisplayName(lang))
+                for (SimpleWordItem item : itemsAll) {
+                    if (Utils.normalizeForComparatorAndRemoveArtikles(item.getValue(lang))
                             .contains(ct)) {
                         suggestions.add(item);
                         if(suggestions.size() >= 100) {
@@ -80,21 +79,27 @@ public class SearchTextViewAdapter extends ArrayAdapter<WordItem> {
                     }
                 }
 
-                Collections.sort(suggestions, new Comparator<WordItem>() {
-                    @Override
-                    public int compare(WordItem a, WordItem b)
-                    {
-                        return a.getValue("de").compareTo(b.getValue("de"));
-                    }
-                });
-
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = suggestions;
-                filterResults.count = suggestions.size();
-                return filterResults;
             } else {
-                return new FilterResults();
+                suggestions.clear();
+                for (SimpleWordItem item : itemsAll) {
+                    suggestions.add(item);
+                    if(suggestions.size() >= 100) {
+                        break;
+                    }
+                }
             }
+
+            Collections.sort(suggestions, new Comparator<SimpleWordItem>() {
+                @Override
+                public int compare(SimpleWordItem a, SimpleWordItem b)
+                {
+                    return a.getValue(lang).compareTo(b.getValue(lang));
+                }
+            });
+
+            filterResults.values = suggestions;
+            filterResults.count = suggestions.size();
+            return filterResults;
         }
 
         @Override

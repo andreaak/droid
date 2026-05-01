@@ -9,8 +9,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -137,23 +135,24 @@ public class Utils {
     }
 
     public static String getDisplayName(String fileName, String prefix) {
-        String[] res =
-                Utils.splitCamelCaseString(
-                        Utils.getNormalizedFileNameWithoutExtensions(fileName)
-                                .replace(prefix, ""));
 
-        StringBuilder sb = new StringBuilder();
-        for (String str : res) {
-            if(Utils.isEmpty(str)) {
-                continue;
-            }
+            String[] res =
+                    Utils.splitCamelCaseString(
+                            Utils.getNormalizedFileNameWithoutExtensions(fileName)
+                                    .replace(prefix, ""));
 
-            if(sb.length() != 0) {
-                sb.append(" ");
+            StringBuilder sb = new StringBuilder();
+            for (String str : res) {
+                if(Utils.isEmpty(str)) {
+                    continue;
+                }
+
+                if(sb.length() != 0) {
+                    sb.append(" ");
+                }
+                sb.append(str.substring(0, 1).toUpperCase() + str.substring(1));
             }
-            sb.append(str.substring(0, 1).toUpperCase() + str.substring(1));
-        }
-        return sb.toString();
+            return sb.toString();
     }
 
     public static boolean checkOrCreateFolderForFile(File file) {

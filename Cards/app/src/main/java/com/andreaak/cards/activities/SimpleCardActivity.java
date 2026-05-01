@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -21,6 +20,7 @@ import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
@@ -38,11 +38,10 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     //in
     public static final String HELPER = "Helper";
 
-    private ImageButton buttonStudy;
-    private ImageButton buttonToggle;
     private ImageButton buttonSound;
     private ImageButton buttonExample;
     private ImageButton buttonDescription;
+    private ImageButton buttonGPTDescription;
     private ImageButton buttonPrap;
 
     private TextView textViewWord1;
@@ -52,8 +51,6 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     private TextView textViewExample;
 
     private SimpleCardActivityHelper helper;
-
-    private Menu menu;
 
     private VelocityTracker mVelocityTracker = null;
     private float x;
@@ -74,11 +71,9 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
 
         setContentView(R.layout.activity_card);
 
-        buttonStudy = (ImageButton) findViewById(R.id.buttonStudy);
-        buttonStudy.setVisibility(View.INVISIBLE);
-
-        buttonToggle = (ImageButton) findViewById(R.id.buttonToggle);
-        buttonToggle.setVisibility(View.INVISIBLE);
+        findViewById(R.id.buttonStudy).setVisibility(View.INVISIBLE);
+        findViewById(R.id.buttonToggle).setVisibility(View.INVISIBLE);
+        findViewById(R.id.buttonRemove).setVisibility(View.INVISIBLE);
 
         buttonSound = (ImageButton) findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
@@ -88,6 +83,9 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
 
         buttonDescription = (ImageButton) findViewById(R.id.buttonDescription);
         buttonDescription.setOnClickListener(this);
+
+        buttonGPTDescription = (ImageButton) findViewById(R.id.buttonGPTDescription);
+        buttonGPTDescription.setOnClickListener(this);
 
         buttonPrap = (ImageButton) findViewById(R.id.buttonPrap);
         buttonPrap.setOnClickListener(this);
@@ -109,21 +107,8 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
             helper =  (SimpleCardActivityHelper) getIntent().getSerializableExtra(SimpleCardActivity.HELPER);
             setTitle(helper.currentSimpleWord.getDisplayName(helper.language.getPrimaryLanguage()));
         }
-
-        LessonItem lesson = XmlParser.parseLesson(helper.currentSimpleWord.getPath(), "");
-
-        WordItem res = null;
-
         String lang = helper.language.getPrimaryLanguage();
-        for (WordItem wordItem : lesson.getWords()) {
-
-            if (Utils.isEqual(wordItem.getValue(lang), helper.currentSimpleWord.getValue(lang))
-                && Utils.isEqual(wordItem.getWordClass(), helper.currentSimpleWord.getWordClass())
-                && Utils.isEqual(wordItem.getInfo(lang), helper.currentSimpleWord.getInfo(lang))) {
-                res = wordItem;
-                break;
-            }
-        }
+        WordItem res = XmlParser.getWordItem(helper.currentSimpleWord, lang);
 
         if(res != null) {
             helper.currentWord = res;
@@ -143,17 +128,6 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
 
     private void saveFontSize(float factor) {
         SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TEXT_FONT_SIZE, factor);
-    }
-
-    private void textSmaller() {
-
-        float factor = 0.95f;
-        setTextSize(factor);
-    }
-
-    private void textBigger() {
-        float factor = 1.05f;
-        setTextSize(factor);
     }
 
     private void setTextSize(float factor) {
@@ -196,6 +170,9 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
             case R.id.buttonDescription:
                 showDescription(v);
                 break;
+            case R.id.buttonGPTDescription:
+                showGPTDescription(v);
+                break;
             case R.id.buttonPrap:
                 showPrap(v);
                 break;
@@ -203,8 +180,6 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     private void activateWord(WordItem word) {
-
-
 
         LanguageItem languageItem = helper.language;
 
@@ -235,6 +210,10 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         String description = getDescription(word);
         flag = !Utils.isEmpty(description) ? View.VISIBLE : View.INVISIBLE;
         buttonDescription.setVisibility(flag);
+
+        description = getGPTDescription(word);
+        flag = !Utils.isEmpty(description) ? View.VISIBLE : View.INVISIBLE;
+        buttonGPTDescription.setVisibility(flag);
 
         String prap = getPrap(word);
         flag = !Utils.isEmpty(prap) ? View.VISIBLE : View.INVISIBLE;
@@ -311,6 +290,20 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         String info = word.getDescription(helper.language.getPrimaryLanguage());
         if(Utils.isEmpty(info)) {
             info = word.getDescription(helper.language.getSecondaryLanguage());
+        }
+        return info;
+    }
+
+    private void showGPTDescription(View v) {
+
+        String info = getGPTDescription(helper.currentWord);
+        showInfo(v, info);
+    }
+
+    private String getGPTDescription(WordItem word) {
+        String info = word.getGPTDescription(helper.language.getPrimaryLanguage());
+        if(Utils.isEmpty(info)) {
+            info = word.getGPTDescription(helper.language.getSecondaryLanguage());
         }
         return info;
     }

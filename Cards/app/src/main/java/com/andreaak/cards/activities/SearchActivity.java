@@ -12,7 +12,7 @@ import com.andreaak.cards.activities.helpers.SelectSimpleWordHelper;
 import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
 import com.andreaak.cards.adapters.SearchTextViewAdapter;
 import com.andreaak.cards.model.LanguageItem;
-import com.andreaak.cards.model.WordItem;
+import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.utils.Constants;
@@ -50,8 +50,9 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
         buttonClear.setOnClickListener(this);
 
         autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
+        autoCompleteTextView.setThreshold(2);
         setTitle(getString(R.string.select_form));
-        lg = new LanguageItem("de", "ru");
+
         onRestoreNonConfigurationInstance();
     }
 
@@ -64,16 +65,21 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
         helper = (SelectSimpleWordHelper) getLastNonConfigurationInstance();
         if (helper != null) {
             helper.isRestore = true;
-            initializeVerbSpinner(helper.items);
+            initializeVerbSpinner(helper.items, lg.getPrimaryLanguage());
         } else {
             try{
                 helper = new SelectSimpleWordHelper();
                 String directories = getIntent().getStringExtra(PATH);
                 String prefixes = getIntent().getStringExtra(PREFIXES);
+                String lang = "de";
+                if(directories.toLowerCase().contains("english")) {
+                    lang = "en";
+                }
+                lg = new LanguageItem(lang, "ru");
                 helper.items = AppUtils.getSimpleWortItems(directories, prefixes, lg);
                 if (helper.items.size() != 0) {
                     setTitle(String.valueOf(helper.items.size()));
-                    initializeVerbSpinner(helper.items);
+                    initializeVerbSpinner(helper.items, lang);
                 }
 
             } catch(Exception e) {
@@ -82,19 +88,15 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
         }
     }
 
-    private void initializeVerbSpinner(ArrayList<WordItem> verbForms) {
+    private void initializeVerbSpinner(ArrayList<SimpleWordItem> items, String lang) {
 
         verbFormsAdapter = new SearchTextViewAdapter(SearchActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
-                verbForms, "de");
+                items, lang);
 
         autoCompleteTextView.setAdapter(verbFormsAdapter);
 
-        if (helper.isRestore) {
-            int position = verbFormsAdapter.getPosition(helper.currentItem);
-            autoCompleteTextView.setSelected(false);  // must
-            autoCompleteTextView.setSelection(position);  //must
-        }
+
 
         autoCompleteTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,10 +110,18 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                WordItem verbForm = verbFormsAdapter.getItem(position);
-                helper.currentItem = verbForm;
+                SimpleWordItem word = verbFormsAdapter.getItem(position);
+                helper.currentItem = word;
             }
         });
+
+        if (helper.isRestore) {
+            int position = verbFormsAdapter.getPosition(helper.currentItem);
+            autoCompleteTextView.setSelected(false);  // must
+            autoCompleteTextView.setSelection(position);  //must
+        } else {
+            autoCompleteTextView.setText("");
+        }
     }
 
     @Override

@@ -16,6 +16,7 @@
         android:background="#ff00"
         app:showAsAction="always" />
 
+
     <item
         android:id="@+id/menu_sort"
         android:gravity="right"
@@ -34,7 +35,12 @@
         android:icon="@drawable/minus"
         app:showAsAction="ifRoom"
         android:title="@string/minus"></item>
-
+    <item
+        android:id="@+id/menu_restore"
+        android:gravity="right"
+        android:icon="@drawable/minus"
+        app:showAsAction="ifRoom"
+        android:title="@string/restore"></item>
     <!--item
         android:id="@+id/menu_edit_word"
         android:gravity="right"

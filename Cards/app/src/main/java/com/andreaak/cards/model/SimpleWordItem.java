@@ -29,7 +29,7 @@ public class SimpleWordItem extends WordItem implements java.io.Serializable {
         if(Utils.isEmpty(wc)) {
             return getValue(lang);
         }
-        return (getValue(lang) + " " + getWordClass() +
+        return (getValue(lang) + " " + wc +
                 ("verb".equals(wc) ? (" " + getInfo(lang)) : "")).trim();
     }
 

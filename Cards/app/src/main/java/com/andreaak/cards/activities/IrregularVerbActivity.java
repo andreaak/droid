@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,9 +19,11 @@ import android.widget.TextView;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.VerbActivityHelper;
+import com.andreaak.cards.adapters.LevelsSpinAdapter;
 import com.andreaak.cards.adapters.VerbSpinAdapter;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.VerbItem;
+import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
 import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
@@ -43,6 +44,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static com.andreaak.common.utils.Utils.showText;
 
@@ -53,6 +56,8 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     private static final int REQUEST_GOOGLE_CONNECT = 2;
     //in
     public static final String HELPER = "Helper";
+    public static final String ALL = "All";
+    public static final String A1B2 = "A1-B2";
 
     private TextView textView_1;
     private TextView textView_1_Trans;
@@ -70,6 +75,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     private LinearLayout texts;
 
     private Spinner spinnerWords;
+    private Spinner spinnerLevels;
 
     private Menu menu;
 
@@ -78,6 +84,8 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
     private VerbActivityHelper helper;
     private VerbSpinAdapter wordsAdapter;
+    private VerbSpinAdapter spinnerAdapterWords;
+    private LevelsSpinAdapter spinnerAdapterLevels;
     private VelocityTracker mVelocityTracker = null;
     private float x;
 
@@ -123,6 +131,8 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         } else {
             helper = (VerbActivityHelper) getIntent()
                     .getSerializableExtra(IrregularVerbActivity.HELPER);
+
+            setTitle(helper.lessonItem.getDisplayName());
         }
 
         googleDriveHelper = GoogleDriveHelper.getInstance();
@@ -146,13 +156,110 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         MenuItem item = menu.findItem(R.id.spinnerWords);
         spinnerWords = (Spinner) item.getActionView();
         spinnerWords.setVisibility(View.GONE);
+        MenuItem levelsSpinner = menu.findItem(R.id.spinnerLevels);
+        spinnerLevels = (android.widget.Spinner) levelsSpinner.getActionView();
+
         if (helper.lessonItem.isContainsWords()) {
+
+            wordsAdapter = new VerbSpinAdapter(IrregularVerbActivity.this,
+                    android.R.layout.simple_spinner_item,
+                    helper.lessonItem.getWords());
+
             initializeWordsSpinner(helper.lessonItem.getWords());
+
+            if(!helper.isRestore) {
+                helper.currentLevel = wordsAdapter.level;
+            }
+
+            if(helper.currentWord == null) {
+                helper.currentWord = wordsAdapter.getItem(0);
+            }
         }
 
         this.menu = menu;
         operationGoogleDriveHelper.setMenu(menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void initializeWordsSpinner(ArrayList<VerbItem> words) {
+
+        ArrayList<VerbItem> copy = (ArrayList<VerbItem>)words.clone();
+        spinnerAdapterWords = new VerbSpinAdapter(IrregularVerbActivity.this,
+                android.R.layout.simple_spinner_item,
+                copy);
+
+        spinnerWords.setAdapter(spinnerAdapterWords);
+
+        setTitle(words.size() + " " + helper.lessonItem.getDisplayName());
+        List<String> levels = GetLevels(words);
+
+        spinnerAdapterLevels = new LevelsSpinAdapter(IrregularVerbActivity.this,
+                android.R.layout.simple_spinner_item,
+                levels);
+
+        spinnerLevels.setAdapter(spinnerAdapterLevels);
+
+        if (helper.isRestore) {
+            int position = spinnerAdapterWords.getPosition(helper.currentWord);
+            spinnerWords.setSelected(false);// must
+            spinnerWords.setSelection(position, true);  //must
+
+            wordsAdapter.setLevel(helper.currentLevel);
+
+            position = spinnerAdapterLevels.getPosition(helper.currentLevel);
+            spinnerLevels.setSelected(false);// must
+            spinnerLevels.setSelection(position, true);  //must
+
+            activateWord(helper.currentWord);
+            helper.isRestore = false;
+        }
+
+        spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+
+                VerbItem word = spinnerAdapterWords.getItem(position);
+                helper.currentWord = word;
+
+                activateWord(word);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+            }
+        });
+
+        //SET LEVEL
+        spinnerLevels.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+
+                String level = spinnerAdapterLevels.getItem(position);
+
+                if(!wordsAdapter.setLevel(level)) {
+                    return;
+                }
+                setTitle(wordsAdapter.getCount() + " " + helper.lessonItem.getDisplayName());
+                helper.currentLevel = level;
+
+                spinnerAdapterWords.setLevel(level);
+                spinnerAdapterWords.notifyDataSetChanged();
+
+                spinnerWords.setSelected(false);// must
+                spinnerWords.setSelection(0, true);
+
+                helper.currentWord = wordsAdapter.getItem(0);
+                activateWord(helper.currentWord);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+            }
+        });
     }
 
     @Override
@@ -300,39 +407,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     private void setSettings() {
     }
 
-    private void initializeWordsSpinner(ArrayList<VerbItem> words) {
 
-        wordsAdapter = new VerbSpinAdapter(IrregularVerbActivity.this,
-                android.R.layout.simple_spinner_item,
-                words);
-
-        spinnerWords.setAdapter(wordsAdapter);
-
-        if (helper.isRestore) {
-            int position = wordsAdapter.getPosition(helper.currentWord);
-            spinnerWords.setSelected(false);// must
-            spinnerWords.setSelection(position, true);  //must
-            activateWord(helper.currentWord);
-            helper.isRestore = false;
-        }
-
-        spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
-
-                VerbItem word = wordsAdapter.getItem(position);
-                helper.currentWord = word;
-
-                activateWord(word);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-            }
-        });
-    }
 
     private void activateWord(VerbItem word) {
 
@@ -365,14 +440,24 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     }
 
     private void previousWord() {
-        int position = wordsAdapter.getPosition(helper.currentWord);
-        spinnerWords.setSelection(position - 1);
+        setWord(-1);
     }
 
     private void nextWord() {
-        int position = wordsAdapter.getPosition(helper.currentWord);
-        spinnerWords.setSelection(position + 1);
+        setWord(1);;
     }
+
+    private void setWord(int index) {
+        int position = wordsAdapter.getPosition(helper.currentWord);
+        VerbItem word = wordsAdapter.getItem(position + index);
+        helper.currentWord = word;
+        setTitle(helper.lessonItem.getDisplayName() + " " + (position + index + 1) + " of " + wordsAdapter.getCount());
+        position = spinnerAdapterWords.getPosition(helper.currentWord);
+        spinnerWords.setSelected(false);// must
+        spinnerWords.setSelection(position, true);
+        activateWord(word);
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -549,5 +634,23 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     @Override
     public void onFinished() {
 
+    }
+
+    private List<String> GetLevels(ArrayList<VerbItem> words) {
+
+        Set<String> s = new TreeSet<>();
+
+        for(VerbItem w : words) {
+            if(!Utils.isEmpty(w.getLevel())) {
+                s.add(w.getLevel());
+            } else {
+                s.add("CC");
+            }
+        }
+
+        List<String> list = new ArrayList<>(s);
+        list.add(0, ALL);
+        list.add(A1B2);
+        return list;
     }
 }

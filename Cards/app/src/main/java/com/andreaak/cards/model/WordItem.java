@@ -14,6 +14,7 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
     public static final String InfoSuffix = "_info";
     public static final String ExampleSuffix = "_example";
     public static final String DescriptionSuffix = "_description";
+    public static final String GPTDescriptionSuffix = "_gptdescription";
     public static final String LevelSuffix = "_level";
     public static final String WordClassSuffix = "_wordclass";
     public static final String PrapSuffix = "_prap";
@@ -26,6 +27,7 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
     private Map<String, String> level = new HashMap<String, String>();
     private Map<String, String> example = new HashMap<String, String>();
     private Map<String, String> descriptions = new HashMap<String, String>();
+    private Map<String, String> gptdescriptions = new HashMap<String, String>();
     private Map<String, String> praps = new HashMap<String, String>();
 
     private int id;
@@ -53,7 +55,9 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
     }
 
     public String getInfo(String language) {
-        return info.get(language + InfoSuffix);
+        String value = info.get(language + InfoSuffix);
+
+        return value == null ? "" : value;
     }
 
     public String getExample(String language) {
@@ -66,6 +70,10 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
 
     public String getDescription(String language) {
         return descriptions.get(language + DescriptionSuffix);
+    }
+
+    public String getGPTDescription(String language) {
+        return gptdescriptions.get(language + GPTDescriptionSuffix);
     }
 
     public String getWordClass() {
@@ -96,6 +104,8 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
             example.put(tag, value);
         } else if (tag.endsWith(DescriptionSuffix)) {
             descriptions.put(tag, value);
+        }else if (tag.endsWith(GPTDescriptionSuffix)) {
+            gptdescriptions.put(tag, value);
         } else if (tag.endsWith(PrapSuffix)) {
             praps.put(tag, value);
         } else if (tag.contains("_")) {
