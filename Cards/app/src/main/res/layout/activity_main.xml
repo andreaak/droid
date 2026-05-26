@@ -185,6 +185,31 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/buttonSearchAll"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
+                android:title="@string/app_name"
+                android:background="@drawable/search102" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:text="@string/open_search_all"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

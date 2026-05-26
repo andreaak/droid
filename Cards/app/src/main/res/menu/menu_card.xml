@@ -24,6 +24,25 @@
         app:showAsAction="ifRoom"
         android:title="@string/sort"></item>
     <item
+        android:id="@+id/menu_createFile"
+        android:gravity="right"
+        android:icon="@drawable/file"
+        app:showAsAction="ifRoom"
+        android:title="@string/createFile"></item>
+    <item
+        android:id="@+id/menu_addItemToFile"
+        android:gravity="right"
+        android:icon="@drawable/plus"
+        app:showAsAction="ifRoom"
+        android:title="@string/addItem"></item>
+    <item
+        android:id="@+id/menu_closeFile"
+        android:gravity="right"
+        android:icon="@drawable/exit"
+        app:showAsAction="ifRoom"
+        android:title="@string/closeFile"></item>
+
+    <item
         android:id="@+id/menu_plus"
         android:gravity="right"
         android:icon="@drawable/plus"

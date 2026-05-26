@@ -23,6 +23,7 @@
     <string name="open_verb">Verb Familie</string>
     <string name="open_search_lesson">Search lesson</string>
     <string name="open_search_verb">Search verb</string>
+    <string name="open_search_all">Search all</string>
     <string name="open_last_lesson">Open last lesson</string>
     <string name="select_language">Select language</string>
     <string name="select_log">Select log file folder</string>
@@ -40,4 +41,7 @@
     <string name="open_form">Verb form</string>
     <string name="sort">Sort</string>
     <string name="restore">Restore</string>
+    <string name="createFile">Create File</string>
+    <string name="addItem">Add Item</string>
+    <string name="closeFile">Close File</string>
 </resources>

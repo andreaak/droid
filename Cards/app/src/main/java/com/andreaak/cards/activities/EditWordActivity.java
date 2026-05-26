@@ -171,11 +171,11 @@ public class EditWordActivity extends HandleExceptionActivity implements View.On
             return false;
         }
 
-        boolean res = XmlParser.updateXML(helper.lessonItem.getPath(),
-                primaryLanguage, primaryLanguageValue,
-                secondaryLanguage, secondaryLanguageValue,
-                map);
-        return res;
+//        boolean res = XmlParser.updateXML(helper.lessonItem.getPath(),
+//                primaryLanguage, primaryLanguageValue,
+//                secondaryLanguage, secondaryLanguageValue,
+//                map);
+        return true;
     }
 
     private boolean isEqual(String value1, String value2) {

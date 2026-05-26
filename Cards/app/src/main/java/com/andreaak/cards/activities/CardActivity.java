@@ -304,19 +304,31 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements /*
                 clearWords();
                 return true;
             }
-            case com.andreaak.cards.R.id.menu_select_account: {
-                try {
-                    startActivityForResult(AccountPicker.newChooseAccountIntent(
-                            null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true,
-                            null, null, null, null),
-                            REQUEST_GOOGLE_CONNECT);
-                } catch (Exception ex) {
-                    Logger.d(Constants.LOG_TAG, "Google services problem");
-                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-                    ex.printStackTrace();
-                }
+            case R.id.menu_createFile: {
+                createFile();
                 return true;
             }
+            case R.id.menu_addItemToFile: {
+                addItemToFile();
+                return true;
+            }
+            case R.id.menu_closeFile: {
+                closeFile();
+                return true;
+            }
+//            case com.andreaak.cards.R.id.menu_select_account: {
+//                try {
+//                    startActivityForResult(AccountPicker.newChooseAccountIntent(
+//                            null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true,
+//                            null, null, null, null),
+//                            REQUEST_GOOGLE_CONNECT);
+//                } catch (Exception ex) {
+//                    Logger.d(Constants.LOG_TAG, "Google services problem");
+//                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+//                    ex.printStackTrace();
+//                }
+//                return true;
+//            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -685,6 +697,15 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements /*
     private void clearWords() {
         String path = getTempFilePath(helper.lessonItem);
         FilesHelper.deleteFile(path);
+    }
+
+    private void createFile() {
+    }
+
+    private void addItemToFile() {
+    }
+
+    private void closeFile() {
     }
 
     MediaPlayerHelper mediaHelper;

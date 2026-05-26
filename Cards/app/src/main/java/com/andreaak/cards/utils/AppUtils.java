@@ -29,6 +29,8 @@ public class AppUtils {
             new ReplaceItem("ö", "!o"),
             new ReplaceItem("ü", "!u")};
 
+    private static HashMap<String, ArrayList<SimpleWordItem>> items = new HashMap<>();
+
     public static ArrayList<LessonItem> getLessons(String path, final String prefix, boolean sortItems) {
 
         if(path == null || path.trim().length() == 0) {
@@ -90,10 +92,6 @@ public class AppUtils {
         return getSimpleWortItems(res, lg);
     }
 
-    private static HashMap<String, ArrayList<SimpleWordItem>> items = new HashMap<>();
-
-
-
     private static ArrayList<SimpleWordItem> getSimpleWortItems(ArrayList<DirectoryItem> paths, LanguageItem lg) {
 
         ArrayList<SimpleWordItem> res = new ArrayList<>();
@@ -105,6 +103,7 @@ public class AppUtils {
                 continue;
             }
 
+            ArrayList<SimpleWordItem> res1 = new ArrayList<>();
             File directory = new File(di.path);
             File[] files = directory.listFiles(new FilenameFilter() {
                 @Override
@@ -121,10 +120,11 @@ public class AppUtils {
                     || (!path.contains("no_preffix") && path.contains("_preffix"))) {
                         continue;
                     }
-                    res.addAll(XmlParser.getSimpleWordItems(file.getPath()));
+                    res1.addAll(XmlParser.getSimpleWordItems(file.getPath()));
                 }
             }
-            items.put(di.path, new ArrayList<>(res));
+            items.put(di.path, new ArrayList<>(res1));
+            res.addAll(res1);
         }
 
         return new ArrayList<>(res);

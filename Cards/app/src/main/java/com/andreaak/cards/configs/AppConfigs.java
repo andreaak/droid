@@ -21,6 +21,7 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     private static final String GRAMMAR_DIR = "Grammar";
     private static final String VERB_FORMS_DIR = "VerbForms";
     private static final String VERB_DIR = "Verb";
+    private static final String STUDY_DIR = "Study";
     // Google
     private static final String SP_GOOGLE_DIR_DEFAULT = "Eng";
     //irregular
@@ -109,6 +110,10 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
     public String getVerbDir() {
         return WorkingDir + "/" + VERB_DIR;
+    }
+
+    public String getStudyDir() {
+        return WorkingDir + "/" + STUDY_DIR;
     }
 
     protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {

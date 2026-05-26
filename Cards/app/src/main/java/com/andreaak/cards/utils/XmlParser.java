@@ -1,5 +1,6 @@
 package com.andreaak.cards.utils;
 
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.DeVerbItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.SimpleWordItem;
@@ -12,6 +13,7 @@ import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.logger.Logger;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -29,6 +31,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -37,6 +40,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class XmlParser {
 
@@ -50,20 +57,15 @@ public class XmlParser {
     public static LessonItem parseLesson(LessonItem lesson) {
 
         lesson.clear();
-        try {
-            InputSource input = new InputSource(new FileReader(lesson.getFile()));
-            Document doc = getXMLDocument(input);
-            NodeList words = doc.getElementsByTagName("word");
-            for (int i = 0; i < words.getLength(); i++) {
-                Node node = words.item(i);
-                WordItem word = parseWord(node, i);
-                lesson.add(word);
-            }
 
-        } catch (FileNotFoundException e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
+        Document doc = getXMLDocument(lesson.getFile());
+        NodeList words = doc.getElementsByTagName("word");
+        for (int i = 0; i < words.getLength(); i++) {
+            Node node = words.item(i);
+            WordItem word = parseWord(node, i);
+            lesson.add(word);
         }
+
         return lesson;
     }
 
@@ -90,28 +92,21 @@ public class XmlParser {
     public static boolean parseVerbForm(VerbForm verbForm) {
 
         verbForm.clear();
-        try {
-            InputSource input = new InputSource(new FileReader(verbForm.getFile()));
-            Document doc = getXMLDocument(input);
-            NodeList rus = doc.getElementsByTagName("ru");
-            String ru = "";
-            if(rus.getLength() > 0) {
-                Node firstChild = rus.item(0).getFirstChild();
-                if(firstChild != null) {
-                    ru = firstChild.getNodeValue();
-                }
-            }
-            NodeList verbFormItems = doc.getElementsByTagName("VerbForm");
-            for (int i = 0; i < verbFormItems.getLength(); i++) {
-                Node node = verbFormItems.item(i);
-                VerbFormItem verbFormItem = parseVerbForm(node, i, ru);
-                verbForm.add(verbFormItem);
-            }
 
-        } catch (FileNotFoundException e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-            return false;
+        Document doc = getXMLDocument(verbForm.getFile());
+        NodeList rus = doc.getElementsByTagName("ru");
+        String ru = "";
+        if(rus.getLength() > 0) {
+            Node firstChild = rus.item(0).getFirstChild();
+            if(firstChild != null) {
+                ru = firstChild.getNodeValue();
+            }
+        }
+        NodeList verbFormItems = doc.getElementsByTagName("VerbForm");
+        for (int i = 0; i < verbFormItems.getLength(); i++) {
+            Node node = verbFormItems.item(i);
+            VerbFormItem verbFormItem = parseVerbForm(node, i, ru);
+            verbForm.add(verbFormItem);
         }
         return true;
     }
@@ -249,13 +244,14 @@ public class XmlParser {
 //        System.out.println(" persons");
 //    }
 
-    private static Document getXMLDocument(InputSource source) {
+    private static Document getXMLDocument(File file){
         try {
+            InputSource input = new InputSource(new FileReader(file));
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(false);
             dbf.setValidating(false);
             DocumentBuilder db = dbf.newDocumentBuilder();
-            return db.parse(source);
+            return db.parse(input);
         } catch (Exception e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -263,37 +259,83 @@ public class XmlParser {
         }
     }
 
-    public static boolean updateXML(String lessonFile, String lang1, String value1,
-                                    String lang2, String value2, HashMap<String, String> map) {
-        try {
-            InputSource input = new InputSource(new FileReader(lessonFile));
-            Document doc = getXMLDocument(input);
-            NodeList words = doc.getElementsByTagName("word");
-            for (int i = 0; i < words.getLength(); i++) {
-                Node word = words.item(i);
-                if (!isEditWord(word, lang1, value1, lang2, value2)) {
-                    continue;
-                }
-                NodeList items = word.getChildNodes();
-                for (int j = 0; j < items.getLength(); j++) {
-                    Node item = items.item(j);
-                    short type = item.getNodeType();
-                    if (type == 1) {
-                        String language = item.getNodeName();
-                        if (map.containsKey(language)) {
-                            item.getFirstChild().setNodeValue(map.get(language));
-                        }
-                    }
-                }
-            }
+    public static VerbLessonItem parseVerbLesson(String path) {
 
-            return writeXmlFile(doc, lessonFile);
-        } catch (FileNotFoundException e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        }
-        return false;
+        return parseVerbLesson(new File(path));
     }
+
+    public static VerbLessonItem parseVerbLesson(File lessonFile) {
+
+        VerbLessonItem lesson = new VerbLessonItem(lessonFile.getName(), lessonFile.getAbsolutePath());
+
+        Document doc = getXMLDocument(lessonFile);
+        NodeList words = doc.getElementsByTagName("verb");
+        for (int i = 0; i < words.getLength(); i++) {
+            Node node = words.item(i);
+
+            VerbItem word = getVerbItem(lesson.getLanguage(), i);
+
+            parseVerb(node, word);
+            lesson.add(word);
+        }
+        return lesson;
+    }
+
+    private static VerbItem getVerbItem(String language, int id) {
+        if(language == VerbLessonItem.English) {
+            return new VerbItem(id);
+        } else if(language == VerbLessonItem.Deutsch) {
+            return new DeVerbItem(id);
+        }
+        return new VerbItem(id);
+    }
+
+    private static VerbItem parseVerb(Node node, VerbItem verb) {
+
+        NodeList items = node.getChildNodes();
+        for (int i = 0; i < items.getLength(); i++) {
+            Node item = items.item(i);
+            short type = item.getNodeType();
+            if (type == 1) {
+                String tag = item.getNodeName();
+                String value = item.getFirstChild().getNodeValue();
+                verb.addTag(tag, value);
+            }
+        }
+        return verb;
+    }
+
+//    public static boolean updateXML(String lessonFile, String lang1, String value1,
+//                                    String lang2, String value2, HashMap<String, String> map) {
+//        try {
+//            InputSource input = new InputSource(new FileReader(lessonFile));
+//            Document doc = getXMLDocument(lessonFile);
+//            NodeList words = doc.getElementsByTagName("word");
+//            for (int i = 0; i < words.getLength(); i++) {
+//                Node word = words.item(i);
+//                if (!isEditWord(word, lang1, value1, lang2, value2)) {
+//                    continue;
+//                }
+//                NodeList items = word.getChildNodes();
+//                for (int j = 0; j < items.getLength(); j++) {
+//                    Node item = items.item(j);
+//                    short type = item.getNodeType();
+//                    if (type == 1) {
+//                        String language = item.getNodeName();
+//                        if (map.containsKey(language)) {
+//                            item.getFirstChild().setNodeValue(map.get(language));
+//                        }
+//                    }
+//                }
+//            }
+//
+//            return writeXmlFile(doc, lessonFile);
+//        } catch (FileNotFoundException e) {
+//            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
     private static boolean isEditWord(Node word, String lang1, String value1,
                                       String lang2, String value2) {
@@ -342,56 +384,101 @@ public class XmlParser {
         return false;
     }
 
+    public static String currentFile = "";
 
-    public static VerbLessonItem parseVerbLesson(String path) {
+    public static void createFile(String directory) {
 
-        return parseVerbLesson(new File(path));
-    }
-
-    public static VerbLessonItem parseVerbLesson(File lessonFile) {
-
-        VerbLessonItem lesson = new VerbLessonItem(lessonFile.getName(), lessonFile.getAbsolutePath());
+        directory = AppConfigs.getInstance().getStudyDir();
         try {
-            InputSource input = new InputSource(new FileReader(lessonFile));
-            Document doc = getXMLDocument(input);
-            NodeList words = doc.getElementsByTagName("verb");
-            for (int i = 0; i < words.getLength(); i++) {
-                Node node = words.item(i);
 
-                VerbItem word = getVerbItem(lesson.getLanguage(), i);
-
-                parseVerb(node, word);
-                lesson.add(word);
+            // Создаем папку если нет
+            File dir = new File(directory);
+            if (!dir.exists()) {
+                dir.mkdirs();
             }
 
-        } catch (FileNotFoundException e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            // Текущая дата
+            String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            int nextNumber = getNextNumber(dir, date);
+
+            // Форматируем как 01, 02, 03...
+            String sequence = String.format("%02d", nextNumber);
+            // Имя файла
+            String fileName = date + "_" + sequence + ".xml";
+
+            File xmlFile = new File(dir, fileName);
+
+            XmlDelegate delegate = (Document document) -> {
+                Element root = document.createElement("words");
+                document.appendChild(root);
+            };
+
+            createXml(xmlFile, delegate);
+
+            currentFile = fileName;
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return lesson;
     }
 
-    private static VerbItem getVerbItem(String language, int id) {
-        if(language == VerbLessonItem.English) {
-            return new VerbItem(id);
-        } else if(language == VerbLessonItem.Deutsch) {
-            return new DeVerbItem(id);
-        }
-        return new VerbItem(id);
+    private static void createXml(File xmlFile, XmlDelegate delegate) throws ParserConfigurationException, TransformerException {
+        // Создаем XML
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.newDocument();
+
+
+        delegate.execute(document);
+
+        // Сохранение
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty( OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(
+                "{http://xml.apache.org/xslt}indent-amount",
+                "4"
+        );
+
+        DOMSource source = new DOMSource(document);
+        StreamResult result = new StreamResult(xmlFile);
+        transformer.transform(source, result);
     }
 
-    private static VerbItem parseVerb(Node node, VerbItem verb) {
+    private static int getNextNumber(File dir, String date) {
+        // Ищем следующий порядковый номер
+        int maxNumber = 0;
 
-        NodeList items = node.getChildNodes();
-        for (int i = 0; i < items.getLength(); i++) {
-            Node item = items.item(i);
-            short type = item.getNodeType();
-            if (type == 1) {
-                String tag = item.getNodeName();
-                String value = item.getFirstChild().getNodeValue();
-                verb.addTag(tag, value);
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String name = file.getName();
+                // Проверяем формат YYYYMMDD_XX.xml
+                if (name.startsWith(date + "_") && name.endsWith(".xml")) {
+                    try {
+
+                        String numberPart =
+                                name.substring(
+                                        date.length() + 1,
+                                        name.length() - 4
+                                );
+
+                        int number = Integer.parseInt(numberPart);
+                        if (number > maxNumber) {
+                            maxNumber = number;
+                        }
+
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
             }
         }
-        return verb;
+
+        // Следующий номер
+        return maxNumber + 1;
     }
+}
+
+interface XmlDelegate {
+    void execute(Document document);
 }

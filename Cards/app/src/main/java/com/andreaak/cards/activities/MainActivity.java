@@ -39,6 +39,7 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
     private ImageButton buttonOpenVerbForm;
     private ImageButton buttonSearchLesson;
     private ImageButton buttonSearchVerb;
+    private ImageButton buttonSearchAll;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,9 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
         buttonSearchVerb = (ImageButton) findViewById(R.id.buttonSearchVerb);
         buttonSearchVerb.setOnClickListener(this);
+
+        buttonSearchAll = (ImageButton) findViewById(R.id.buttonSearchAll);
+        buttonSearchAll.setOnClickListener(this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -143,6 +147,9 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
                 break;
             case R.id.buttonSearchVerb:
                 searchVerb();
+                break;
+            case R.id.buttonSearchAll:
+                searchAll();
                 break;
         }
     }
@@ -232,6 +239,13 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
         Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra(SearchActivity.PATH, AppConfigs.getInstance().getVerbDir());
         intent.putExtra(SearchActivity.PREFIXES, AppConfigs.getInstance().VerbPrefix);
+        startActivity(intent);
+    }
+
+    private void searchAll() {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchActivity.PATH, AppConfigs.getInstance().getVerbDir() + "|" + AppConfigs.getInstance().getLessonsDir());
+        intent.putExtra(SearchActivity.PREFIXES, AppConfigs.getInstance().VerbPrefix + "|" + AppConfigs.getInstance().LessonsPrefix);
         startActivity(intent);
     }
 }
