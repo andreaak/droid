@@ -125,7 +125,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     private void setWorkingDirectory() {
         Intent intent = new Intent(this, DirectoryChooserActivity.class);
         intent.putExtra(DirectoryChooserActivity.PREDICATE, new AlwaysTruePredicate());
-        intent.putExtra(DirectoryChooserActivity.TITLE, getString(R.string.select_working_directory));
+        intent.putExtra(DirectoryChooserActivity.TITLE, getString(com.andreaak.common.R.string.select_working_directory));
         intent.putExtra(DirectoryChooserActivity.INITIAL_PATH, AppConfigs.getInstance().WorkingDir);
         startActivityForResult(intent, REQUEST_WORKING_DIRECTORY_CHOOSER);
     }

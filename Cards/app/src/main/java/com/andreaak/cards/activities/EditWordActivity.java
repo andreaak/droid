@@ -111,14 +111,13 @@ public class EditWordActivity extends HandleExceptionActivity implements View.On
 
     @Override
     public void onClick(View v) {
+
         int id = v.getId();
-        switch (id) {
-            case R.id.buttonSave:
-                onSaveClick();
-                break;
-            case R.id.buttonCancel:
-                onCancel();
-                break;
+
+        if(id == R.id.buttonSave)  {
+            onSaveClick();
+        } else if(id == R.id.buttonCancel)  {
+            onCancel();
         }
     }
 

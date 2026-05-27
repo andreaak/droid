@@ -155,16 +155,13 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id) {
-            case com.andreaak.cards.R.id.buttonOk:
-                onOkClick();
-                break;
-            case com.andreaak.cards.R.id.buttonCancel:
-                onCancel();
-                break;
-            case R.id.buttonClear:
-                onClear();
-                break;
+
+        if(id == R.id.buttonOk)  {
+            onOkClick();
+        } else if(id == R.id.buttonCancel)  {
+            onCancel();
+        } else if(id == R.id.buttonClear)  {
+            onClear();
         }
     }
 

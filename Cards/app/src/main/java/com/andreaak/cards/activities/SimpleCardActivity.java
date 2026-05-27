@@ -1,8 +1,8 @@
 package com.andreaak.cards.activities;
 
 import android.os.Bundle;
-import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v7.app.AppCompatDelegate;
+import android.view.VelocityTracker;
+import androidx.appcompat.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -159,23 +159,17 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id) {
-            case R.id.buttonSound:
-                playSound();
-                break;
 
-            case R.id.buttonExample:
-                showExample();
-                break;
-            case R.id.buttonDescription:
-                showDescription(v);
-                break;
-            case R.id.buttonGPTDescription:
-                showGPTDescription(v);
-                break;
-            case R.id.buttonPrap:
-                showPrap(v);
-                break;
+        if(id == R.id.buttonSound)  {
+            playSound();
+        } else if(id == R.id.buttonExample)  {
+            showExample();
+        } else if(id == R.id.buttonDescription)  {
+            showDescription(v);
+        } else if(id == R.id.buttonGPTDescription)  {
+            showGPTDescription(v);
+        } else if(id == R.id.buttonPrap)  {
+            showPrap(v);
         }
     }
 
@@ -421,7 +415,7 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
                 // Log velocity of pixels per second
                 // Best practice to use VelocityTrackerCompat where possible.
 
-                x = VelocityTrackerCompat.getXVelocity(mVelocityTracker, pointerId);
+                x = mVelocityTracker.getXVelocity(pointerId);
 
                 break;
             case MotionEvent.ACTION_UP:

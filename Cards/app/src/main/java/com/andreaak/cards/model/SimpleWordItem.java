@@ -1,6 +1,6 @@
 package com.andreaak.cards.model;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import com.andreaak.common.utils.Utils;
 

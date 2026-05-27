@@ -1,6 +1,6 @@
 package com.andreaak.cards.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.andreaak.common.utils.Utils;
 

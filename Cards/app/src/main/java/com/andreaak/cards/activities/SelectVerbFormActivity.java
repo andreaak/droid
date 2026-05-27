@@ -179,10 +179,9 @@ public class SelectVerbFormActivity extends HandleExceptionActivity implements V
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id) {
-            case R.id.buttonCancel:
-                onCancel();
-                break;
+
+        if(id == R.id.buttonCancel)  {
+            onCancel();
         }
     }
 

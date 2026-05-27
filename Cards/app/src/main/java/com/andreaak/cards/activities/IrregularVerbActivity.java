@@ -3,8 +3,8 @@ package com.andreaak.cards.activities;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v7.app.AppCompatDelegate;
+import android.view.VelocityTracker;
+import androidx.appcompat.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,17 +27,13 @@ import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
 import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
-import com.andreaak.common.google.GoogleDriveHelper;
-import com.andreaak.common.google.GoogleItem;
 import com.andreaak.common.google.IConnectGoogleDrive;
 import com.andreaak.common.google.IGoogleActivity;
 import com.andreaak.common.google.IOperationGoogleDrive;
-import com.andreaak.common.google.OperationGoogleDrive;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.Logger;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.AccountPicker;
+
 
 import java.io.File;
 import java.util.ArrayDeque;
@@ -79,8 +75,8 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
     private Menu menu;
 
-    private GoogleDriveHelper googleDriveHelper;
-    private OperationGoogleDrive operationGoogleDriveHelper;
+//    private GoogleDriveHelper googleDriveHelper;
+//    private OperationGoogleDrive operationGoogleDriveHelper;
 
     private VerbActivityHelper helper;
     private VerbSpinAdapter wordsAdapter;
@@ -118,8 +114,8 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
         texts = (LinearLayout) findViewById(R.id.texts);
 
-        googleDriveHelper = GoogleDriveHelper.getInstance();
-        googleDriveHelper.setActivity(this, this);
+//        googleDriveHelper = GoogleDriveHelper.getInstance();
+//        googleDriveHelper.setActivity(this, this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -135,12 +131,12 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
             setTitle(helper.lessonItem.getDisplayName());
         }
 
-        googleDriveHelper = GoogleDriveHelper.getInstance();
-        operationGoogleDriveHelper = new OperationGoogleDrive(
-                this,
-                getString(com.andreaak.cards.R.string.app_name),
-                com.andreaak.cards.R.id.groupGoogle);
-        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
+//        googleDriveHelper = GoogleDriveHelper.getInstance();
+//        operationGoogleDriveHelper = new OperationGoogleDrive(
+//                this,
+//                getString(com.andreaak.cards.R.string.app_name),
+//                com.andreaak.cards.R.id.groupGoogle);
+//        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
     }
 
     @Override
@@ -151,7 +147,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_card, menu);
-        menu.setGroupVisible(R.id.groupGoogle, googleDriveHelper.isConnected());
+        //menu.setGroupVisible(R.id.groupGoogle, googleDriveHelper.isConnected());
 
         MenuItem item = menu.findItem(R.id.spinnerWords);
         spinnerWords = (Spinner) item.getActionView();
@@ -177,7 +173,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         }
 
         this.menu = menu;
-        operationGoogleDriveHelper.setMenu(menu);
+        //operationGoogleDriveHelper.setMenu(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -275,9 +271,9 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
                     }
                 }
                 break;
-            case REQUEST_GOOGLE_CONNECT:
-                operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
-                break;
+//            case REQUEST_GOOGLE_CONNECT:
+//                operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
+//                break;
 
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -286,53 +282,66 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
 
-            case R.id.menu_plus: {
-                textBigger();
-                return true;
-            }
-            case R.id.menu_minus: {
-                textSmaller();
-                return true;
-            }
-//            case R.id.menu_edit_word: {
-//                //editWord();
+        int id = item.getItemId();
+        if(id == R.id.menu_plus)  {
+            textBigger();
+            return true;
+        } else if(id == R.id.menu_minus)  {
+            textSmaller();
+            return true;
+        } else if(id == R.id.menu_settings)  {
+            setSettings();
+            return true;
+        }
+
+//        switch (item.getItemId()) {
+//
+//            case R.id.menu_plus: {
+//                textBigger();
 //                return true;
 //            }
-            case R.id.menu_select_account: {
-                try {
-                    startActivityForResult(AccountPicker.newChooseAccountIntent(
-                            null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true,
-                            null, null, null, null),
-                            REQUEST_GOOGLE_CONNECT);
-                } catch (Exception ex) {
-                    Logger.d(Constants.LOG_TAG, "Google services problem");
-                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-                    ex.printStackTrace();
-                }
-                return true;
-            }
-            case R.id.menu_download: {
-                //uploadLesson();
-                return true;
-            }
-            case R.id.menu_settings: {
-                //setSettings();
-                return true;
-            }
-        }
+//            case R.id.menu_minus: {
+//                textSmaller();
+//                return true;
+//            }
+////            case R.id.menu_edit_word: {
+////                //editWord();
+////                return true;
+////            }
+//            case R.id.menu_select_account: {
+////                try {
+////                    startActivityForResult(AccountPicker.newChooseAccountIntent(
+////                            null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true,
+////                            null, null, null, null),
+////                            REQUEST_GOOGLE_CONNECT);
+////                } catch (Exception ex) {
+////                    Logger.d(Constants.LOG_TAG, "Google services problem");
+////                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+////                    ex.printStackTrace();
+////                }
+//                return true;
+//            }
+//            case R.id.menu_download: {
+//                //uploadLesson();
+//                return true;
+//            }
+//            case R.id.menu_settings: {
+//                //setSettings();
+//                return true;
+//            }
+//        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id) {
-            case R.id.buttonSound:
-                playSound();
-                break;
+
+        if(id == R.id.buttonSound)  {
+            playSound();
         }
+
     }
 
     private void textSmaller() {
@@ -487,7 +496,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
                 // Log velocity of pixels per second
                 // Best practice to use VelocityTrackerCompat where possible.
 
-                x = VelocityTrackerCompat.getXVelocity(mVelocityTracker, pointerId);
+                x = mVelocityTracker.getXVelocity(pointerId);
 
                 break;
             case MotionEvent.ACTION_UP:
@@ -537,23 +546,23 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
             @Override
             protected Exception doInBackground(Void... params) {
-                try {
-                    GoogleItem directory = googleDriveHelper.searchFolder("root", AppConfigs.getInstance().GoogleDir);
-                    if (directory != null) {
-                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
-                                helper.lessonItem.getFileName(), null);
-                        for (GoogleItem file : findFiles) {
-                            googleDriveHelper.update(file.getId(), null, null, null, new File(helper.lessonItem.getPath()));
-                            break;
-                        }
-                    }
-                    publishProgress("Upload Completed");
-                    isDownload[0] = true;
-                } catch (Exception ex) {
-                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-                    ex.printStackTrace();
-                    return ex;
-                }
+//                try {
+//                    GoogleItem directory = googleDriveHelper.searchFolder("root", AppConfigs.getInstance().GoogleDir);
+//                    if (directory != null) {
+//                        ArrayList<GoogleItem> findFiles = googleDriveHelper.search(directory.getId(),
+//                                helper.lessonItem.getFileName(), null);
+//                        for (GoogleItem file : findFiles) {
+//                            googleDriveHelper.update(file.getId(), null, null, null, new File(helper.lessonItem.getPath()));
+//                            break;
+//                        }
+//                    }
+//                    publishProgress("Upload Completed");
+//                    isDownload[0] = true;
+//                } catch (Exception ex) {
+//                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
+//                    ex.printStackTrace();
+//                    return ex;
+//                }
                 return null;
             }
 

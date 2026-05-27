@@ -16,7 +16,6 @@ import com.andreaak.cards.model.WordType;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.google.EmailHolder;
-import com.andreaak.common.google.GoogleDriveHelper;
 import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.FileLogger;
 import com.andreaak.common.utils.logger.ILogger;
@@ -27,7 +26,7 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
     private static final int REQUEST_PREFERENCES = 4;
 
-    private GoogleDriveHelper googleDriveHelper;
+    //private GoogleDriveHelper googleDriveHelper;
 
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
     private boolean isPrefChanged;
@@ -74,11 +73,11 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
     }
 
     private void onRestoreNonConfigurationInstance() {
-        googleDriveHelper = (GoogleDriveHelper) getLastNonConfigurationInstance();
-        if (googleDriveHelper == null) {
+//        googleDriveHelper = (GoogleDriveHelper) getLastNonConfigurationInstance();
+//        if (googleDriveHelper == null) {
             SharedPreferencesHelper.initInstance(this);
-            GoogleDriveHelper.initInstance(new EmailHolder());
-            googleDriveHelper = GoogleDriveHelper.getInstance();
+//            GoogleDriveHelper.initInstance(new EmailHolder());
+//            googleDriveHelper = GoogleDriveHelper.getInstance();
             Utils.init(this);
             AppConfigs.getInstance().init(this);
             AppConfigs.getInstance().read();
@@ -92,13 +91,13 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
             SharedPreferencesHelper.getInstance().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(prefListener);
 
-        }
+       // }
     }
 
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-        return googleDriveHelper;
-    }
+//    @Override
+//    public Object onRetainNonConfigurationInstance() {
+//        return googleDriveHelper;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -108,49 +107,42 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case com.andreaak.cards.R.id.menu_exit: {
-                finish();
-                return true;
-            }
-            case com.andreaak.cards.R.id.menu_settings: {
-                isPrefChanged = false;
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivityForResult(intent, REQUEST_PREFERENCES);
-                return true;
-            }
+
+        int id = item.getItemId();
+
+        if(id == R.id.menu_exit)  {
+            finish();
+            return true;
+        } else if(id == R.id.menu_settings)  {
+            isPrefChanged = false;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, REQUEST_PREFERENCES);
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id) {
-            case R.id.buttonOpenCards:
-                chooseLesson();
-                break;
-            case R.id.buttonOpenVerbs:
-                chooseVerbs();
-                break;
-            case R.id.buttonOpenVerbCards:
-                chooseIrregularVerbs();
-                break;
-            case R.id.buttonOpenGrammar:
-                openGrammar();
-                break;
-            case R.id.buttonOpenVerbForm:
-                openVerbForm();
-                break;
-            case R.id.buttonSearchLesson:
-                searchLesson();
-                break;
-            case R.id.buttonSearchVerb:
-                searchVerb();
-                break;
-            case R.id.buttonSearchAll:
-                searchAll();
-                break;
+
+        if(id == R.id.buttonOpenCards)  {
+            chooseLesson();
+        } else if(id == R.id.buttonOpenVerbs)  {
+            chooseVerbs();
+        } else if(id == R.id.buttonOpenVerbCards)  {
+            chooseIrregularVerbs();
+        } else if(id == R.id.buttonOpenGrammar)  {
+            openGrammar();
+        } else if(id == R.id.buttonOpenVerbForm)  {
+            openVerbForm();
+        } else if(id == R.id.buttonSearchLesson)  {
+            searchLesson();
+        } else if(id == R.id.buttonSearchVerb)  {
+            searchVerb();
+        } else if(id == R.id.buttonSearchAll)  {
+            searchAll();
         }
     }
 

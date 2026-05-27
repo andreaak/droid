@@ -1,7 +1,7 @@
 package com.andreaak.common.activitiesShared;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.logger.Logger;

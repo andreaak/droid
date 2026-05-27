@@ -1,10 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andreaak.common">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application
-        android:allowBackup="true"
-        android:supportsRtl="true">
-
-    </application>
+<application
+    android:allowBackup="true"
+    android:supportsRtl="true" />
 
 </manifest>

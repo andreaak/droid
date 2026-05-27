@@ -2,8 +2,7 @@ package com.andreaak.cards.activities;
 
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v7.app.AppCompatDelegate;
+import android.view.VelocityTracker;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -11,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import androidx.appcompat.app.AppCompatDelegate;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -33,11 +33,7 @@ import com.andreaak.cards.utils.MediaPlayerHelper;
 import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
-import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
-import com.andreaak.common.utils.logger.Logger;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.AccountPicker;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -286,50 +282,32 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements /*
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
 
-            case com.andreaak.cards.R.id.menu_plus: {
-                textBigger();
-                return true;
-            }
-            case com.andreaak.cards.R.id.menu_minus: {
-                textSmaller();
-                return true;
-            }
-            case R.id.menu_sort: {
-                sortSpinner();
-                return true;
-            }
-            case R.id.menu_restore: {
-                clearWords();
-                return true;
-            }
-            case R.id.menu_createFile: {
-                createFile();
-                return true;
-            }
-            case R.id.menu_addItemToFile: {
-                addItemToFile();
-                return true;
-            }
-            case R.id.menu_closeFile: {
-                closeFile();
-                return true;
-            }
-//            case com.andreaak.cards.R.id.menu_select_account: {
-//                try {
-//                    startActivityForResult(AccountPicker.newChooseAccountIntent(
-//                            null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true,
-//                            null, null, null, null),
-//                            REQUEST_GOOGLE_CONNECT);
-//                } catch (Exception ex) {
-//                    Logger.d(Constants.LOG_TAG, "Google services problem");
-//                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-//                    ex.printStackTrace();
-//                }
-//                return true;
-//            }
+        int id = item.getItemId();
+
+        if(id == R.id.menu_plus)  {
+            textBigger();
+            return true;
+        } else if(id == R.id.menu_minus)  {
+            textSmaller();
+            return true;
+        }else if(id == R.id.menu_sort)  {
+            sortSpinner();
+            return true;
+        }else if(id == R.id.menu_restore)  {
+            clearWords();
+            return true;
+        }else if(id == R.id.menu_createFile)  {
+            createFile();
+            return true;
+        }else if(id == R.id.menu_addItemToFile)  {
+            addItemToFile();
+            return true;
+        }else if(id == R.id.menu_closeFile)  {
+            closeFile();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -452,31 +430,23 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements /*
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id) {
-            case R.id.buttonToggle:
-                toggle();
-                break;
-            case R.id.buttonSound:
-                playSound();
-                break;
-            case R.id.buttonStudy:
-                showStudy();
-                break;
-            case R.id.buttonExample:
-                showExample();
-                break;
-            case R.id.buttonDescription:
-                showDescription(v);
-                break;
-            case R.id.buttonGPTDescription:
-                showGPTDescription(v);
-                break;
-            case R.id.buttonPrap:
-                showPrap(v);
-                break;
-            case R.id.buttonRemove:
-                removeWord(v);
-                break;
+
+        if(id == R.id.buttonToggle)  {
+            toggle();
+        } else if(id == R.id.buttonSound)  {
+            playSound();
+        } else if(id == R.id.buttonStudy)  {
+            showStudy();
+        } else if(id == R.id.buttonExample)  {
+            showExample();
+        } else if(id == R.id.buttonDescription)  {
+            showDescription(v);
+        } else if(id == R.id.buttonGPTDescription)  {
+            showGPTDescription(v);
+        } else if(id == R.id.buttonPrap)  {
+            showPrap(v);
+        } else if(id == R.id.buttonRemove)  {
+            removeWord(v);
         }
     }
 
@@ -809,7 +779,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements /*
                 // Log velocity of pixels per second
                 // Best practice to use VelocityTrackerCompat where possible.
 
-                x = VelocityTrackerCompat.getXVelocity(mVelocityTracker, pointerId);
+                x = mVelocityTracker.getXVelocity(pointerId);
 
                 break;
             case MotionEvent.ACTION_UP:

@@ -1,9 +1,7 @@
 package com.andreaak.common.fileSystemItems;
 
 import android.os.Environment;
-import android.support.v4.content.ContextCompat;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

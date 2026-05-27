@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andreaak.cards">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".CardsApplication"
@@ -15,28 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- Home -->
-        <!-- <meta-data -->
-        <!-- android:name="com.google.android.geo.API_KEY" -->
-        <!-- android:value="650768443623-r99bdpuo4hr0bh7cslb4v25u6s1jbooe.apps.googleusercontent.com" /> -->
-
-        <!-- Home Note-->
-         <meta-data
-         android:name="com.google.android.geo.API_KEY"
-         android:value="650768443623-gf6m3e6fq6g3k65dhg7fq0s4od1akued.apps.googleusercontent.com" />
-
-        <!-- Work -->
-        <!--<meta-data-->
-            <!--android:name="com.google.android.geo.API_KEY"-->
-            <!--android:value="650768443623-nlhuqffv4l7a2k3el9tupriill7c8n1u.apps.googleusercontent.com" />-->
-
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
         <activity
             android:name=".activities.MainActivity"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,140 +28,182 @@
         <activity
             android:name=".activities.LessonChooseActivity"
             android:label="@string/select_lesson"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
+
             <action android:name="com.andreaak.cards.activities.LessonChooseActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.CardActivity"
             android:label=""
-            android:theme="@style/Theme.AppCompat.DayNight">
+            android:theme="@style/Theme.AppCompat.DayNight"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.CardActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.SimpleCardActivity"
             android:label=""
-            android:theme="@style/Theme.AppCompat.DayNight">
+            android:theme="@style/Theme.AppCompat.DayNight"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.SimpleCardActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.CardHtmlActivity"
             android:label=""
-            android:theme="@style/Theme.AppCompat.DayNight">
+            android:theme="@style/Theme.AppCompat.DayNight"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.CardHtmlActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.SelectLessonAndLanguageActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.SelectLessonAndLanguageActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.SelectVerbFormActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.SelectVerbFormActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/preferences"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.SettingsActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.EditWordActivity"
             android:label="@string/edit_word"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.EditWordActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.IrregularVerbActivity"
             android:label=""
-            android:theme="@style/Theme.AppCompat.DayNight">
+            android:theme="@style/Theme.AppCompat.DayNight"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.IrregularVerbActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.IrregularVerbChooseActivity"
             android:label="@string/select_lesson"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.IrregularVerbChooseActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.GrammarChooseActivity"
             android:label="@string/grammar"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.GrammarChooseActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.HtmlActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activities.HtmlActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
 
         <!-- Shared -->
         <activity
             android:name="com.andreaak.common.activitiesShared.FileChooserActivity"
             android:label="@string/select_file"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activitiesShared.FileChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name="com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity"
             android:label="@string/select_file"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activitiesShared.FileChooserWithButtonsActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name="com.andreaak.common.activitiesShared.DirectoryChooserActivity"
             android:label="@string/select_directory"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activitiesShared.DirectoryChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
-        </activity>
-        <activity
-            android:name="com.andreaak.common.activitiesShared.GoogleFilesChooserActivity"
-            android:label="@string/select_google_file"
-            android:theme="@android:style/Theme.Holo">
-            <action android:name="com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".activities.SearchActivity"
             android:label="@string/select_google_file"
-            android:theme="@android:style/Theme.Holo">
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
             <action android:name="com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
     </application>
