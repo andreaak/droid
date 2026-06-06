@@ -21,6 +21,7 @@
     <string name="select_lesson">Select lesson</string>
     <string name="open_lesson">Open lesson</string>
     <string name="open_verb">Verb Familie</string>
+    <string name="open_study">Open Study</string>
     <string name="open_search_lesson">Search lesson</string>
     <string name="open_search_verb">Search verb</string>
     <string name="open_search_all">Search all</string>
@@ -30,6 +31,7 @@
     <string name="edit_word">Edit word</string>
     <string name="preferences">Preferences</string>
     <string name="select_file">Select file</string>
+    <string name="select_files">Select files</string>
     <string name="select_directory">Select directory</string>
     <string name="select_google_file">Select Google file</string>
     <string name="irregular_verbs_en">Irregular verbs</string>
@@ -41,7 +43,10 @@
     <string name="open_form">Verb form</string>
     <string name="sort">Sort</string>
     <string name="restore">Restore</string>
-    <string name="createFile">Create File</string>
-    <string name="addItem">Add Item</string>
-    <string name="closeFile">Close File</string>
+    <string name="create_file">Create File</string>
+    <string name="add_item">Add Item</string>
+    <string name="open_last_file">Open Last File</string>
+    <string name="combine_files">Combine files</string>
+    <string name="google_drive_lessons">Download lessons</string>
+    <string name="google_drive_verbs">Download verbs</string>
 </resources>

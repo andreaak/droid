@@ -13,22 +13,15 @@ import com.andreaak.cards.activities.helpers.FileArrayAdapter;
 import com.andreaak.cards.activities.helpers.FileHelper;
 import com.andreaak.cards.activities.helpers.FileItem;
 import com.andreaak.cards.activities.helpers.VerbActivityHelper;
-import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.VerbLessonItem;
-import com.andreaak.cards.predicates.IrregularVerbEnFileNamePredicate;
 import com.andreaak.cards.utils.XmlParser;
 
 import com.andreaak.common.fileSystemItems.ItemType;
 
-import com.andreaak.common.google.IGoogleActivity;
-
-import com.andreaak.common.utils.Constants;
-import com.andreaak.common.utils.logger.Logger;
-
 
 import java.util.List;
 
-public class IrregularVerbChooseActivity extends ListActivity implements IGoogleActivity {
+public class IrregularVerbChooseActivity extends ListActivity {
 
     //in
     public static final String PATH = "path";
@@ -149,29 +142,5 @@ public class IrregularVerbChooseActivity extends ListActivity implements IGoogle
         Intent intent = new Intent(this, IrregularVerbActivity.class);
         intent.putExtra(CardActivity.HELPER, helper);
         startActivity(intent);
-    }
-
-    private void chooseFilesForDownload() {
-//        Intent intent = new Intent(this, GoogleFilesChooserActivity.class);
-//        intent.putExtra(GoogleFilesChooserActivity.PREDICATE, new IrregularVerbEnFileNamePredicate());
-//        intent.putExtra(GoogleFilesChooserActivity.TITLE, getString(R.string.select_lesson));
-//        intent.putExtra(GoogleFilesChooserActivity.GOOGLE_DRIVE_PATH, AppConfigs.getInstance().getRemoteIrregularVerbDir());
-//        intent.putExtra(GoogleFilesChooserActivity.DOWNLOAD_TO_PATH_INITIAL, AppConfigs.getInstance().getIrregularVerbDir());
-//        startActivityForResult(intent, REQUEST_GOOGLE_FILES_CHOOSER);
-    }
-
-//    private void downloadFromGoogleDrive(final GoogleItems items, final String path) {
-//        if (items.getItems().length == 0) {
-//            return;
-//        }
-//
-//        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false);
-//
-//        googleDriveHelper.saveFiles(items, path);
-//    }
-
-    @Override
-    public void onFinished() {
-        fill(fileHelper.getCurrentPath());
     }
 }

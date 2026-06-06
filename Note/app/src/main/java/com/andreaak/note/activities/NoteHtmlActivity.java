@@ -1,7 +1,8 @@
 package com.andreaak.note.activities;
 
+import static com.andreaak.common.utils.Utils.getSeparatedText;
+
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,8 +17,6 @@ import com.andreaak.note.dataBase.EntityHelper;
 import com.andreaak.note.dataBase.EntityItem;
 
 import java.util.List;
-
-import static com.andreaak.common.utils.Utils.getSeparatedText;
 
 public class NoteHtmlActivity extends Activity {
 

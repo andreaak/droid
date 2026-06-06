@@ -1,5 +1,7 @@
 package com.andreaak.cards.utils;
 
+import androidx.annotation.Nullable;
+
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.DeVerbItem;
 import com.andreaak.cards.model.LessonItem;
@@ -10,6 +12,7 @@ import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.model.VerbLessonItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.Logger;
 
 import org.w3c.dom.Document;
@@ -24,7 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,18 +34,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class XmlParser {
 
@@ -133,41 +132,6 @@ public class XmlParser {
         }
         return handler.result;
     }
-//    public static ArrayList<LessonItem> parseLessons(String path, String prefix) {
-//
-//        ArrayList<LessonItem> lessons = new ArrayList<>();
-//        File directory = new File(path);
-//        File[] files = directory.listFiles(new FilenameFilter() {
-//            @Override
-//            public boolean accept(File file, String s) {
-//                return s.startsWith(AppConfigs.getInstance().LessonsPrefix);
-//            }
-//        });
-//
-//        for (File lessonFile : files) {
-//            try {
-//
-//                LessonItem lesson = new LessonItem(lessonFile, prefix);
-//
-//                InputSource input = new InputSource(new FileReader(lessonFile));
-//                Document doc = getXMLDocument(input);
-//                NodeList words = doc.getElementsByTagName("word");
-//
-//                for (int i = 0; i < words.getLength(); i++) {
-//                    Node node = words.item(i);
-//                    WordItem word = parseWord(node, i);
-//                    lesson.add(word);
-//                }
-//                if (!lesson.getWords().isEmpty()) {
-//                    lessons.add(lesson);
-//                }
-//            } catch (FileNotFoundException e) {
-//                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-//                e.printStackTrace();
-//            }
-//        }
-//        return lessons;
-//    }
 
     private static WordItem parseWord(Node node, int id) {
 
@@ -179,8 +143,11 @@ public class XmlParser {
             short type = item.getNodeType();
             if (type == 1) {
                 String nodeTag = item.getNodeName();
-                String value = item.getFirstChild().getNodeValue();
-                word.addItem(nodeTag, value);
+                Node child = item.getFirstChild();
+                if(child != null) {
+                    String value = item.getFirstChild().getNodeValue();
+                    word.addItem(nodeTag, value);
+                }
             }
         }
         return word;
@@ -206,43 +173,6 @@ public class XmlParser {
         }
         return verbFormItem;
     }
-
-    //    public static void main(String file) throws Exception {
-//        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-//        InputStream in = new FileInputStream(file);
-//        XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);
-//        streamReader.nextTag(); // Advance to "book" element
-//        streamReader.nextTag(); // Advance to "person" element
-//
-//        int persons = 0;
-//        while (streamReader.hasNext()) {
-//            if (streamReader.isStartElement()) {
-//                switch (streamReader.getLocalName()) {
-//                    case "first": {
-//                        System.out.print("First Name : ");
-//                        System.out.println(streamReader.getElementText());
-//                        break;
-//                    }
-//                    case "last": {
-//                        System.out.print("Last Name : ");
-//                        System.out.println(streamReader.getElementText());
-//                        break;
-//                    }
-//                    case "age": {
-//                        System.out.print("Age : ");
-//                        System.out.println(streamReader.getElementText());
-//                        break;
-//                    }
-//                    case "person" : {
-//                        persons ++;
-//                    }
-//                }
-//            }
-//            streamReader.next();
-//        }
-//        System.out.print(persons);
-//        System.out.println(" persons");
-//    }
 
     private static Document getXMLDocument(File file){
         try {
@@ -305,108 +235,15 @@ public class XmlParser {
         return verb;
     }
 
-//    public static boolean updateXML(String lessonFile, String lang1, String value1,
-//                                    String lang2, String value2, HashMap<String, String> map) {
-//        try {
-//            InputSource input = new InputSource(new FileReader(lessonFile));
-//            Document doc = getXMLDocument(lessonFile);
-//            NodeList words = doc.getElementsByTagName("word");
-//            for (int i = 0; i < words.getLength(); i++) {
-//                Node word = words.item(i);
-//                if (!isEditWord(word, lang1, value1, lang2, value2)) {
-//                    continue;
-//                }
-//                NodeList items = word.getChildNodes();
-//                for (int j = 0; j < items.getLength(); j++) {
-//                    Node item = items.item(j);
-//                    short type = item.getNodeType();
-//                    if (type == 1) {
-//                        String language = item.getNodeName();
-//                        if (map.containsKey(language)) {
-//                            item.getFirstChild().setNodeValue(map.get(language));
-//                        }
-//                    }
-//                }
-//            }
-//
-//            return writeXmlFile(doc, lessonFile);
-//        } catch (FileNotFoundException e) {
-//            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
+    public static final String FileKey = "file";
 
-    private static boolean isEditWord(Node word, String lang1, String value1,
-                                      String lang2, String value2) {
+    public static void createFile() {
 
-        boolean isValue1 = false;
-        boolean isValue2 = false;
-
-        NodeList items = word.getChildNodes();
-        for (int j = 0; j < items.getLength(); j++) {
-            Node item = items.item(j);
-            short type = item.getNodeType();
-            if (type == 1) {
-                String language = item.getNodeName();
-                String value = item.getFirstChild().getNodeValue();
-                if (language.equals(lang1) && value.equals(value1)) {
-                    isValue1 = true;
-                }
-                if (language.equals(lang2) && value.equals(value2)) {
-                    isValue2 = true;
-                }
-            }
-        }
-        return isValue1 && isValue2;
-    }
-
-    public static boolean writeXmlFile(Document doc, String lessonFile) {
-        try {
-            // Prepare the DOM document for writing
-            Source source = new DOMSource(doc);
-
-            File file = new File(lessonFile);
-
-            Result result = new StreamResult(file);
-
-            // Write the DOM document to the file
-            Transformer xformer = TransformerFactory.newInstance().newTransformer();
-            xformer.transform(source, result);
-            return true;
-        } catch (TransformerConfigurationException e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        } catch (TransformerException e) {
-            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static String currentFile = "";
-
-    public static void createFile(String directory) {
-
-        directory = AppConfigs.getInstance().getStudyDir();
+        String directory = AppConfigs.getInstance().getStudyDir();
         try {
 
-            // Создаем папку если нет
-            File dir = new File(directory);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            // Текущая дата
-            String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            int nextNumber = getNextNumber(dir, date);
-
-            // Форматируем как 01, 02, 03...
-            String sequence = String.format("%02d", nextNumber);
-            // Имя файла
-            String fileName = date + "_" + sequence + ".xml";
-
-            File xmlFile = new File(dir, fileName);
+            String fileName = getNextFilePath(directory, false);
+            File xmlFile = new File(directory, fileName);
 
             XmlDelegate delegate = (Document document) -> {
                 Element root = document.createElement("words");
@@ -415,7 +252,7 @@ public class XmlParser {
 
             createXml(xmlFile, delegate);
 
-            currentFile = fileName;
+            Cache.getInstance().add(FileKey, fileName);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -423,6 +260,7 @@ public class XmlParser {
     }
 
     private static void createXml(File xmlFile, XmlDelegate delegate) throws ParserConfigurationException, TransformerException {
+
         // Создаем XML
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -445,7 +283,71 @@ public class XmlParser {
         transformer.transform(source, result);
     }
 
-    private static int getNextNumber(File dir, String date) {
+    public static void mergeXmlFiles(List<String> xmlFiles) {
+
+        try {
+            String directory = AppConfigs.getInstance().getStudyDir();
+            String fileName = getNextFilePath(directory, true);
+            File outputFile = new File(directory, fileName);
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            DocumentBuilder builder =
+                    factory.newDocumentBuilder();
+
+            // Новый итоговый XML
+            Document resultDoc = builder.newDocument();
+
+            // Корневой элемент
+            Element root =
+                    resultDoc.createElement("words");
+
+            resultDoc.appendChild(root);
+
+            // Проходим по всем XML
+            for (String xmlFile : xmlFiles) {
+
+                File file = new File(xmlFile);
+                Document doc = builder.parse(file);
+
+                NodeList words =
+                        doc.getElementsByTagName("word");
+
+                for (int i = 0; i < words.getLength(); i++) {
+
+                    Node importedNode =
+                            resultDoc.importNode(
+                                    words.item(i),
+                                    true
+                            );
+
+                    root.appendChild(importedNode);
+                }
+            }
+
+            // Сохранение
+            TransformerFactory transformerFactory =
+                    TransformerFactory.newInstance();
+
+            Transformer transformer =
+                    transformerFactory.newTransformer();
+
+            transformer.setOutputProperty(
+                    OutputKeys.INDENT,
+                    "yes"
+            );
+
+            transformer.transform(
+                    new DOMSource(resultDoc),
+                    new StreamResult(outputFile)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static int getLastNumber(File dir, String date) {
         // Ищем следующий порядковый номер
         int maxNumber = 0;
 
@@ -458,7 +360,7 @@ public class XmlParser {
                     try {
 
                         String numberPart =
-                                name.substring(
+                                name.replace("combined_", "").substring(
                                         date.length() + 1,
                                         name.length() - 4
                                 );
@@ -475,7 +377,162 @@ public class XmlParser {
         }
 
         // Следующий номер
-        return maxNumber + 1;
+        return maxNumber;
+    }
+
+    public static boolean addItemToFile(WordItem wordItem, String primaryLang, String secondaryLang) {
+
+
+        try {
+
+            String directory = AppConfigs.getInstance().getStudyDir();
+            String fileName = Cache.getInstance().getItem(FileKey);
+            if(Utils.isEmpty(fileName)) {
+                return false;
+            }
+
+            File file = new File(directory, fileName);
+
+            // Загрузка XML
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(file);
+
+            // Корневой элемент <words>
+            Element root = doc.getDocumentElement();
+
+            // Создаем <word>
+            Element word = doc.createElement("word");
+
+            // <ru>
+            Element ru = doc.createElement(primaryLang);
+            ru.setTextContent(wordItem.getValue(primaryLang));
+            word.appendChild(ru);
+
+            // <de>
+            Element de = doc.createElement(secondaryLang);
+            de.setTextContent(wordItem.getValue(secondaryLang));
+            word.appendChild(de);
+
+            // <de_wordclass>
+            Element wordClass = doc.createElement( String.format("%s_wordclass", secondaryLang));
+            wordClass.setTextContent(wordItem.getWordClass());
+            word.appendChild(wordClass);
+
+            // <de_level>
+            Element level = doc.createElement(String.format("%s_level", secondaryLang));
+            level.setTextContent(wordItem.getLevel(secondaryLang));
+            word.appendChild(level);
+
+            // <de_description>
+            Element description = doc.createElement(String.format("%s_description", secondaryLang));
+            description.setTextContent(wordItem.getDescription(secondaryLang));
+            word.appendChild(description);
+
+            // <de_gptdescription>
+            Element gpt = doc.createElement(String.format("%s_gptdescription", secondaryLang));
+            gpt.setTextContent(wordItem.getGPTDescription(secondaryLang));
+            word.appendChild(gpt);
+
+            Element example = doc.createElement(String.format("%s_example", secondaryLang));
+            example.setTextContent(wordItem.getExample(secondaryLang));
+            word.appendChild(example);
+
+            Element tr = doc.createElement(String.format("%s_tr", secondaryLang));
+            tr.setTextContent(wordItem.getTranscription(secondaryLang));
+            word.appendChild(tr);
+
+            Element info = doc.createElement(String.format("%s_info", secondaryLang));
+            info.setTextContent(wordItem.getInfo(secondaryLang));
+            word.appendChild(info);
+
+            Element prap = doc.createElement(String.format("%s_prap", secondaryLang));
+            prap.setTextContent(wordItem.getPrap(secondaryLang));
+            word.appendChild(prap);
+
+            // Добавляем <word> в <words>
+            root.appendChild(word);
+
+            // Сохраняем XML
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(
+                    "{http://xml.apache.org/xslt}indent-amount",
+                    "4"
+            );
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(file);
+
+            transformer.transform(source, result);
+
+            System.out.println("Новый word добавлен.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean openLastFile() {
+        String directory = AppConfigs.getInstance().getStudyDir();
+        try {
+
+            String fileName = getLastFilePath(directory);
+            if (fileName == null) {
+                return false;
+            }
+
+            Cache.getInstance().add(FileKey, fileName);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Nullable
+    private static String getLastFilePath(String directory) {
+        // Создаем папку если нет
+        File dir = new File(directory);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        // Текущая дата
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        int number = getLastNumber(dir, date);
+        if(number == 0) {
+            return null;
+        }
+        // Форматируем как 01, 02, 03...
+        String sequence = String.format("%02d", number);
+        // Имя файла
+        String fileName = date + "_" + sequence + ".xml";
+        return fileName;
+    }
+
+    @Nullable
+    private static String getNextFilePath(String directory, boolean isCombined) {
+        // Создаем папку если нет
+        File dir = new File(directory);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        // Текущая дата
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        int number = getLastNumber(dir, date) + 1;
+
+        // Форматируем как 01, 02, 03...
+        String sequence = String.format("%02d", number);
+        // Имя файла
+        String fileName = date + "_" + (isCombined ? "combined_" : "") + sequence + ".xml";
+        return fileName;
     }
 }
 

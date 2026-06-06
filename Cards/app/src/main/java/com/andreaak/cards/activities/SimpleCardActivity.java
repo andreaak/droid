@@ -1,5 +1,6 @@
 package com.andreaak.cards.activities;
 
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.VelocityTracker;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -7,7 +8,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -19,8 +19,6 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
-import com.andreaak.cards.model.LessonItem;
-import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
@@ -184,15 +182,16 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         String info = word.getInfo(languageItem.getPrimaryLanguage());
         String level = word.getLevel(languageItem.getPrimaryLanguage());
         String text = combineText(combineText(transcription, info), level);
-        SetTranscriptionAndVisibility(textViewTrans1, text);
+        setTranscriptionAndVisibility(textViewTrans1, text);
 
         wordText = word.getValue(languageItem.getSecondaryLanguage());
         SetWordAndVisibility(textViewWord2, wordText);
+        adoptFontSize(textViewWord2, wordText, 45, 25);
 
         transcription = word.getTranscription(languageItem.getSecondaryLanguage());
         info = word.getInfo(languageItem.getSecondaryLanguage());
         text = combineText(transcription, info);
-        SetTranscriptionAndVisibility(textViewTrans2, text);
+        setTranscriptionAndVisibility(textViewTrans2, text);
 
         String example = word.getExample(languageItem.getPrimaryLanguage());
         if(Utils.isEmpty(example)) {
@@ -215,10 +214,10 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
 
         if(isExample && !Utils.isEmpty(example)) {
             textViewExample.setGravity(Gravity.CENTER);
-            SetTranscriptionAndVisibility(textViewExample, example);
+            setTranscriptionAndVisibility(textViewExample, example);
         } else if(isDescription && !Utils.isEmpty(description)) {
             textViewExample.setGravity(Gravity.LEFT);
-            SetTranscriptionAndVisibility(textViewExample, description);
+            setTranscriptionAndVisibility(textViewExample, description);
         } else {
             setVisibility(textViewExample, View.GONE);
         }
@@ -228,6 +227,46 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         flag = isVisible ? View.VISIBLE : View.INVISIBLE;
         buttonSound.setVisibility(flag);
     }
+
+    private void adoptFontSize(TextView textView, String text, float minFontSize, float defaultFontSize) {
+        String[] items = text.split("\n");
+        String textLine = "";
+        for(String item : items) {
+            if(textLine.length() < item.length()) {
+                textLine = item;
+            }
+        }
+
+        int displayWidth = textView.getMeasuredWidth();
+        if(displayWidth <= 0) {
+            return;
+        }
+
+        float fontSizeOld = textView.getTextSize();
+        float density = textView.getResources().getDisplayMetrics().density;
+        defaultFontSize = defaultFontSize * density;
+        Paint paint = new Paint();
+        paint.setTextSize(defaultFontSize); // размер в пикселях
+        float widthPx = paint.measureText(textLine);
+        if(widthPx > displayWidth) {
+            float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize);
+            setViewTextSize(textView, fontSize);
+            setViewGravity(textView, false);
+        } else {
+            setViewTextSize(textView, defaultFontSize);
+            setViewGravity(textView, true);
+        }
+    }
+    private void setViewGravity(TextView textView, boolean isCenter) {
+        if(isCenter){
+            textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        } else {
+            textView.setGravity(Gravity.LEFT);
+        }
+        textView.setPadding(0, 0, 0, 0);
+    }
+
+
 
     private String combineText(String first, String second) {
         return first == null ? second : second == null ? first : first + "  " + second;
@@ -249,7 +288,7 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         setVisibility(textView, View.VISIBLE);
     }
 
-    private void SetTranscriptionAndVisibility(TextView textView, String transcription) {
+    private void setTranscriptionAndVisibility(TextView textView, String transcription) {
         if (!Utils.isEmpty(transcription)) {
             textView.setText(transcription);
             setVisibility(textView, View.VISIBLE);

@@ -9,13 +9,9 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.andreaak.cards.R;
-import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.configs.AppConfigs;
-import com.andreaak.cards.model.LessonItem;
-import com.andreaak.cards.model.WordType;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
-import com.andreaak.common.google.EmailHolder;
 import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.FileLogger;
 import com.andreaak.common.utils.logger.ILogger;
@@ -26,13 +22,12 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
     private static final int REQUEST_PREFERENCES = 4;
 
-    //private GoogleDriveHelper googleDriveHelper;
-
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
     private boolean isPrefChanged;
 
     private ImageButton buttonOpenCards;
     private ImageButton buttonOpenVerbs;
+    private ImageButton buttonOpenStudy;
     private ImageButton buttonOpenVerbCards;
     private ImageButton buttonOpenGrammar;
     private ImageButton buttonOpenVerbForm;
@@ -50,6 +45,9 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
         buttonOpenVerbs = (ImageButton) findViewById(R.id.buttonOpenVerbs);
         buttonOpenVerbs.setOnClickListener(this);
+
+        buttonOpenStudy = (ImageButton) findViewById(R.id.buttonOpenStudy);
+        buttonOpenStudy.setOnClickListener(this);
 
         buttonOpenVerbCards = (ImageButton) findViewById(R.id.buttonOpenVerbCards);
         buttonOpenVerbCards.setOnClickListener(this);
@@ -69,15 +67,15 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
         buttonSearchAll = (ImageButton) findViewById(R.id.buttonSearchAll);
         buttonSearchAll.setOnClickListener(this);
 
+        ((ImageButton) findViewById(R.id.buttonGDLessons)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonGDVerbs)).setOnClickListener(this);
+
         onRestoreNonConfigurationInstance();
     }
 
     private void onRestoreNonConfigurationInstance() {
-//        googleDriveHelper = (GoogleDriveHelper) getLastNonConfigurationInstance();
-//        if (googleDriveHelper == null) {
+
             SharedPreferencesHelper.initInstance(this);
-//            GoogleDriveHelper.initInstance(new EmailHolder());
-//            googleDriveHelper = GoogleDriveHelper.getInstance();
             Utils.init(this);
             AppConfigs.getInstance().init(this);
             AppConfigs.getInstance().read();
@@ -90,14 +88,7 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
             SharedPreferencesHelper.getInstance().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(prefListener);
-
-       // }
     }
-
-//    @Override
-//    public Object onRetainNonConfigurationInstance() {
-//        return googleDriveHelper;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -131,6 +122,8 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
             chooseLesson();
         } else if(id == R.id.buttonOpenVerbs)  {
             chooseVerbs();
+        }  else if(id == R.id.buttonOpenStudy)  {
+            chooseStudy();
         } else if(id == R.id.buttonOpenVerbCards)  {
             chooseIrregularVerbs();
         } else if(id == R.id.buttonOpenGrammar)  {
@@ -143,6 +136,10 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
             searchVerb();
         } else if(id == R.id.buttonSearchAll)  {
             searchAll();
+        } else if(id == R.id.buttonGDLessons)  {
+            googleDriveLessons();
+        } else if(id == R.id.buttonGDVerbs)  {
+            googleDriveVerbs();
         }
     }
 
@@ -155,14 +152,6 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
                     setLogger();
                 }
                 break;
-//            case LessonChooseActivity.REQUEST_LESSON_AND_LANGUAGE_CHOOSER:
-//                if (resultCode == RESULT_OK) {
-//                    LessonItem lessonItem = (LessonItem) data.getSerializableExtra(CardActivity.HELPER);
-//                    if (lessonItem.isContainsWords()) {
-//                        openCard(lessonItem);
-//                    }
-//                }
-//                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -181,26 +170,14 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
         Intent intent = new Intent(this, SelectLessonAndLanguageActivity.class);
         intent.putExtra(SelectLessonAndLanguageActivity.DIRECTORY, AppConfigs.getInstance().getVerbDir());
         intent.putExtra(SelectLessonAndLanguageActivity.PREFIX, AppConfigs.getInstance().VerbPrefix);
-        intent.putExtra(SelectLessonAndLanguageActivity.WORD_TYPE, WordType.Verb);
+        intent.putExtra(SelectLessonAndLanguageActivity.SORT_ITEMS, "");
         startActivityForResult(intent, LessonChooseActivity.REQUEST_LESSON_AND_LANGUAGE_CHOOSER);
     }
 
-//    private void openCard(LessonItem lessonItem) {
-//        CardActivityHelper helper = new CardActivityHelper();
-//        helper.lessonItem = lessonItem;
-//        helper.currentWord = helper.lessonItem.getLessonWords().get(0);
-//
-//        Intent intent;
-//        if(lessonItem.getFileName().contains("_html")) {
-//            intent = new Intent(this, CardHtmlActivity.class);
-//            intent.putExtra(CardHtmlActivity.HELPER, helper);
-//
-//        } else {
-//            intent = new Intent(this, CardActivity.class);
-//            intent.putExtra(CardActivity.HELPER, helper);
-//        }
-//        startActivity(intent);
-//    }
+    private void chooseStudy() {
+        Intent intent = new Intent(this, StudyChooseActivity.class);
+        startActivity(intent);
+    }
 
     private void chooseIrregularVerbs() {
         Intent intent = new Intent(this, IrregularVerbChooseActivity.class);
@@ -238,6 +215,20 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
         Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra(SearchActivity.PATH, AppConfigs.getInstance().getVerbDir() + "|" + AppConfigs.getInstance().getLessonsDir());
         intent.putExtra(SearchActivity.PREFIXES, AppConfigs.getInstance().VerbPrefix + "|" + AppConfigs.getInstance().LessonsPrefix);
+        startActivity(intent);
+    }
+
+    private void googleDriveLessons() {
+        Intent intent = new Intent(this, DriveActivity.class);
+        intent.putExtra(DriveActivity.PATH, AppConfigs.getInstance().getLessonsDir() );
+        intent.putExtra(DriveActivity.PREFIXES, AppConfigs.getInstance().LessonsPrefix);
+        startActivity(intent);
+    }
+
+    private void googleDriveVerbs() {
+        Intent intent = new Intent(this, DriveActivity.class);
+        intent.putExtra(DriveActivity.PATH, AppConfigs.getInstance().getVerbDir());
+        intent.putExtra(DriveActivity.PREFIXES, AppConfigs.getInstance().VerbPrefix);
         startActivity(intent);
     }
 }

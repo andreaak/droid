@@ -12,32 +12,19 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.FileArrayAdapter;
 import com.andreaak.cards.activities.helpers.FileHelper;
 import com.andreaak.cards.activities.helpers.FileItem;
-import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.fileSystemItems.ItemType;
-//import com.andreaak.common.google.GoogleDriveHelper;
-import com.andreaak.common.google.IGoogleActivity;
-//import com.andreaak.common.google.OperationGoogleDrive;
-//import com.andreaak.common.google.SyncHelper;
-import com.andreaak.common.utils.Constants;
-import com.andreaak.common.utils.logger.Logger;
-//import com.google.android.gms.auth.GoogleAuthUtil;
-//import com.google.android.gms.common.AccountPicker;
 
 import java.util.List;
 
-public class GrammarChooseActivity extends ListActivity implements IGoogleActivity {
+public class GrammarChooseActivity extends ListActivity {
 
     //in
     public static final String PATH = "path";
-
-    private static final int REQUEST_GOOGLE_CONNECT = 2;
 
     private FileArrayAdapter adapter;
     private FileHelper helper;
 
     private Menu menu;
-//    private GoogleDriveHelper googleDriveHelper;
-//    private OperationGoogleDrive operationGoogleDriveHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,13 +40,6 @@ public class GrammarChooseActivity extends ListActivity implements IGoogleActivi
         }
 
         fill(helper.getCurrentPath());
-
-//        googleDriveHelper = GoogleDriveHelper.getInstance();
-//        operationGoogleDriveHelper = new OperationGoogleDrive(
-//                this,
-//                getString(R.string.grammar),
-//                com.andreaak.cards.R.id.groupGoogle);
-//        googleDriveHelper.setActivity(this, operationGoogleDriveHelper);
     }
 
     @Override
@@ -85,21 +65,7 @@ public class GrammarChooseActivity extends ListActivity implements IGoogleActivi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-//            case com.andreaak.cards.R.id.menu_select_account: {
-////                try {
-////                    startActivityForResult(AccountPicker.newChooseAccountIntent(
-////                            null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null), REQUEST_GOOGLE_CONNECT);
-////                } catch (Exception ex) {
-////                    Logger.d(Constants.LOG_TAG, "Google services problem");
-////                    Logger.e(Constants.LOG_TAG, ex.getMessage(), ex);
-////                    ex.printStackTrace();
-////                }
-//                return true;
-//            }
-//            case com.andreaak.cards.R.id.menu_download: {
-//                downloadFiles();
-//                return true;
-//            }
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -107,16 +73,9 @@ public class GrammarChooseActivity extends ListActivity implements IGoogleActivi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-//            case REQUEST_GOOGLE_CONNECT:
-//                operationGoogleDriveHelper.connectGoogleDrive(data, this, googleDriveHelper);
-//                break;
+
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void downloadFiles() {
-//        new SyncHelper(AppConfigs.getInstance().getGrammarDir(), AppConfigs.getInstance().getRemoteGrammarDir(), operationGoogleDriveHelper)
-//                .process();
     }
 
     private void fill(String currentPath) {
@@ -143,10 +102,5 @@ public class GrammarChooseActivity extends ListActivity implements IGoogleActivi
         intent.putExtra(HtmlActivity.PATH, item.getPath());
         intent.putExtra(HtmlActivity.DESCRIPTION, item.getDescription());
         startActivity(intent);
-    }
-
-    @Override
-    public void onFinished() {
-        fill(helper.getCurrentPath());
     }
 }

@@ -15,7 +15,12 @@
         app:actionViewClass="android.widget.Spinner"
         android:background="#ff00"
         app:showAsAction="always" />
-
+    <item
+        android:id="@+id/menu_addItemToFile"
+        android:gravity="right"
+        android:icon="@drawable/plus"
+        app:showAsAction="ifRoom"
+        android:title="@string/add_item"></item>
 
     <item
         android:id="@+id/menu_sort"
@@ -28,20 +33,13 @@
         android:gravity="right"
         android:icon="@drawable/file"
         app:showAsAction="ifRoom"
-        android:title="@string/createFile"></item>
+        android:title="@string/create_file"></item>
     <item
-        android:id="@+id/menu_addItemToFile"
-        android:gravity="right"
-        android:icon="@drawable/plus"
-        app:showAsAction="ifRoom"
-        android:title="@string/addItem"></item>
-    <item
-        android:id="@+id/menu_closeFile"
+        android:id="@+id/menu_openLastFile"
         android:gravity="right"
         android:icon="@drawable/exit"
         app:showAsAction="ifRoom"
-        android:title="@string/closeFile"></item>
-
+        android:title="@string/open_last_file"></item>
     <item
         android:id="@+id/menu_plus"
         android:gravity="right"
@@ -60,26 +58,6 @@
         android:icon="@drawable/minus"
         app:showAsAction="ifRoom"
         android:title="@string/restore"></item>
-    <!--item
-        android:id="@+id/menu_edit_word"
-        android:gravity="right"
-        android:icon="@drawable/edit"
-        app:showAsAction="ifRoom"
-        android:title="@string/edit_word"></item>
-
-    <item
-        android:id="@+id/menu_select_account"
-        android:icon="@drawable/google"
-        android:showAsAction="ifRoom"
-        android:title="@string/select_account" />
-    <group android:id="@+id/groupGoogle">
-        <item
-            android:id="@+id/menu_upload"
-            android:icon="@drawable/ic_action_upload"
-            android:showAsAction="ifRoom"
-            android:title="@string/upload" />
-    </group-->
-
     <item
         android:id="@+id/menu_settings"
         android:gravity="right"

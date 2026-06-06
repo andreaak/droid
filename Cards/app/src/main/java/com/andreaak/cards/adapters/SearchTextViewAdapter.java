@@ -17,6 +17,8 @@ import java.util.Comparator;
 
 public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
 
+    private final Object lock =  new Object();
+
     private ArrayList<SimpleWordItem> items;
     private ArrayList<SimpleWordItem> itemsAll;
     private ArrayList<SimpleWordItem> suggestions;
@@ -66,12 +68,25 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
-            if (constraint != null) {
-                suggestions.clear();
-                String ct = Utils.normalizeForComparatorAndRemoveArtikles(constraint.toString());
-                for (SimpleWordItem item : itemsAll) {
-                    if (Utils.normalizeForComparatorAndRemoveArtikles(item.getValue(lang))
-                            .contains(ct)) {
+
+            synchronized (lock) {
+
+                if (constraint != null) {
+                    suggestions.clear();
+                    String ct = Utils.normalizeForComparatorAndRemoveArtikles(constraint.toString());
+                    for (SimpleWordItem item : itemsAll) {
+                        if (Utils.normalizeForComparatorAndRemoveArtikles(item.getValue(lang))
+                                .contains(ct)) {
+                            suggestions.add(item);
+                            if(suggestions.size() >= 100) {
+                                break;
+                            }
+                        }
+                    }
+
+                } else {
+                    suggestions.clear();
+                    for (SimpleWordItem item : itemsAll) {
                         suggestions.add(item);
                         if(suggestions.size() >= 100) {
                             break;
@@ -79,23 +94,16 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
                     }
                 }
 
-            } else {
-                suggestions.clear();
-                for (SimpleWordItem item : itemsAll) {
-                    suggestions.add(item);
-                    if(suggestions.size() >= 100) {
-                        break;
+                Collections.sort(suggestions, new Comparator<SimpleWordItem>() {
+                    @Override
+                    public int compare(SimpleWordItem a, SimpleWordItem b)
+                    {
+                        return a.getValue(lang).compareTo(b.getValue(lang));
                     }
-                }
+                });
+
             }
 
-            Collections.sort(suggestions, new Comparator<SimpleWordItem>() {
-                @Override
-                public int compare(SimpleWordItem a, SimpleWordItem b)
-                {
-                    return a.getValue(lang).compareTo(b.getValue(lang));
-                }
-            });
 
             filterResults.values = suggestions;
             filterResults.count = suggestions.size();

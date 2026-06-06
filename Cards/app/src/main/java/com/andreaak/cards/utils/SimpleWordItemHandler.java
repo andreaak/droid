@@ -1,8 +1,6 @@
 package com.andreaak.cards.utils;
 
 import com.andreaak.cards.model.SimpleWordItem;
-import com.andreaak.cards.model.WordItem;
-import com.andreaak.common.utils.Utils;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

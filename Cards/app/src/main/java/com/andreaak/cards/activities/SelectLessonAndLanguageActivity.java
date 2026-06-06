@@ -20,6 +20,7 @@ import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
+import com.andreaak.common.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
 
     public static final String DIRECTORY = "Directory";
     public static final String PREFIX = "Prefix";
-    public static final String WORD_TYPE = "WordType";
+    public static final String SORT_ITEMS = "Sort";
 
     private AutoCompleteTextView autoCompleteTextViewLessons;
     private Spinner spinnerLang;
@@ -75,7 +76,8 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
             helper = new SelectLessonAndLanguageHelper();
             String directory = getIntent().getStringExtra(DIRECTORY);
             String prefix = getIntent().getStringExtra(PREFIX);
-            helper.lessons = AppUtils.getLessons(directory, prefix, !AppConfigs.getInstance().VerbPrefix.equals(prefix));
+            boolean sortItems = !Utils.isEmpty(getIntent().getStringExtra(SORT_ITEMS));
+            helper.lessons = AppUtils.getLessons(directory, prefix, sortItems);
             if (helper.lessons.size() != 0) {
                 initializeLessonsSpinner(helper.lessons);
             }

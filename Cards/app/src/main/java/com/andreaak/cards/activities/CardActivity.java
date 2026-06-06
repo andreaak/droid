@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
+
 import androidx.appcompat.app.AppCompatDelegate;
 import android.view.View;
 import android.view.WindowManager;
@@ -28,6 +28,7 @@ import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
+import com.andreaak.cards.utils.Cache;
 import com.andreaak.cards.utils.FilesHelper;
 import com.andreaak.cards.utils.MediaPlayerHelper;
 import com.andreaak.cards.utils.XmlParser;
@@ -45,11 +46,8 @@ import java.util.TreeSet;
 import static com.andreaak.cards.utils.FilesHelper.getTempFilePath;
 import static com.andreaak.cards.utils.FilesHelper.getWordId;
 
-public class CardActivity extends HandleExceptionAppCompatActivity implements /*IConnectGoogleDrive,
-        IOperationGoogleDrive, IGoogleActivity,*/ View.OnClickListener {
+public class CardActivity extends HandleExceptionAppCompatActivity implements View.OnClickListener {
 
-    private static final int REQUEST_UPDATE_WORD = 1;
-    private static final int REQUEST_GOOGLE_CONNECT = 2;
     //in
     public static final String HELPER = "Helper";
     public static final String ALL = "All";
@@ -303,8 +301,8 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements /*
         }else if(id == R.id.menu_addItemToFile)  {
             addItemToFile();
             return true;
-        }else if(id == R.id.menu_closeFile)  {
-            closeFile();
+        }else if(id == R.id.menu_openLastFile)  {
+            openLastFile();
             return true;
         }
 
@@ -670,12 +668,23 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements /*
     }
 
     private void createFile() {
+        XmlParser.createFile();
     }
 
     private void addItemToFile() {
+
+        String lang1 = helper.lessonItem.getLanguageItem().getPrimaryLanguage();
+        String lang2 = helper.lessonItem.getLanguageItem().getSecondaryLanguage();
+
+        if("ru".equals(lang1)) {
+            XmlParser.addItemToFile(helper.currentWord, lang1, lang2);
+        } else {
+            XmlParser.addItemToFile(helper.currentWord, lang2, lang1);
+        }
     }
 
-    private void closeFile() {
+    private void openLastFile() {
+        XmlParser.openLastFile();
     }
 
     MediaPlayerHelper mediaHelper;
@@ -743,7 +752,9 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements /*
         int position = wordsAdapter.getPosition(helper.currentWord);
         WordItem word = wordsAdapter.getItem(position + index);
         helper.currentWord = word;
-        setTitle(helper.lessonItem.getDisplayName() + " " + (position + index + 1) + " of " + wordsAdapter.getCount());
+        setTitle(helper.lessonItem.getDisplayName() + " " + (position + index + 1) +
+                " of " + wordsAdapter.getCount()
+        + " " + Cache.getInstance().getItem(XmlParser.FileKey));
         position = spinnerAdapterWords.getPosition(helper.currentWord);
         isSelectWord = true;
         spinnerWords.setSelected(false);// must

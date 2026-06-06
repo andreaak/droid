@@ -29,7 +29,7 @@ public class AppUtils {
             new ReplaceItem("ö", "!o"),
             new ReplaceItem("ü", "!u")};
 
-    private static HashMap<String, ArrayList<SimpleWordItem>> items = new HashMap<>();
+
 
     public static ArrayList<LessonItem> getLessons(String path, final String prefix, boolean sortItems) {
 
@@ -39,10 +39,11 @@ public class AppUtils {
         ArrayList<LessonItem> res = new ArrayList<>();
         try {
             File directory = new File(path);
+
             File[] files = directory.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return s.startsWith(prefix) && s.endsWith(AppConfigs.getInstance().LessonsExtension);
+                    return (Utils.isEmpty(prefix) || s.startsWith(prefix)) && s.endsWith(AppConfigs.getInstance().LessonsExtension);
                 }
             });
 
@@ -96,7 +97,8 @@ public class AppUtils {
 
         ArrayList<SimpleWordItem> res = new ArrayList<>();
         for(DirectoryItem di : paths) {
-            ArrayList<SimpleWordItem> allItems = items.get(di.path);
+
+            ArrayList<SimpleWordItem> allItems = Cache.getInstance().getWordItems(di.path);
 
             if(allItems != null){
                 res.addAll(allItems);
@@ -123,7 +125,8 @@ public class AppUtils {
                     res1.addAll(XmlParser.getSimpleWordItems(file.getPath()));
                 }
             }
-            items.put(di.path, new ArrayList<>(res1));
+
+            Cache.getInstance().add(di.path, new ArrayList<>(res1));
             res.addAll(res1);
         }
 

@@ -10,6 +10,8 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 
+import java.io.File;
+
 public class HtmlActivity extends HandleExceptionActivity {
 
     public static final String PATH = "path";
@@ -22,9 +24,19 @@ public class HtmlActivity extends HandleExceptionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_html);
         webView = (WebView) findViewById(R.id.webView);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.getSettings().setDisplayZoomControls(false);
+
+        WebSettings settings = webView.getSettings();
+
+        settings.setJavaScriptEnabled(true);
+        settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
+
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+        settings.setDefaultTextEncodingName("utf-8");
+
         loadText();
         float scale = AppConfigs.getInstance().Scale;
         webView.setInitialScale((int) (scale * 100));
@@ -56,14 +68,8 @@ public class HtmlActivity extends HandleExceptionActivity {
         setTitle(description);
 
         String path = getIntent().getStringExtra(PATH);
-
-        WebSettings settings = webView.getSettings();
-        settings.setDefaultTextEncodingName("utf-8");
-
-        //String text = FilesHelper.getTextFileContent(path);
-        // webView.loadData(text, "text/html; charset=utf-8", "utf-8");
-        //webView.loadDataWithBaseURL(null, text, "text/html", "UTF-8", null);
-        String url = "file://" + path;
-        webView.loadUrl(url);
+        File file = new File(path);
+        String uri = file.toURI().toString();
+        webView.loadUrl(uri);
     }
 }
