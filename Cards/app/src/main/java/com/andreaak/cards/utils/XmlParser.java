@@ -83,6 +83,7 @@ public class XmlParser {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
         return new ArrayList<>();
@@ -122,7 +123,7 @@ public class XmlParser {
             parser.parse(file, handler);
 
         } catch (SAXException e) {
-            if (!(e.getCause() instanceof BreakParsingException)) {
+            if (!(e.getException() instanceof BreakParsingException)) {
                 Logger.e(Constants.LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
@@ -255,6 +256,7 @@ public class XmlParser {
             Cache.getInstance().add(FileKey, fileName);
 
         } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -300,8 +302,7 @@ public class XmlParser {
             Document resultDoc = builder.newDocument();
 
             // Корневой элемент
-            Element root =
-                    resultDoc.createElement("words");
+            Element root = resultDoc.createElement("words");
 
             resultDoc.appendChild(root);
 
@@ -311,8 +312,7 @@ public class XmlParser {
                 File file = new File(xmlFile);
                 Document doc = builder.parse(file);
 
-                NodeList words =
-                        doc.getElementsByTagName("word");
+                NodeList words = doc.getElementsByTagName("word");
 
                 for (int i = 0; i < words.getLength(); i++) {
 
@@ -343,6 +343,7 @@ public class XmlParser {
                     new StreamResult(outputFile)
             );
         } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -471,6 +472,7 @@ public class XmlParser {
             System.out.println("Новый word добавлен.");
 
         } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
             return false;
         }
@@ -489,6 +491,7 @@ public class XmlParser {
             Cache.getInstance().add(FileKey, fileName);
 
         } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
             return false;
         }

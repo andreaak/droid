@@ -25,50 +25,22 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
     private boolean isPrefChanged;
 
-    private ImageButton buttonOpenCards;
-    private ImageButton buttonOpenVerbs;
-    private ImageButton buttonOpenStudy;
-    private ImageButton buttonOpenVerbCards;
-    private ImageButton buttonOpenGrammar;
-    private ImageButton buttonOpenVerbForm;
-    private ImageButton buttonSearchLesson;
-    private ImageButton buttonSearchVerb;
-    private ImageButton buttonSearchAll;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.andreaak.cards.R.layout.activity_main);
 
-        buttonOpenCards = (ImageButton) findViewById(R.id.buttonOpenCards);
-        buttonOpenCards.setOnClickListener(this);
-
-        buttonOpenVerbs = (ImageButton) findViewById(R.id.buttonOpenVerbs);
-        buttonOpenVerbs.setOnClickListener(this);
-
-        buttonOpenStudy = (ImageButton) findViewById(R.id.buttonOpenStudy);
-        buttonOpenStudy.setOnClickListener(this);
-
-        buttonOpenVerbCards = (ImageButton) findViewById(R.id.buttonOpenVerbCards);
-        buttonOpenVerbCards.setOnClickListener(this);
-
-        buttonOpenGrammar = (ImageButton) findViewById(R.id.buttonOpenGrammar);
-        buttonOpenGrammar.setOnClickListener(this);
-
-        buttonOpenVerbForm = (ImageButton) findViewById(R.id.buttonOpenVerbForm);
-        buttonOpenVerbForm.setOnClickListener(this);
-
-        buttonSearchLesson = (ImageButton) findViewById(R.id.buttonSearchLesson);
-        buttonSearchLesson.setOnClickListener(this);
-
-        buttonSearchVerb = (ImageButton) findViewById(R.id.buttonSearchVerb);
-        buttonSearchVerb.setOnClickListener(this);
-
-        buttonSearchAll = (ImageButton) findViewById(R.id.buttonSearchAll);
-        buttonSearchAll.setOnClickListener(this);
-
-        ((ImageButton) findViewById(R.id.buttonGDLessons)).setOnClickListener(this);
-        ((ImageButton) findViewById(R.id.buttonGDVerbs)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonOpenCards)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonOpenVerbs)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonOpenStudy)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonOpenVerbCards)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonOpenGrammar)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonOpenVerbForm)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonSearchLesson)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonSearchVerb)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonSearchAll)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonSearchAI)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonGD)).setOnClickListener(this);
 
         onRestoreNonConfigurationInstance();
     }
@@ -136,10 +108,10 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
             searchVerb();
         } else if(id == R.id.buttonSearchAll)  {
             searchAll();
-        } else if(id == R.id.buttonGDLessons)  {
+        } else if(id == R.id.buttonSearchAI)  {
+            searchAI();
+        } else if(id == R.id.buttonGD)  {
             googleDriveLessons();
-        } else if(id == R.id.buttonGDVerbs)  {
-            googleDriveVerbs();
         }
     }
 
@@ -218,17 +190,13 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
         startActivity(intent);
     }
 
-    private void googleDriveLessons() {
-        Intent intent = new Intent(this, DriveActivity.class);
-        intent.putExtra(DriveActivity.PATH, AppConfigs.getInstance().getLessonsDir() );
-        intent.putExtra(DriveActivity.PREFIXES, AppConfigs.getInstance().LessonsPrefix);
+    private void searchAI() {
+        Intent intent = new Intent(this, OpenAiActivity.class);
         startActivity(intent);
     }
 
-    private void googleDriveVerbs() {
-        Intent intent = new Intent(this, DriveActivity.class);
-        intent.putExtra(DriveActivity.PATH, AppConfigs.getInstance().getVerbDir());
-        intent.putExtra(DriveActivity.PREFIXES, AppConfigs.getInstance().VerbPrefix);
+    private void googleDriveLessons() {
+        Intent intent = new Intent(this, DownloadActivity.class);
         startActivity(intent);
     }
 }

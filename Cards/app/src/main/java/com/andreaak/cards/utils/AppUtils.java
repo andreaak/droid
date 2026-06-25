@@ -1,5 +1,11 @@
 package com.andreaak.cards.utils;
 
+import android.graphics.Paint;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
@@ -29,6 +35,67 @@ public class AppUtils {
             new ReplaceItem("ö", "!o"),
             new ReplaceItem("ü", "!u")};
 
+
+    public static void adoptFontSize(TextView textView, String text, float minFontSize, float defaultFontSize) {
+
+        if(Utils.isEmpty(text)) {
+            return;
+        }
+
+        final float defaultFontSize1 = defaultFontSize;
+        textView.post(new Runnable() {
+            @Override
+            public void run() {
+
+                String[] items = text.split("\n");
+                String textLine = "";
+                for(String item : items) {
+                    if(textLine.length() < item.length()) {
+                        textLine = item;
+                    }
+                }
+
+                int displayWidth = textView.getMeasuredWidth();
+                int displayWidth1 = textView.getWidth();
+                if(displayWidth <= 0) {
+                    return;
+                }
+
+                float fontSizeOld = textView.getTextSize();
+                float density = textView.getResources().getDisplayMetrics().density;
+                float defaultFontSize2 = defaultFontSize1 * density;
+                Paint paint = new Paint();
+                paint.setTextSize(defaultFontSize2); // размер в пикселях
+                float widthPx = paint.measureText(textLine);
+                if(widthPx > displayWidth) {
+                    float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize2);
+                    setViewTextSize(textView, fontSize);
+                    setViewGravity(textView, false);
+                } else {
+                   setViewTextSize(textView, defaultFontSize2);
+                   setViewGravity(textView, true);
+                }
+            }
+        });
+    }
+
+    public static void setViewTextSize(TextView textView, float size) {
+        android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(Math.round(0), Math.round(0), Math.round(0), Math.round(0));
+
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+        textView.setLayoutParams(params);
+    }
+
+    public static void setViewGravity(TextView textView, boolean isCenter) {
+        if(isCenter){
+            textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        } else {
+            textView.setGravity(Gravity.LEFT);
+        }
+        textView.setPadding(0, 0, 0, 0);
+    }
 
 
     public static ArrayList<LessonItem> getLessons(String path, final String prefix, boolean sortItems) {

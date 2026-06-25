@@ -13,45 +13,43 @@ import com.andreaak.common.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
-public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
+public class AITextViewAdapter extends ArrayAdapter<String> {
 
     private final Object lock =  new Object();
 
-    private ArrayList<SimpleWordItem> items;
-    private ArrayList<SimpleWordItem> itemsAll;
-    private ArrayList<SimpleWordItem> suggestions;
-    private String lang;
+    private ArrayList<String> items;
+    private ArrayList<String> itemsAll;
+    private ArrayList<String> suggestions;
     private int viewResourceId;
 
     @SuppressWarnings("unchecked")
-    public SearchTextViewAdapter(Context context, int viewResourceId,
-                                 ArrayList<SimpleWordItem> items, String lang) {
+    public AITextViewAdapter(Context context, int viewResourceId,
+                             ArrayList<String> items) {
         super(context, viewResourceId, items);
         this.items = items;
-        this.itemsAll = (ArrayList<SimpleWordItem>) items.clone();
+        this.itemsAll = (ArrayList<String>) items.clone();
         this.suggestions = new ArrayList<>();
         this.viewResourceId = viewResourceId;
-        this.lang = lang;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-        if (v == null) {
-            LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
-                    Context.LAYOUT_INFLATER_SERVICE);
-            v = vi.inflate(viewResourceId, null);
+
+        TextView view;
+
+        if (convertView == null) {
+
+            view = (TextView) LayoutInflater.from(getContext())
+                    .inflate(viewResourceId, parent, false);
+
+        } else {
+
+            view = (TextView) convertView;
         }
-        SimpleWordItem product = items.get(position);
-        if (product != null) {
-            TextView productLabel = (TextView)  v.findViewById(android.R.id.text1);
-            if (productLabel != null) {
-                productLabel.setText(product.getDisplayName(lang));
-                productLabel.setTextSize(20);
-            }
-        }
-        return v;
+
+        view.setText(getItem(position));
+
+        return view;
     }
 
     @Override
@@ -61,7 +59,7 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
 
     Filter nameFilter = new Filter() {
         public String convertResultToString(Object resultValue) {
-            String str = ((SimpleWordItem) (resultValue)).getDisplayName(lang);
+            String str = resultValue.toString();
             return str;
         }
 
@@ -74,8 +72,8 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
                 if (constraint != null) {
                     suggestions.clear();
                     String ct = Utils.normalizeForComparatorAndRemoveArtikles(constraint.toString());
-                    for (SimpleWordItem item : itemsAll) {
-                        if (Utils.normalizeForComparatorAndRemoveArtikles(item.getValue(lang))
+                    for (String item : itemsAll) {
+                        if (Utils.normalizeForComparatorAndRemoveArtikles(item)
                                 .contains(ct)) {
                             suggestions.add(item);
                             if(suggestions.size() >= 100) {
@@ -86,7 +84,7 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
 
                 } else {
                     suggestions.clear();
-                    for (SimpleWordItem item : itemsAll) {
+                    for (String item : itemsAll) {
                         suggestions.add(item);
                         if(suggestions.size() >= 100) {
                             break;
@@ -94,14 +92,8 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
                     }
                 }
 
-                Collections.sort(suggestions, new Comparator<SimpleWordItem>() {
-                    @Override
-                    public int compare(SimpleWordItem a, SimpleWordItem b)
-                    {
-                        return a.getValue(lang).compareTo(b.getValue(lang));
-                    }
-                });
-
+                Collections.sort(suggestions, (a, b) -> Utils.normalizeForComparatorAndRemoveArtikles(a)
+                        .compareTo(Utils.normalizeForComparatorAndRemoveArtikles(b)));
             }
 
 
@@ -114,11 +106,11 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
         protected void publishResults(CharSequence constraint,
                                       FilterResults results) {
             @SuppressWarnings("unchecked")
-            ArrayList<SimpleWordItem> filteredList = (ArrayList<SimpleWordItem>) results.values;
+            ArrayList<String> filteredList = (ArrayList<String>) results.values;
             if (results != null && results.count > 0) {
                 synchronized (lock) {
                     clear();
-                    for (SimpleWordItem c : filteredList) {
+                    for (String c : filteredList) {
                         add(c);
                     }
                     notifyDataSetChanged();

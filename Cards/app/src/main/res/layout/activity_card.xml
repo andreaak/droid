@@ -140,7 +140,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="190dp"
         android:layout_marginTop="10dp"
-        android:background="@drawable/chatgptlogo" />
+        android:background="@drawable/gpt" />
 
     <ImageButton
         android:id="@+id/buttonPrap"

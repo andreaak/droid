@@ -2,6 +2,7 @@ package com.andreaak.common.utils;
 
 
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import java.io.FileOutputStream;
@@ -9,7 +10,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class DriveRepository {
 
@@ -38,21 +42,6 @@ public class DriveRepository {
 
             parentId = folderdId;
         }
-
-
-//        String deutschId =
-//                findFolderId(null, "Deutch");
-//
-//        if (deutschId == null) {
-//            throw new Exception("Folder Deutsch not found");
-//        }
-//
-//        String exportId =
-//                findFolderId(deutschId, "Export");
-//
-//        if (exportId == null) {
-//            throw new Exception("Folder Export not found");
-//        }
 
         return parentId;
     }
@@ -94,7 +83,7 @@ public class DriveRepository {
     // =========================================================
 
     public List<com.google.api.services.drive.model.File>
-    getFilesFromFolder(String folderId, String filter) throws Exception {
+        getFilesFromFolder(String folderId, String filter) throws Exception {
             List<com.google.api.services.drive.model.File> allFiles =
                     new ArrayList<>();
             String fl = String.format("and name contains '%s' ", filter);
@@ -142,25 +131,100 @@ public class DriveRepository {
             return allFiles;
     }
 
+    public Map<String, com.google.api.services.drive.model.File>
+        getFiles(String folderId) throws Exception {
+
+        Map<String, File> result = new TreeMap<String, File>();
+
+        collectDriveFiles(folderId,"", result);
+
+        return result;
+    }
+
+    private void collectDriveFiles(
+            String folderId,
+            String currentPath,
+            Map<String,
+                    com.google.api.services.drive.model.File> result)
+            throws Exception {
+
+        String pageToken = null;
+
+        do {
+
+            FileList fileList =
+                    driveService.files()
+                            .list()
+                            .setQ(
+                                    "'" + folderId + "' in parents " +
+                                            "and trashed=false"
+                            )
+                            .setFields(
+                                    "nextPageToken," +
+                                            "files(id,name,mimeType,modifiedTime)"
+                            )
+                            .setPageSize(1000)
+                            .setPageToken(pageToken)
+                            .execute();
+
+            for (com.google.api.services.drive.model.File file
+                    : fileList.getFiles()) {
+
+                if ("application/vnd.google-apps.folder"
+                        .equals(file.getMimeType())) {
+
+                    collectDriveFiles(
+                            file.getId(),
+                            currentPath
+                                    + file.getName()
+                                    + "/",
+                            result
+                    );
+
+                } else {
+
+                    result.put(
+                            currentPath + file.getName(),
+                            file
+                    );
+                }
+            }
+
+            pageToken = fileList.getNextPageToken();
+
+        } while (pageToken != null);
+    }
+
+
     // =========================================================
     // Скачивание файла
     // =========================================================
 
-    public java.io.File downloadFile(
+    public java.io.File downloadFileToFolder(
             com.google.api.services.drive.model.File driveFile,
             java.io.File destinationFolder
     ) throws Exception {
-
-        InputStream inputStream =
-                driveService.files()
-                        .get(driveFile.getId())
-                        .executeMediaAsInputStream();
 
         java.io.File localFile =
                 new java.io.File(
                         destinationFolder,
                         driveFile.getName()
                 );
+
+        downloadFile(driveFile, localFile);
+
+        return localFile;
+    }
+
+    public java.io.File downloadFile(
+            com.google.api.services.drive.model.File driveFile,
+            java.io.File localFile
+    ) throws Exception {
+
+        InputStream inputStream =
+                driveService.files()
+                        .get(driveFile.getId())
+                        .executeMediaAsInputStream();
 
         FileOutputStream outputStream =
                 new FileOutputStream(localFile);

@@ -12,8 +12,11 @@ import androidx.annotation.Nullable;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.cards.model.SyncFileInfo;
+import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.DriveRepository;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
+import com.andreaak.common.utils.logger.Logger;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -53,12 +56,13 @@ public class DriveActivity extends HandleExceptionActivity {
 
     private final List<String> fileNames = new ArrayList<>();
 
-    private final List<File>
-            driveFiles = new ArrayList<>();
+    private final List<File> driveFiles = new ArrayList<>();
 
     private DriveRepository repository;
 
     private java.io.File destinationFolder;
+
+    private String googleDriveFolder;
 
     private String prefixes;
 
@@ -116,7 +120,7 @@ public class DriveActivity extends HandleExceptionActivity {
 
         String directories = getIntent().getStringExtra(PATH);
         destinationFolder = new java.io.File(directories);
-
+        googleDriveFolder = AppConfigs.getInstance().getRemoteLessonsDir();
         signIn();
     }
 
@@ -190,10 +194,11 @@ public class DriveActivity extends HandleExceptionActivity {
 
                 repository = new DriveRepository(driveService);
 
-                loadFilesInfo(AppConfigs.getInstance().GoogleDir);
+                setTitle("Loading info...");
+                loadFilesInfo(googleDriveFolder);
 
             } catch (Exception e) {
-
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
         }
@@ -209,8 +214,7 @@ public class DriveActivity extends HandleExceptionActivity {
 
             try {
 
-                String folderId =
-                        repository.getGoogleDriveFolderId(path);
+                String folderId = repository.getGoogleDriveFolderId(path);
 
                 if (folderId == null) {
                     return;
@@ -224,8 +228,7 @@ public class DriveActivity extends HandleExceptionActivity {
 
                 fileNames.clear();
 
-                for (File
-                        file : filteredFiles) {
+                for (File file : filteredFiles) {
 
                     Date date = new Date(file.getModifiedTime().getValue());
 
@@ -238,9 +241,45 @@ public class DriveActivity extends HandleExceptionActivity {
                     fileNames.add(file.getName().replace(".xml", "") + " -- " + text);
                 }
 
-                runOnUiThread(() -> adapter.notifyDataSetChanged());
+                runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+
+                                adapter.notifyDataSetChanged();
+                                if(fileNames.size() == 0) {
+                                    setTitle("Not found");
+                                    Toast.makeText(
+                                            DriveActivity.this,
+                                            "Not found",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                } else {
+                                    setTitle("Found " + fileNames.size());
+                                }
+                            }
+                        }
+                );
 
             } catch (Exception e) {
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+
+                                buttonDownload.setEnabled(true);
+
+                                Toast.makeText(
+                                        DriveActivity.this,
+                                        e.getMessage(),
+                                        Toast.LENGTH_LONG
+                                ).show();
+                                setTitle("Error");
+
+                            }
+                        }
+                );
 
                 e.printStackTrace();
             }
@@ -275,6 +314,83 @@ public class DriveActivity extends HandleExceptionActivity {
         return result;
     }
 
+    // =========================================================
+    // Скачать выбранные файлы
+    // =========================================================
+
+    private void downloadSelectedFiles() {
+
+        setTitle("Downloading files...");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    final ArrayList<Integer> downloadedPositions = new ArrayList<>();
+
+                    SparseBooleanArray checked = listView.getCheckedItemPositions();
+
+                    for (int i = 0; i < checked.size(); i++) {
+
+                        int position = checked.keyAt(i);
+
+                        if (checked.valueAt(i)) {
+
+                            File driveFile = driveFiles.get(position);
+
+                            repository.downloadFileToFolder(driveFile, destinationFolder);
+
+                            downloadedPositions.add(position);
+                        }
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+//                            // снять выделение только у скачанных файлов
+//                            for (Integer position : downloadedPositions) {
+//
+//                                listView.setItemChecked(position, false);
+//                            }
+//                            adapter.notifyDataSetChanged();
+                            buttonDownload.setEnabled(false);
+                            Toast.makeText(
+                                    DriveActivity.this,
+                                    "Download completed",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            setTitle("Download completed");
+                            loadFilesInfo(googleDriveFolder);
+                        }
+                    });
+
+                } catch (Exception e) {
+                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                    runOnUiThread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    buttonDownload.setEnabled(true);
+
+                                    Toast.makeText(
+                                            DriveActivity.this,
+                                            e.getMessage(),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                    setTitle("Error");
+
+                                }
+                            }
+                    );
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     private void toggleSelection() {
 
         boolean allSelected = true;
@@ -304,68 +420,8 @@ public class DriveActivity extends HandleExceptionActivity {
 
             buttonSelectAll.setText("Unselect all");
         }
-
+        updateDownloadButtonState();
         adapter.notifyDataSetChanged();
-    }
-
-    // =========================================================
-    // Скачать выбранные файлы
-    // =========================================================
-
-    private void downloadSelectedFiles() {
-
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-
-                    final ArrayList<Integer> downloadedPositions = new ArrayList<>();
-
-                    SparseBooleanArray checked = listView.getCheckedItemPositions();
-
-                    for (int i = 0; i < checked.size(); i++) {
-
-                        int position = checked.keyAt(i);
-
-                        if (checked.valueAt(i)) {
-
-                            File driveFile = driveFiles.get(position);
-
-                            repository.downloadFile(driveFile, destinationFolder);
-
-                            downloadedPositions.add(position);
-                        }
-                    }
-
-                    loadFilesInfo(AppConfigs.getInstance().GoogleDir);
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-//                            // снять выделение только у скачанных файлов
-//                            for (Integer position : downloadedPositions) {
-//
-//                                listView.setItemChecked(position, false);
-//                            }
-//                            adapter.notifyDataSetChanged();
-                            buttonDownload.setEnabled(false);
-                            Toast.makeText(
-                                    DriveActivity.this,
-                                    "Download completed",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                        }
-                    });
-
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     private void updateDownloadButtonState() {

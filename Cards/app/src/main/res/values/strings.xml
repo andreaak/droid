@@ -25,6 +25,7 @@
     <string name="open_search_lesson">Search lesson</string>
     <string name="open_search_verb">Search verb</string>
     <string name="open_search_all">Search all</string>
+    <string name="open_search_ai">Search GPT</string>
     <string name="open_last_lesson">Open last lesson</string>
     <string name="select_language">Select language</string>
     <string name="select_log">Select log file folder</string>
@@ -42,6 +43,7 @@
     <string name="select_word">Select word</string>
     <string name="open_form">Verb form</string>
     <string name="sort">Sort</string>
+    <string name="shuffle_words">Shuffle</string>
     <string name="restore">Restore</string>
     <string name="create_file">Create File</string>
     <string name="add_item">Add Item</string>
@@ -49,4 +51,7 @@
     <string name="combine_files">Combine files</string>
     <string name="google_drive_lessons">Download lessons</string>
     <string name="google_drive_verbs">Download verbs</string>
+    <string name="google_drive_irr_verbs">Download irregular verbs</string>
+    <string name="google_drive_sounds">Download sounds</string>
+    <string name="google_drive_grammar">Download grammar</string>
 </resources>

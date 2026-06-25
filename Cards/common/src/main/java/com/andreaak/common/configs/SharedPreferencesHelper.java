@@ -65,8 +65,8 @@ public class SharedPreferencesHelper {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public float getFloat(String id) {
-        SharedPreferences sPref = getSharedPreferences();
-        return sPref.getFloat(id, NOT_DEFINED_FLOAT);
-    }
+//    public float getFloat(String id) {
+//        SharedPreferences sPref = getSharedPreferences();
+//        return sPref.getFloat(id, NOT_DEFINED_FLOAT);
+//    }
 }

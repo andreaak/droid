@@ -110,8 +110,25 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
             values = GetWordsForLevel(sourceWords, language, level);
         } else {
 
-            List<WordItem> copy = GetWordsForSort(sourceWords, language, level);
+            List<WordItem> copy = GetClonedWordsForLevel(sourceWords, language, level);
             Collections.sort(copy, new WordsComparator(language));
+            values = copy;
+        }
+
+        return values;
+    }
+
+    boolean isShuffle = false;
+
+    public List<WordItem> shuffle() {
+
+        isShuffle = !isShuffle;
+        if(!isShuffle) {
+            values = GetWordsForLevel(sourceWords, language, level);
+        } else {
+
+            List<WordItem> copy = GetClonedWordsForLevel(sourceWords, language, level);
+            Collections.shuffle(copy);
             values = copy;
         }
 
@@ -123,7 +140,7 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
     }
 
     private List<WordItem> GetWordsForLevel(List<WordItem> words, String language, String level) {
-        if(ALL.equals(level)) {
+        if(ALL.equals(level) || Utils.isEmpty(level)) {
             return words;
         }
 
@@ -132,17 +149,43 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
         for(WordItem w : words) {
             String l = w.getLevel(language);
 
-            if(A1B2.equals(level)) {
-                if(isLevelInGroup(level, l)) {
-                    list.add(w);
-                }
-            }
-            else if(Utils.isEqual(level, l) || Utils.isEmpty(l) && "CC".equals(level)) {
+            if(isFiltered(level, l)) {
                 list.add(w);
             }
         }
 
         return list;
+    }
+
+    private List<WordItem> GetClonedWordsForLevel(List<WordItem> words, String language, String level) {
+        if(ALL.equals(level) || Utils.isEmpty(level)) {
+            return new ArrayList<>(sourceWords);
+        }
+
+        ArrayList<WordItem> list = new ArrayList<>();
+
+        for(WordItem w : words) {
+            String l = w.getLevel(language);
+
+            if(isFiltered(level, l)) {
+                list.add(w);
+            }
+        }
+
+        return list;
+    }
+
+    private boolean isFiltered(String level, String l) {
+        if(level.contains("-")) {
+            if(isLevelInGroup(level, l)) {
+                return true;
+            }
+        }
+        else if(Utils.isEqual(level, l) || Utils.isEmpty(l) && "CC".equals(level)) {
+            return true;
+        }
+
+        return false;
     }
 
     private boolean isLevelInGroup (String levelGroup, String level) {
@@ -156,19 +199,4 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
         return startIndex <= index && index <= endIndex;
     }
 
-    private List<WordItem> GetWordsForSort(List<WordItem> words, String language, String level) {
-        if(ALL.equals(level)) {
-            return new ArrayList<>(sourceWords);
-        }
-
-        ArrayList<WordItem> list = new ArrayList<>();
-
-        for(WordItem w : words) {
-            if(Utils.isEqual(level, w.getLevel(language))) {
-                list.add(w);
-            }
-        }
-
-        return list;
-    }
 }

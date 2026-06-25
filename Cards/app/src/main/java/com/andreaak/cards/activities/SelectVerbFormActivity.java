@@ -2,6 +2,8 @@ package com.andreaak.cards.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -15,7 +17,10 @@ import com.andreaak.cards.adapters.VerbFormTextViewAdapter;
 import com.andreaak.cards.adapters.VerbTypesSpinAdapter;
 import com.andreaak.cards.model.VerbForm;
 import com.andreaak.cards.model.VerbFormItem;
+import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
+import com.andreaak.cards.utils.Cache;
+import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
@@ -44,6 +49,9 @@ public class SelectVerbFormActivity extends HandleExceptionActivity implements V
     private TextView textView_6;
     private TextView textView_tr;
     private AutoCompleteTextView autoCompleteTextView;
+
+    private VelocityTracker mVelocityTracker = null;
+    private float x;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -189,5 +197,78 @@ public class SelectVerbFormActivity extends HandleExceptionActivity implements V
         Intent intent = new Intent();
         setResult(RESULT_CANCELED, intent);
         finish();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int index = event.getActionIndex();
+        int action = event.getActionMasked();
+        int pointerId = event.getPointerId(index);
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                if (mVelocityTracker == null) {
+                    // Retrieve a new VelocityTracker object to watch the
+                    // velocity of a motion.
+                    mVelocityTracker = VelocityTracker.obtain();
+                } else {
+                    // Reset the velocity tracker back to its initial state.
+                    mVelocityTracker.clear();
+                }
+                // Add a user's movement to the tracker.
+                mVelocityTracker.addMovement(event);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                mVelocityTracker.addMovement(event);
+                // When you want to determine the velocity, call
+                // computeCurrentVelocity(). Then call getXVelocity()
+                // and getYVelocity() to retrieve the velocity for each pointer ID.
+                mVelocityTracker.computeCurrentVelocity(1000);
+                // Log velocity of pixels per second
+                // Best practice to use VelocityTrackerCompat where possible.
+
+                x = mVelocityTracker.getXVelocity(pointerId);
+
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                // Return a VelocityTracker object back to be re-used by others.
+                //mVelocityTracker.recycle();
+
+                if (Math.abs(x) > 500 && verbTypesAdapter != null) {
+
+                    int position = verbTypesAdapter.getPosition(helper.verbFormItem);
+                    if (x < 0) {
+                        if (position < (verbTypesAdapter.getCount() - 1)) {
+                            nextWord();
+                        }
+                    } else {
+                        if (position > 0) {
+                            previousWord();
+                        }
+                    }
+                }
+                x = 0;
+                break;
+        }
+        return true;
+    }
+
+    private void previousWord() {
+        setWord(-1);
+    }
+
+    private void nextWord() {
+        setWord(1);
+    }
+
+    private void setWord(int index) {
+
+        int position = verbTypesAdapter.getPosition(helper.verbFormItem);
+        VerbFormItem item = verbTypesAdapter.getItem(position + index);
+        helper.verbFormItem = item;
+        setVerbFormData(helper.verbFormItem);
+        spinnerVerbForm.setSelected(false);// must
+        spinnerVerbForm.setSelection(position + index, false);
     }
 }

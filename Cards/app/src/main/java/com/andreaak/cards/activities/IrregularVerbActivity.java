@@ -61,7 +61,6 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
     private Menu menu;
     private VerbActivityHelper helper;
-    private VerbSpinAdapter wordsAdapter;
     private VerbSpinAdapter spinnerAdapterWords;
     private LevelsSpinAdapter spinnerAdapterLevels;
     private VelocityTracker mVelocityTracker = null;
@@ -93,6 +92,8 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
         buttonSound = (ImageButton) findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonSwitchMode)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonShow)).setOnClickListener(this);
 
         texts = (LinearLayout) findViewById(R.id.texts);
 
@@ -128,18 +129,14 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
         if (helper.lessonItem.isContainsWords()) {
 
-            wordsAdapter = new VerbSpinAdapter(IrregularVerbActivity.this,
-                    android.R.layout.simple_spinner_item,
-                    helper.lessonItem.getWords());
-
             initializeWordsSpinner(helper.lessonItem.getWords());
 
             if(!helper.isRestore) {
-                helper.currentLevel = wordsAdapter.level;
+                helper.currentLevel = spinnerAdapterWords.level;
             }
 
             if(helper.currentWord == null) {
-                helper.currentWord = wordsAdapter.getItem(0);
+                helper.currentWord = spinnerAdapterWords.getItem(0);
             }
         }
 
@@ -152,7 +149,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         ArrayList<VerbItem> copy = (ArrayList<VerbItem>)words.clone();
         spinnerAdapterWords = new VerbSpinAdapter(IrregularVerbActivity.this,
                 android.R.layout.simple_spinner_item,
-                copy);
+                copy, helper.isSort);
 
         spinnerWords.setAdapter(spinnerAdapterWords);
 
@@ -170,7 +167,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
             spinnerWords.setSelected(false);// must
             spinnerWords.setSelection(position, true);  //must
 
-            wordsAdapter.setLevel(helper.currentLevel);
+            spinnerAdapterWords.setLevel(helper.currentLevel);
 
             position = spinnerAdapterLevels.getPosition(helper.currentLevel);
             spinnerLevels.setSelected(false);// must
@@ -206,10 +203,10 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
                 String level = spinnerAdapterLevels.getItem(position);
 
-                if(!wordsAdapter.setLevel(level)) {
+                if(!spinnerAdapterWords.setLevel(level)) {
                     return;
                 }
-                setTitle(wordsAdapter.getCount() + " " + helper.lessonItem.getDisplayName());
+                setTitle(spinnerAdapterWords.getCount() + " " + helper.lessonItem.getDisplayName());
                 helper.currentLevel = level;
 
                 spinnerAdapterWords.setLevel(level);
@@ -218,7 +215,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
                 spinnerWords.setSelected(false);// must
                 spinnerWords.setSelection(0, true);
 
-                helper.currentWord = wordsAdapter.getItem(0);
+                helper.currentWord = spinnerAdapterWords.getItem(0);
                 activateWord(helper.currentWord);
             }
 
@@ -260,6 +257,12 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         } else if(id == R.id.menu_settings)  {
             setSettings();
             return true;
+        } else if(id == R.id.menu_sort)  {
+            sortSpinner();
+            return true;
+        } else if(id == R.id.menu_shuffle_words)  {
+            shuffleWords();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -271,6 +274,11 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
         if(id == R.id.buttonSound)  {
             playSound();
+        } else if(id == R.id.buttonSwitchMode) {
+            switchHideMode();
+        }
+        else if(id == R.id.buttonShow) {
+            showHiddenForCurrentWord();
         }
 
     }
@@ -342,6 +350,8 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
     private void activateWord(VerbItem word) {
 
+        helper.forceShowCurrentWord = false;
+
         textView_1.setText(word._1);
         textView_1_Trans.setText(word._1_Trans);
         textView_2.setText(word._2);
@@ -352,17 +362,22 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         if(!Utils.isEmpty(word._4)) {
             textView_4.setText(word._4);
             textView_4_Trans.setText(word._4_Trans);
+            layout_4.setVisibility(View.VISIBLE);
         } else {
             layout_4.setVisibility(View.GONE);
         }
 
-        String translation = Utils.isEmpty(word.translation) ? word.translation :
-                word.translation.replace("\n", "").replace("\r", "");
-
-        String text = Utils.isEmpty(word.level) ? translation :
-                String.format("%s: %s",  word.level, translation);
+        String text = Utils.isEmpty(word.level) ? word.translation :
+                String.format("%s: %s",  word.level, word.translation);
 
         textViewTranslation.setText(text);
+
+        //if(helper.hideMode == HideMode.SHOW_ALL) {
+            AppUtils.adoptFontSize(textViewTranslation, text, 45, 20);
+        //}
+
+
+        applyHideMode();
 
         Queue<String> files = getSoundFiles(helper.lessonItem.getLanguage());
         boolean isVisible = !files.isEmpty();
@@ -379,16 +394,15 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     }
 
     private void setWord(int index) {
-        int position = wordsAdapter.getPosition(helper.currentWord);
-        VerbItem word = wordsAdapter.getItem(position + index);
+        int position = spinnerAdapterWords.getPosition(helper.currentWord);
+        VerbItem word = spinnerAdapterWords.getItem(position + index);
         helper.currentWord = word;
-        setTitle(helper.lessonItem.getDisplayName() + " " + (position + index + 1) + " of " + wordsAdapter.getCount());
+        setTitle(helper.lessonItem.getDisplayName() + " " + (position + index + 1) + " of " + spinnerAdapterWords.getCount());
         position = spinnerAdapterWords.getPosition(helper.currentWord);
         spinnerWords.setSelected(false);// must
         spinnerWords.setSelection(position, true);
         activateWord(word);
     }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -426,11 +440,11 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
                 // Return a VelocityTracker object back to be re-used by others.
                 //mVelocityTracker.recycle();
 
-                if (Math.abs(x) > 500 && wordsAdapter != null) {
+                if (Math.abs(x) > 500 && spinnerAdapterWords != null) {
 
-                    int position = wordsAdapter.getPosition(helper.currentWord);
+                    int position = spinnerAdapterWords.getPosition(helper.currentWord);
                     if (x < 0) {
-                        if (position < (wordsAdapter.getCount() - 1)) {
+                        if (position < (spinnerAdapterWords.getCount() - 1)) {
                             nextWord();
                         }
                     } else {
@@ -505,4 +519,98 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         list.add(A1B2);
         return list;
     }
+
+    private void sortSpinner() {
+        helper.isSort = !helper.isSort;
+        List<VerbItem> filtered = spinnerAdapterWords.setSort(helper.isSort);
+
+        spinnerAdapterWords.clear();
+
+        spinnerAdapterWords.addAll(filtered);
+        spinnerAdapterWords.notifyDataSetChanged();
+
+        int position = spinnerAdapterWords.getPosition(helper.currentWord);
+        spinnerWords.setSelected(false);// must
+        spinnerWords.setSelection(position, true);
+    }
+
+    private void shuffleWords() {
+        List<VerbItem> filtered = spinnerAdapterWords.shuffle();
+
+        spinnerAdapterWords.clear();
+
+        spinnerAdapterWords.addAll(filtered);
+        spinnerAdapterWords.notifyDataSetChanged();
+
+        int position = spinnerAdapterWords.getPosition(helper.currentWord);
+        spinnerWords.setSelected(false);// must
+        spinnerWords.setSelection(position, true);
+    }
+
+    private void switchHideMode() {
+
+        helper.hideMode = helper.hideMode.next();
+
+        helper.forceShowCurrentWord = false;
+
+        activateWord(helper.currentWord);
+    }
+
+    private void showHiddenForCurrentWord() {
+
+        helper.forceShowCurrentWord = true;
+
+        applyHideMode();
+    }
+
+    private void applyHideMode() {
+
+        boolean show2 = true;
+        boolean show3 = true;
+        boolean show4 = true;
+        boolean show5 = true;
+
+        if(!helper.forceShowCurrentWord) {
+
+            switch(helper.hideMode) {
+
+                case HIDE_5:
+                    show5 = false;
+                    break;
+
+                case HIDE_4_5:
+                    show4 = false;
+                    show5 = false;
+                    break;
+
+                case HIDE_3_4_5:
+                    show3 = false;
+                    show4 = false;
+                    show5 = false;
+                    break;
+                case HIDE_2_3_4_5:
+                    show2 = false;
+                    show3 = false;
+                    show4 = false;
+                    show5 = false;
+                    break;
+
+            }
+        }
+
+        textView_2.setVisibility(show2 ? View.VISIBLE : View.INVISIBLE);
+        textView_2_Trans.setVisibility(show2 ? View.VISIBLE : View.INVISIBLE);
+
+        textView_3.setVisibility(show3 ? View.VISIBLE : View.INVISIBLE);
+        textView_3_Trans.setVisibility(show3 ? View.VISIBLE : View.INVISIBLE);
+
+        textView_4.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
+        textView_4_Trans.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
+        textView_4.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
+        textView_4_Trans.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
+
+        textViewTranslation.setVisibility(show5 ? View.VISIBLE : View.INVISIBLE);
+
+    }
 }
+

@@ -43,6 +43,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static com.andreaak.cards.utils.AppUtils.setViewGravity;
 import static com.andreaak.cards.utils.FilesHelper.getTempFilePath;
 import static com.andreaak.cards.utils.FilesHelper.getWordId;
 
@@ -54,13 +55,13 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
     public static final String A1B2 = "A1-B2";
 
     private ImageButton buttonStudy;
-    private ImageButton buttonToggle;
+//    private ImageButton buttonToggle;
     private ImageButton buttonSound;
     private ImageButton buttonExample;
     private ImageButton buttonDescription;
     private ImageButton buttonGPTDescription;
     private ImageButton buttonPrap;
-    private ImageButton buttonRemove;
+//    private ImageButton buttonRemove;
 
     private TextView textViewWord1;
     private TextView textViewTrans1;
@@ -75,7 +76,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
     private Menu menu;
 
     private CardActivityHelper helper;
-    private WordsSpinAdapter wordsAdapter;
+    //private WordsSpinAdapter wordsAdapter;
     private WordsSpinAdapter spinnerAdapterWords;
     private LevelsSpinAdapter spinnerAdapterLevels;
     private VelocityTracker mVelocityTracker = null;
@@ -98,11 +99,9 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
         setContentView(R.layout.activity_card);
 
-        buttonStudy = (ImageButton) findViewById(R.id.buttonStudy);
-        buttonStudy.setOnClickListener(this);
-
-        buttonToggle = (ImageButton) findViewById(R.id.buttonToggle);
-        buttonToggle.setOnClickListener(this);
+        (findViewById(R.id.buttonStudy)).setOnClickListener(this);
+        (findViewById(R.id.buttonToggle)).setOnClickListener(this);
+        (findViewById(R.id.buttonRemove)).setOnClickListener(this);
 
         buttonSound = (ImageButton) findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
@@ -119,9 +118,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         buttonPrap = (ImageButton) findViewById(R.id.buttonPrap);
         buttonPrap.setOnClickListener(this);
 
-        buttonRemove = (ImageButton) findViewById(R.id.buttonRemove);
-        buttonRemove.setOnClickListener(this);
-
         textViewWord1 = (TextView) findViewById(R.id.textViewWord1);
         textViewTrans1 = (TextView) findViewById(R.id.textViewTrans1);
         textViewWord2 = (TextView) findViewById(R.id.textViewWord2);
@@ -129,7 +125,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         textViewExample = (TextView) findViewById(R.id.textViewExample);
         texts = (LinearLayout) findViewById(R.id.texts);
 
-        setFontSize();
+        //setFontSize();
         onRestoreNonConfigurationInstance();
     }
 
@@ -168,21 +164,17 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         if (helper.lessonItem.isContainsWords()) {
 
             helper.lessonItem.resetLanguage();
-            wordsAdapter = new WordsSpinAdapter(CardActivity.this,
-                    android.R.layout.simple_spinner_item,
-                    helper.lessonItem.getLessonWords(), false, helper.lessonItem.getCurrentLanguage());
 
             initializeWordsSpinner(helper.lessonItem.getLessonWords(), helper.isSort/*helper.lessonItem.isSortItems()*/,
                     helper.lessonItem.getCurrentLanguage());
 
             if(!helper.isRestore) {
-                helper.currentLevel = wordsAdapter.level;
+                helper.currentLevel = spinnerAdapterWords.level;
             }
 
             if(helper.currentWord == null) {
-                helper.currentWord = wordsAdapter.getItem(0);
+                helper.currentWord = spinnerAdapterWords.getItem(0);
             }
-            //activateWord(helper.currentWord);
         } else {
             spinnerWords.setVisibility(View.GONE);
         }
@@ -215,13 +207,12 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
             spinnerWords.setSelected(false);// must
             spinnerWords.setSelection(position, true);  //must
 
-            wordsAdapter.setLevel(helper.currentLevel);
+            spinnerAdapterWords.setLevel(helper.currentLevel);
 
             position = spinnerAdapterLevels.getPosition(helper.currentLevel);
             spinnerLevels.setSelected(false);// must
             spinnerLevels.setSelection(position, true);  //must
 
-            //activateWord(helper.currentWord);
             helper.isRestore = false;
         }
 
@@ -256,10 +247,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
                 String level = spinnerAdapterLevels.getItem(position);
 
-                if(!wordsAdapter.setLevel(level)) {
+                if(!spinnerAdapterWords.setLevel(level)) {
                     return;
                 }
-                setTitle(wordsAdapter.getCount() + " " + helper.lessonItem.getDisplayName());
+                setTitle(spinnerAdapterWords.getCount() + " " + helper.lessonItem.getDisplayName());
                 helper.currentLevel = level;
 
                 spinnerAdapterWords.setLevel(level);
@@ -268,7 +259,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                 spinnerWords.setSelected(false);// must
                 spinnerWords.setSelection(0, true);
 
-                helper.currentWord = wordsAdapter.getItem(0);
+                helper.currentWord = spinnerAdapterWords.getItem(0);
                 activateWord(helper.currentWord);
             }
 
@@ -289,10 +280,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         } else if(id == R.id.menu_minus)  {
             textSmaller();
             return true;
-        }else if(id == R.id.menu_sort)  {
+        } else if(id == R.id.menu_sort)  {
             sortSpinner();
             return true;
-        }else if(id == R.id.menu_restore)  {
+        } else if(id == R.id.menu_restore)  {
             clearWords();
             return true;
         }else if(id == R.id.menu_createFile)  {
@@ -303,6 +294,9 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
             return true;
         }else if(id == R.id.menu_openLastFile)  {
             openLastFile();
+            return true;
+        } else if(id == R.id.menu_shuffle_words)  {
+            shuffleWords();
             return true;
         }
 
@@ -323,40 +317,25 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         spinnerWords.setSelection(position, true);
     }
 
-    private void setFontSize() {
-        float factor = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
-        setTextSize(factor);
+    private void shuffleWords() {
+        List<WordItem> filtered = spinnerAdapterWords.shuffle();
+
+        spinnerAdapterWords.clear();
+
+        spinnerAdapterWords.addAll(filtered);
+        spinnerAdapterWords.notifyDataSetChanged();
+
+        int position = spinnerAdapterWords.getPosition(helper.currentWord);
+        spinnerWords.setSelected(false);// must
+        spinnerWords.setSelection(position, true);
     }
 
-    private void adoptFontSize(TextView textView, String text, float minFontSize, float defaultFontSize) {
-       String[] items = text.split("\n");
-       String textLine = "";
-       for(String item : items) {
-           if(textLine.length() < item.length()) {
-               textLine = item;
-           }
-       }
+//    private void setFontSize() {
+//        float factor = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
+//        setTextSize(factor);
+//    }
 
-       int displayWidth = textView.getMeasuredWidth();
-       if(displayWidth <= 0) {
-           return;
-       }
 
-       float fontSizeOld = textView.getTextSize();
-       float density = textView.getResources().getDisplayMetrics().density;
-       defaultFontSize = defaultFontSize * density;
-       Paint paint = new Paint();
-       paint.setTextSize(defaultFontSize); // размер в пикселях
-       float widthPx = paint.measureText(textLine);
-       if(widthPx > displayWidth) {
-           float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize);
-           setViewTextSize(textView, fontSize);
-           setViewGravity(textView, false);
-       } else {
-           setViewTextSize(textView, defaultFontSize);
-           setViewGravity(textView, true);
-       }
-    }
 
     private void saveFontSize(float factor) {
         SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TEXT_FONT_SIZE, factor);
@@ -384,27 +363,11 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
     private void setTextSize(TextView view, float factor, boolean isCenter) {
         float newSize = view.getTextSize() * factor;
-        setViewTextSize(view, newSize);
-        setViewGravity(view, isCenter);
+        AppUtils.setViewTextSize(view, newSize);
+        AppUtils.setViewGravity(view, isCenter);
     }
 
-    private void setViewTextSize(TextView textView, float size) {
-        android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(Math.round(0), Math.round(0), Math.round(0), Math.round(0));
 
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
-        textView.setLayoutParams(params);
-    }
-
-    private void setViewGravity(TextView textView, boolean isCenter) {
-        if(isCenter){
-            textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
-        } else {
-            textView.setGravity(Gravity.LEFT);
-        }
-        textView.setPadding(0, 0, 0, 0);
-    }
 
     private List<String> GetLevels(ArrayList<WordItem> words, final String language) {
 
@@ -469,7 +432,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
         String wordText = word.getValue(helper.lessonItem.getCurrentLanguage());
         SetWordAndVisibility(textViewWord1, wordText);
-        adoptFontSize(textViewWord1, wordText, 45, 38);
+        AppUtils.adoptFontSize(textViewWord1, wordText, 45, 38);
 
         String transcription = word.getTranscription(helper.lessonItem.getCurrentLanguage());
         String info = word.getInfo(helper.lessonItem.getCurrentLanguage());
@@ -498,7 +461,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
         wordText = word.getValue(languageItem.getSecondaryLanguage());
         SetWordAndVisibility(textViewWord2, wordText);
-        adoptFontSize(textViewWord2, wordText, 45, 25);
+        AppUtils.adoptFontSize(textViewWord2, wordText, 45, 25);
 
         transcription = word.getTranscription(languageItem.getSecondaryLanguage());
         info = word.getInfo(languageItem.getSecondaryLanguage());
@@ -749,11 +712,11 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
     }
 
     private void setWord(int index) {
-        int position = wordsAdapter.getPosition(helper.currentWord);
-        WordItem word = wordsAdapter.getItem(position + index);
+        int position = spinnerAdapterWords.getPosition(helper.currentWord);
+        WordItem word = spinnerAdapterWords.getItem(position + index);
         helper.currentWord = word;
         setTitle(helper.lessonItem.getDisplayName() + " " + (position + index + 1) +
-                " of " + wordsAdapter.getCount()
+                " of " + spinnerAdapterWords.getCount()
         + " " + Cache.getInstance().getItem(XmlParser.FileKey));
         position = spinnerAdapterWords.getPosition(helper.currentWord);
         isSelectWord = true;
@@ -798,11 +761,11 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                 // Return a VelocityTracker object back to be re-used by others.
                 //mVelocityTracker.recycle();
 
-                if (Math.abs(x) > 500 && wordsAdapter != null) {
+                if (Math.abs(x) > 500 && spinnerAdapterWords != null) {
 
-                    int position = wordsAdapter.getPosition(helper.currentWord);
+                    int position = spinnerAdapterWords.getPosition(helper.currentWord);
                     if (x < 0) {
-                        if (position < (wordsAdapter.getCount() - 1)) {
+                        if (position < (spinnerAdapterWords.getCount() - 1)) {
                             nextWord();
                         }
                     } else {

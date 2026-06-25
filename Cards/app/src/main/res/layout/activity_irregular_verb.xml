@@ -182,9 +182,29 @@
                 android:layout_height="35dp"
                 android:layout_alignParentLeft="true"
                 android:layout_above="@+id/verbs"
-                android:layout_marginLeft="15dp"
-                android:layout_marginBottom="-15dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginBottom="-5dp"
                 android:background="@drawable/sound48" />
+
+            <ImageButton
+                android:id="@+id/buttonSwitchMode"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentLeft="true"
+                android:layout_above="@+id/verbs"
+                android:layout_marginLeft="45dp"
+                android:layout_marginBottom="-5dp"
+                android:background="@drawable/rotate" />
+
+            <ImageButton
+                android:id="@+id/buttonShow"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentLeft="true"
+                android:layout_above="@+id/verbs"
+                android:layout_marginLeft="85dp"
+                android:layout_marginBottom="-5dp"
+                android:background="@drawable/search102" />
 
         </RelativeLayout>
 

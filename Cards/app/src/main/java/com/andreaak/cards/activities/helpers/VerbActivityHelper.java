@@ -1,5 +1,6 @@
 package com.andreaak.cards.activities.helpers;
 
+import com.andreaak.cards.activities.HideMode;
 import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.model.VerbLessonItem;
 
@@ -10,4 +11,9 @@ public class VerbActivityHelper implements Serializable {
     public VerbItem currentWord;
     public boolean isRestore;
     public String currentLevel;
+    public boolean isSort;
+
+    public HideMode hideMode = HideMode.SHOW_ALL;
+
+    public boolean forceShowCurrentWord = false;
 }

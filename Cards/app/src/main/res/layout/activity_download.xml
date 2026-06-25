@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/buttonGDLessons"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
+                android:title="@string/app_name"
+                android:background="@drawable/google_drive_logo" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:text="@string/google_drive_lessons"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/buttonGDVerbs"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
+                android:title="@string/app_name"
+                android:background="@drawable/google_drive_logo" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:text="@string/google_drive_verbs"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/buttonGDIrregularVerbs"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
+                android:title="@string/app_name"
+                android:background="@drawable/google_drive_logo" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:text="@string/google_drive_irr_verbs"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/buttonGDSounds"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
+                android:title="@string/app_name"
+                android:background="@drawable/google_drive_logo" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:text="@string/google_drive_sounds"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/buttonGDGrammar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginLeft="12dp"
+                android:title="@string/app_name"
+                android:background="@drawable/google_drive_logo" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:text="@string/google_drive_grammar"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

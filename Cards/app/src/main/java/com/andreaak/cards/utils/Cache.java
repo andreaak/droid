@@ -10,6 +10,8 @@ public class Cache {
     protected static Cache instance;
 
     private static HashMap<String, ArrayList<SimpleWordItem>> wordItems = new HashMap<>();
+
+    private static HashMap<String, ArrayList<String>> wordListItems = new HashMap<>();
     private static HashMap<String, String> items = new HashMap<>();
 
 
@@ -21,7 +23,12 @@ public class Cache {
     }
 
     public void add(String key, ArrayList<SimpleWordItem> items) {
+
         wordItems.put(key, items);
+    }
+
+    public void addWordListItems(String key, ArrayList<String> items) {
+        wordListItems.put(key, items);
     }
 
     public void add(String key, String value) {
@@ -34,5 +41,9 @@ public class Cache {
 
     public String getItem(String key) {
         return items.get(key);
+    }
+
+    public ArrayList<String> getWordListItems(String key) {
+        return wordListItems.get(key);
     }
 }

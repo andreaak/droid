@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.andreaak.common.utils.Constants;
+import com.andreaak.common.utils.logger.Logger;
 import com.andreaak.note.R;
 import com.andreaak.note.configs.AppConfigs;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
@@ -188,10 +190,11 @@ public class DriveActivity extends HandleExceptionActivity {
 
                 repository = new DriveRepository(driveService);
 
+                setTitle("Loading info...");
                 loadFilesInfo(AppConfigs.getInstance().GoogleDir);
 
             } catch (Exception e) {
-
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
         }
@@ -236,12 +239,45 @@ public class DriveActivity extends HandleExceptionActivity {
                     fileNames.add(file.getName().replace(".xml", "") + " -- " + text);
                 }
 
-                runOnUiThread(() ->
-                        adapter.notifyDataSetChanged()
+                runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+
+                                adapter.notifyDataSetChanged();
+                                if(fileNames.size() == 0) {
+                                    setTitle("Not found");
+                                    Toast.makeText(
+                                            DriveActivity.this,
+                                            "Not found",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                } else {
+                                    setTitle("Found " + fileNames.size());
+                                }
+                            }
+                        }
                 );
 
             } catch (Exception e) {
+                Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
 
+                                buttonDownload.setEnabled(true);
+
+                                Toast.makeText(
+                                        DriveActivity.this,
+                                        e.getMessage(),
+                                        Toast.LENGTH_LONG
+                                ).show();
+                                setTitle("Error");
+
+                            }
+                        }
+                );
                 e.printStackTrace();
             }
 
@@ -314,7 +350,7 @@ public class DriveActivity extends HandleExceptionActivity {
 
     private void downloadSelectedFiles() {
 
-
+        setTitle("Downloading files...");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -356,11 +392,30 @@ public class DriveActivity extends HandleExceptionActivity {
                                     "Download completed",
                                     Toast.LENGTH_SHORT
                             ).show();
+                            setTitle("Download completed");
+                            loadFilesInfo(AppConfigs.getInstance().GoogleDir);
                         }
                     });
 
                 } catch (Exception e) {
+                    Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+                    runOnUiThread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
 
+                                    buttonDownload.setEnabled(true);
+
+                                    Toast.makeText(
+                                            DriveActivity.this,
+                                            e.getMessage(),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                    setTitle("Error");
+
+                                }
+                            }
+                    );
                     e.printStackTrace();
                 }
             }

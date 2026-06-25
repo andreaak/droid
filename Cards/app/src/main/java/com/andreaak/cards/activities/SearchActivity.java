@@ -76,11 +76,27 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
                     lang = "en";
                 }
                 lg = new LanguageItem(lang, "ru");
-                helper.items = AppUtils.getSimpleWortItems(directories, prefixes, lg);
-                if (helper.items.size() != 0) {
-                    setTitle(String.valueOf(helper.items.size()));
-                    initializeVerbSpinner(helper.items, lang);
-                }
+
+                String finalLang = lang;
+                setTitle("Download...");
+                new Thread(() -> {
+
+                    ArrayList<SimpleWordItem> items =
+                            AppUtils.getSimpleWortItems(directories, prefixes, lg);
+
+                    runOnUiThread(() -> {
+                        helper.items = items;
+                        initializeVerbSpinner(items, finalLang);
+                        setTitle(String.valueOf(helper.items.size()));
+                    });
+
+                }).start();
+
+//                helper.items = AppUtils.getSimpleWortItems(directories, prefixes, lg);
+//                if (helper.items.size() != 0) {
+//                    setTitle(String.valueOf(helper.items.size()));
+//                    initializeVerbSpinner(helper.items, lang);
+//                }
 
             } catch(Exception e) {
                 Logger.e(Constants.LOG_TAG, e.getMessage(), e);

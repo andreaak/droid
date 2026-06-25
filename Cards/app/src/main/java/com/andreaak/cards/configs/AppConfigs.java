@@ -17,11 +17,17 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     private static final String SP_VERB_PREFFIX = "SP_VERB_PREFFIX";
     private static final String SP_VERB_PREFFIX_DEFAULT = "verb_";
     private static final String LESSONS_DIR = "Lessons";
+    private static final String GOOGLE_LESSONS_DIR = "Export";
+
+    private static final String SP_IRREGULAR_VERB_PREFFIX = "SP_IRREGULAR_VERB_PREFFIX";
     private static final String IRREGULAR_VERB_DIR = "IrregularVerbs";
+    private static final String SP_IRREGULAR_VERB_PREFFIX_DEFAULT = "irregular_";
     private static final String GRAMMAR_DIR = "Grammar";
     private static final String VERB_FORMS_DIR = "VerbForms";
     private static final String VERB_DIR = "Verb";
     private static final String STUDY_DIR = "Study";
+    private static final String AI_DIR = "Ai";
+    private static final String SOUNDS_DIR = "Sounds";
     // Google
     private static final String SP_GOOGLE_DIR_DEFAULT = "Eng";
     //irregular
@@ -37,6 +43,7 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     public String LessonsExtension;
     public String LessonsPrefix;
     public String VerbPrefix;
+    public String IrregularVerbPrefix;
     public float Scale;
 
     public static AppConfigs getInstance() {
@@ -68,6 +75,9 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
         VerbPrefix = getConfig(helper, SP_VERB_PREFFIX,
                 SP_VERB_PREFFIX_DEFAULT);
+
+        IrregularVerbPrefix = getConfig(helper, SP_IRREGULAR_VERB_PREFFIX,
+                SP_IRREGULAR_VERB_PREFFIX_DEFAULT);
     }
 
     public boolean saveSoundsDirectory(String path) {
@@ -85,7 +95,7 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     }
 
     public String getRemoteLessonsDir() {
-        return GoogleDir + "/" + LESSONS_DIR;
+        return GoogleDir + "/" + GOOGLE_LESSONS_DIR;
     }
 
     public String getIrregularVerbDir() {
@@ -116,13 +126,23 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
         return WorkingDir + "/" + STUDY_DIR;
     }
 
+    public String getAIDir() {
+        return WorkingDir + "/" + AI_DIR;
+    }
+
+    public String getRemoteSoundsDir() {
+        return GoogleDir + "/" + SOUNDS_DIR;
+    }
+
     protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {
-        float value = helper.getFloat(key);
-        if ((int) value > (int) SharedPreferencesHelper.NOT_DEFINED_FLOAT) {
-            return value;
-        } else {
-            helper.save(key, defaultValue);
-            return defaultValue;
-        }
+        return defaultValue;
+
+//        float value = helper.getFloat(key);
+//        if ((int) value > (int) SharedPreferencesHelper.NOT_DEFINED_FLOAT) {
+//            return value;
+//        } else {
+//            helper.save(key, defaultValue);
+//            return defaultValue;
+//        }
     }
 }

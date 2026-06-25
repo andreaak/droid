@@ -62,7 +62,7 @@ public class FileLogger implements ILogger {
         String formattedDate = df.format(c.getTime());
 
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%1$s Ex: %2$s \nExceeption: %3$s", formattedDate, msg, tr.getClass().toString()) + '\n');
+        sb.append(String.format("%1$s Message: %2$s \nException: %3$s", formattedDate, msg, tr.getClass().toString()) + '\n');
 
         for (StackTraceElement el : tr.getStackTrace()) {
             sb.append(String.format("at %1$s.%2$s (%3$s:%4$d)", el.getClassName(), el.getMethodName(), el.getFileName(), el.getLineNumber()) + '\n');

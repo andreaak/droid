@@ -120,8 +120,8 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     private void setFontSize() {
-        float factor = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
-        setTextSize(factor);
+//        float factor = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
+//        setTextSize(factor);
     }
 
     private void saveFontSize(float factor) {
@@ -229,34 +229,73 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     private void adoptFontSize(TextView textView, String text, float minFontSize, float defaultFontSize) {
-        String[] items = text.split("\n");
-        String textLine = "";
-        for(String item : items) {
-            if(textLine.length() < item.length()) {
-                textLine = item;
+
+        final float defaultFontSize1 = defaultFontSize;
+        textView.post(new Runnable() {
+            @Override
+            public void run() {
+
+                String[] items = text.split("\n");
+                String textLine = "";
+                for(String item : items) {
+                    if(textLine.length() < item.length()) {
+                        textLine = item;
+                    }
+                }
+
+                int displayWidth = textView.getMeasuredWidth();
+                int displayWidth1 = textView.getWidth();
+                if(displayWidth <= 0) {
+                    return;
+                }
+
+                float fontSizeOld = textView.getTextSize();
+                float density = textView.getResources().getDisplayMetrics().density;
+                float defaultFontSize2 = defaultFontSize1 * density;
+                Paint paint = new Paint();
+                paint.setTextSize(defaultFontSize2); // размер в пикселях
+                float widthPx = paint.measureText(textLine);
+                if(widthPx > displayWidth) {
+                    float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize2);
+                    setViewTextSize(textView, fontSize);
+                    setViewGravity(textView, false);
+                } else {
+                    setViewTextSize(textView, defaultFontSize2);
+                    setViewGravity(textView, true);
+                }
             }
-        }
+        });
 
-        int displayWidth = textView.getMeasuredWidth();
-        if(displayWidth <= 0) {
-            return;
-        }
 
-        float fontSizeOld = textView.getTextSize();
-        float density = textView.getResources().getDisplayMetrics().density;
-        defaultFontSize = defaultFontSize * density;
-        Paint paint = new Paint();
-        paint.setTextSize(defaultFontSize); // размер в пикселях
-        float widthPx = paint.measureText(textLine);
-        if(widthPx > displayWidth) {
-            float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize);
-            setViewTextSize(textView, fontSize);
-            setViewGravity(textView, false);
-        } else {
-            setViewTextSize(textView, defaultFontSize);
-            setViewGravity(textView, true);
-        }
+//        String[] items = text.split("\n");
+//        String textLine = "";
+//        for(String item : items) {
+//            if(textLine.length() < item.length()) {
+//                textLine = item;
+//            }
+//        }
+//
+//        int displayWidth = textView.getMeasuredWidth();
+//        if(displayWidth <= 0) {
+//            return;
+//        }
+//
+//        float fontSizeOld = textView.getTextSize();
+//        float density = textView.getResources().getDisplayMetrics().density;
+//        defaultFontSize = defaultFontSize * density;
+//        Paint paint = new Paint();
+//        paint.setTextSize(defaultFontSize); // размер в пикселях
+//        float widthPx = paint.measureText(textLine);
+//        if(widthPx > displayWidth) {
+//            float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize);
+//            setViewTextSize(textView, fontSize);
+//            setViewGravity(textView, false);
+//        } else {
+//            setViewTextSize(textView, defaultFontSize);
+//            setViewGravity(textView, true);
+//        }
     }
+
     private void setViewGravity(TextView textView, boolean isCenter) {
         if(isCenter){
             textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);

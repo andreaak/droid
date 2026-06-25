@@ -118,6 +118,17 @@
         </intent-filter>
         </activity>
         <activity
+            android:name=".activities.OpenAiActivity"
+            android:label="@string/preferences"
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.andreaak.cards.activities.OpenAiActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activities.EditWordActivity"
             android:label="@string/edit_word"
             android:theme="@android:style/Theme.Holo"
@@ -184,7 +195,28 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.DownloadActivity"
+            android:label="@string/select_google_file"
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.andreaak.cards.activities.DownloadActivity" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.DriveSyncActivity"
+            android:label="@string/select_google_file"
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.andreaak.cards.activities.DriveSyncActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <!-- Shared -->
         <activity
             android:name="com.andreaak.common.activitiesShared.FileChooserActivity"

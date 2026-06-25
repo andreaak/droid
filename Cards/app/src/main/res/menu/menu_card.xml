@@ -29,6 +29,12 @@
         app:showAsAction="ifRoom"
         android:title="@string/sort"></item>
     <item
+        android:id="@+id/menu_shuffle_words"
+        android:gravity="right"
+        android:icon="@drawable/sort"
+        app:showAsAction="ifRoom"
+        android:title="@string/shuffle_words"></item>
+    <item
         android:id="@+id/menu_createFile"
         android:gravity="right"
         android:icon="@drawable/file"

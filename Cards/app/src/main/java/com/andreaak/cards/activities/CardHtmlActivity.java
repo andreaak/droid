@@ -190,11 +190,11 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
     }
 
     private void setFontSize() {
-        float fontSize1 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
-        float fontSize2 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TRANS_FONT_SIZE);
-        if (fontSize1 > 0 && fontSize2 > 0) {
-            //setTextSize(fontSize1, fontSize2, 1);
-        }
+//        float fontSize1 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
+//        float fontSize2 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TRANS_FONT_SIZE);
+//        if (fontSize1 > 0 && fontSize2 > 0) {
+//            //setTextSize(fontSize1, fontSize2, 1);
+//        }
     }
 
     private void textSmaller() {
