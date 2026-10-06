@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_addItemToFile"
+        android:gravity="right"
+        android:icon="@drawable/addinfile"
+        app:showAsAction="ifRoom"
+        android:title="@string/add_item"></item>
+
+    <item
+        android:id="@+id/menu_createFile"
+        android:gravity="right"
+        android:icon="@drawable/create"
+        app:showAsAction="ifRoom"
+        android:title="@string/create_file"></item>
+    <item
+        android:id="@+id/menu_openFile"
+        android:gravity="right"
+        android:icon="@drawable/open"
+        app:showAsAction="ifRoom"
+        android:title="@string/open_file"></item>
+    <item
+        android:id="@+id/menu_plus"
+        android:gravity="right"
+        android:icon="@drawable/plus"
+        app:showAsAction="ifRoom"
+        android:title="@string/plus"></item>
+    <item
+        android:id="@+id/menu_minus"
+        android:gravity="right"
+        android:icon="@drawable/minus"
+        app:showAsAction="ifRoom"
+        android:title="@string/minus"></item>
+</menu>

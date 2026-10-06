@@ -86,6 +86,7 @@ public class DriveRepository {
         getFilesFromFolder(String folderId, String filter) throws Exception {
             List<com.google.api.services.drive.model.File> allFiles =
                     new ArrayList<>();
+
             String fl = String.format("and name contains '%s' ", filter);
             String pageToken = null;
 
@@ -106,7 +107,16 @@ public class DriveRepository {
                                 .setPageToken(pageToken)
                                 .execute();
 
-                allFiles.addAll(result.getFiles());
+
+                List<File> files = result.getFiles();
+
+                for (File file: files ) {
+                    if(file.getName().startsWith(filter)) {
+                        allFiles.add(file);
+                    }
+                }
+
+
 
                 pageToken = result.getNextPageToken();
 

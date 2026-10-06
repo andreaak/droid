@@ -13,12 +13,11 @@ import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.activities.helpers.SelectLessonAndLanguageHelper;
 import com.andreaak.cards.adapters.LangSpinAdapter;
 import com.andreaak.cards.adapters.LessonsSpinAdapter;
-import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
-import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.cards.utils.xml.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.utils.Utils;
 
@@ -27,6 +26,7 @@ import java.util.List;
 
 public class SelectLessonAndLanguageActivity extends HandleExceptionActivity implements View.OnClickListener {
 
+    public static final int REQUEST_LESSON_AND_LANGUAGE_CHOOSER = 1;
     public static final String DIRECTORY = "Directory";
     public static final String PREFIX = "Prefix";
     public static final String SORT_ITEMS = "Sort";
@@ -93,8 +93,8 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
 
         if (helper.isRestore) {
             int position = lessonsAdapter.getPosition(helper.lessonItem);
-            autoCompleteTextViewLessons.setSelected(false);  // must
-            autoCompleteTextViewLessons.setSelection(position);  //must
+
+            autoCompleteTextViewLessons.setText(helper.lessonItem.getDisplayName(), false);
             initializeLanguageSpinner(helper.lessonItem.getWords());
             if( helper.lessonItem.wordsCount() > 100) {
                 helper.lessonItem.subClear();
@@ -173,12 +173,6 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
         if (lessonItem.isContainsWords()) {
             openCard(lessonItem);
         }
-
-//        Intent intent = new Intent();
-//
-//        intent.putExtra(CardActivity.HELPER, helper.lessonItem);
-//        setResult(RESULT_OK, intent);
-//        finish();
     }
 
     private void openCard(LessonItem lessonItem) {

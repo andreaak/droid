@@ -113,10 +113,15 @@ public class Utils {
                 .replace("ä", "a")
                 .replace("ö", "o")
                 .replace("ü", "u")
-                .replace("ß", "ss");
+                .replace("ß", "ss")
+                .replace("ё", "e");
     }
 
     public static String normalizeForComparatorAndRemoveArtikles(String fileName) {
+        if(Utils.isEmpty(fileName)) {
+            return "";
+        }
+
         return normalizeForComparator(fileName).trim()
                 .replace("der ", "")
                 .replace("die ", "")
@@ -124,6 +129,14 @@ public class Utils {
                 .replace("der(die) ", "")
                 .replace("die(der) ", "")
                 .replace("|", "");
+    }
+
+    public static String normalizeRuForComparator(String fileName) {
+        if(Utils.isEmpty(fileName)) {
+            return "";
+        }
+
+        return fileName.toLowerCase().replace("ё", "е").replace("e", "е");
     }
 
     static Pattern SPLIT_CAMEL_CASE = Pattern.compile(

@@ -17,10 +17,7 @@ import com.andreaak.cards.adapters.VerbFormTextViewAdapter;
 import com.andreaak.cards.adapters.VerbTypesSpinAdapter;
 import com.andreaak.cards.model.VerbForm;
 import com.andreaak.cards.model.VerbFormItem;
-import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
-import com.andreaak.cards.utils.Cache;
-import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
@@ -111,8 +108,7 @@ public class SelectVerbFormActivity extends HandleExceptionActivity implements V
 
         if (helper.isRestore) {
             int position = verbFormsAdapter.getPosition(helper.verbForm);
-            autoCompleteTextView.setSelected(false);  // must
-            autoCompleteTextView.setSelection(position);  //must
+            autoCompleteTextView.setText(helper.verbForm.getDisplayName(), false);
             initializeVerbFromSpinner(helper.verbForm.getVerbFormItems());
         }
 

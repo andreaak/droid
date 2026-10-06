@@ -1,4 +1,4 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.utils.xml;
 
 import androidx.annotation.Nullable;
 
@@ -11,6 +11,8 @@ import com.andreaak.cards.model.VerbFormItem;
 import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.model.VerbLessonItem;
 import com.andreaak.cards.model.WordItem;
+import com.andreaak.cards.utils.BreakParsingException;
+import com.andreaak.cards.utils.Cache;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
 import com.andreaak.common.utils.logger.Logger;
@@ -131,7 +133,9 @@ public class XmlParser {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-        return handler.result;
+        WordItem wi = handler.result;
+        wi.setPath(wordItem.getPath());
+        return wi;
     }
 
     private static WordItem parseWord(Node node, int id) {
@@ -236,7 +240,7 @@ public class XmlParser {
         return verb;
     }
 
-    public static final String FileKey = "file";
+    public static final String CurrentStudyFileKey = "currentstudyfilekey";
 
     public static void createFile() {
 
@@ -253,7 +257,7 @@ public class XmlParser {
 
             createXml(xmlFile, delegate);
 
-            Cache.getInstance().add(FileKey, fileName);
+            Cache.getInstance().add(CurrentStudyFileKey, fileName);
 
         } catch (Exception e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
@@ -387,7 +391,7 @@ public class XmlParser {
         try {
 
             String directory = AppConfigs.getInstance().getStudyDir();
-            String fileName = Cache.getInstance().getItem(FileKey);
+            String fileName = Cache.getInstance().getItem(CurrentStudyFileKey);
             if(Utils.isEmpty(fileName)) {
                 return false;
             }
@@ -401,6 +405,27 @@ public class XmlParser {
 
             // Корневой элемент <words>
             Element root = doc.getDocumentElement();
+
+
+            NodeList words = root.getElementsByTagName("word");
+
+            String txt  = wordItem.getValue(secondaryLang) + wordItem.getWordClass() + wordItem.getInfo(secondaryLang);
+
+            if(Utils.isEmpty(txt)) {
+                return false;
+            }
+            for (int i = 0; i < words.getLength(); i++) {
+                Element word = (Element) words.item(i);
+
+                // Ищем тег <de> внутри конкретного элемента <word>
+                String deText = word.getElementsByTagName(secondaryLang).item(0).getTextContent()
+                + word.getElementsByTagName(secondaryLang + "_wordclass").item(0).getTextContent()
+                + word.getElementsByTagName(secondaryLang + "_info").item(0).getTextContent();
+                if(txt.equals(deText)) {
+                    return false;
+                }
+            }
+
 
             // Создаем <word>
             Element word = doc.createElement("word");
@@ -479,6 +504,23 @@ public class XmlParser {
         return true;
     }
 
+    public static boolean openFile(String fileName) {
+
+        try {
+            if (fileName == null) {
+                return false;
+            }
+            String directory = AppConfigs.getInstance().getStudyDir();
+            Cache.getInstance().add(CurrentStudyFileKey, fileName);
+
+        } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     public static boolean openLastFile() {
         String directory = AppConfigs.getInstance().getStudyDir();
         try {
@@ -488,7 +530,7 @@ public class XmlParser {
                 return false;
             }
 
-            Cache.getInstance().add(FileKey, fileName);
+            Cache.getInstance().add(CurrentStudyFileKey, fileName);
 
         } catch (Exception e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);

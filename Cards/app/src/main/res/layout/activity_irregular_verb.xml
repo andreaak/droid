@@ -8,10 +8,10 @@
         android:id="@+id/texts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="5dp"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -26,6 +26,41 @@
                 android:layout_centerVertical="true"
                 android:id="@+id/verbs"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/_0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="false"
+                    android:layout_centerVertical="false"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/buttonSound"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_above="@+id/verbs"
+                        android:background="@drawable/sound48" />
+
+                    <ImageButton
+                        android:id="@+id/buttonSwitchMode"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="5dp"
+                        android:background="@drawable/rotate" />
+
+                    <ImageButton
+                        android:id="@+id/buttonShow"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="5dp"
+                        android:background="@drawable/search102" />
+
+                </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/_1"
@@ -156,6 +191,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/_5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/_4"
@@ -176,35 +212,7 @@
             </LinearLayout>
 
 
-            <ImageButton
-                android:id="@+id/buttonSound"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_alignParentLeft="true"
-                android:layout_above="@+id/verbs"
-                android:layout_marginLeft="5dp"
-                android:layout_marginBottom="-5dp"
-                android:background="@drawable/sound48" />
 
-            <ImageButton
-                android:id="@+id/buttonSwitchMode"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_alignParentLeft="true"
-                android:layout_above="@+id/verbs"
-                android:layout_marginLeft="45dp"
-                android:layout_marginBottom="-5dp"
-                android:background="@drawable/rotate" />
-
-            <ImageButton
-                android:id="@+id/buttonShow"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_alignParentLeft="true"
-                android:layout_above="@+id/verbs"
-                android:layout_marginLeft="85dp"
-                android:layout_marginBottom="-5dp"
-                android:background="@drawable/search102" />
 
         </RelativeLayout>
 

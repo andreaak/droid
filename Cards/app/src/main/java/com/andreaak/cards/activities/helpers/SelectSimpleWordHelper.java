@@ -1,5 +1,6 @@
 package com.andreaak.cards.activities.helpers;
 
+import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.model.VerbForm;
 import com.andreaak.cards.model.WordItem;
@@ -10,4 +11,6 @@ public class SelectSimpleWordHelper implements java.io.Serializable {
     public ArrayList<SimpleWordItem> items;
     public SimpleWordItem currentItem;
     public boolean isRestore;
+    public LanguageItem lg;
+
 }

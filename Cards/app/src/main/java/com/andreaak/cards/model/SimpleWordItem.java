@@ -33,6 +33,20 @@ public class SimpleWordItem extends WordItem implements java.io.Serializable {
                 ("verb".equals(wc) ? (" " + getInfo(lang)) : "")).trim();
     }
 
+    public String getRuDisplayName(String lang1, String lang2) {
+        String wc = getWordClass();
+        String value = "" ;
+        if(!Utils.isEmpty(wc)) {
+            value += (wc + ("verb".equals(wc) ? (" " + getInfo(lang2)) : "") + " ");
+        }
+        return  value + (getValue(lang2)).trim()  + " " + (getValue(lang1)).trim();
+    }
+
+    public String getDisplayName(String currentLang, String lang1, String lang2) {
+
+        return "ru".equals(currentLang) ? getRuDisplayName(lang1, lang2) : getDisplayName(lang2);
+    }
+
     public String getPath() {
         return path;
     }

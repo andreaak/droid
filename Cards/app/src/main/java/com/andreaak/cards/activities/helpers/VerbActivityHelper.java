@@ -1,6 +1,6 @@
 package com.andreaak.cards.activities.helpers;
 
-import com.andreaak.cards.activities.HideMode;
+import com.andreaak.cards.model.HideMode;
 import com.andreaak.cards.model.VerbItem;
 import com.andreaak.cards.model.VerbLessonItem;
 

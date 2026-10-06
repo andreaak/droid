@@ -11,7 +11,6 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.EditWordActivityHelper;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.WordItem;
-import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.utils.Utils;
 

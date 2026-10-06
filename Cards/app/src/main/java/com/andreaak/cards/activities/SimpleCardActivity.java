@@ -1,7 +1,13 @@
 package com.andreaak.cards.activities;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TabStopSpan;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.VelocityTracker;
 import androidx.appcompat.app.AppCompatDelegate;
 import android.util.TypedValue;
@@ -22,9 +28,12 @@ import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
-import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.cards.utils.xml.XmlParser;
+import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
+import com.andreaak.common.activitiesShared.FilesChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
+import com.andreaak.common.predicates.StudyFilesPredicate;
 import com.andreaak.common.utils.Utils;
 
 import java.util.ArrayDeque;
@@ -36,6 +45,9 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     //in
     public static final String HELPER = "Helper";
 
+    public static final int REQUEST_FILE = 1;
+
+    private Menu menu;
     private ImageButton buttonSound;
     private ImageButton buttonExample;
     private ImageButton buttonDescription;
@@ -115,6 +127,15 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_card_simple, menu);
+        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false /*googleDriveHelper.isConnected()*/);
+
+        this.menu = menu;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public Object onRetainCustomNonConfigurationInstance() {
         return helper;
     }
@@ -155,6 +176,44 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if(id == R.id.menu_plus)  {
+            //textBigger();
+            return true;
+        } else if(id == R.id.menu_minus)  {
+            //textSmaller();
+            return true;
+        } else if(id == R.id.menu_createFile)  {
+            createFile();
+            return true;
+        } else if(id == R.id.menu_addItemToFile)  {
+            addItemToFile();
+            return true;
+        } else if(id == R.id.menu_openFile)  {
+            openFile();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_FILE:
+                if (resultCode == RESULT_OK) {
+                    String name = (String) data.getSerializableExtra(FileChooserWithButtonsActivity.FILE_NAME);
+                    openFile(name);
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onClick(View v) {
         int id = v.getId();
 
@@ -181,7 +240,8 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         String transcription = word.getTranscription(languageItem.getPrimaryLanguage());
         String info = word.getInfo(languageItem.getPrimaryLanguage());
         String level = word.getLevel(languageItem.getPrimaryLanguage());
-        String text = combineText(combineText(transcription, info), level);
+        String quantity = word.getQuantity(languageItem.getPrimaryLanguage());
+        String text = combineText(combineText(combineText(transcription, info), level), quantity);
         setTranscriptionAndVisibility(textViewTrans1, text);
 
         wordText = word.getValue(languageItem.getSecondaryLanguage());
@@ -190,7 +250,8 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
 
         transcription = word.getTranscription(languageItem.getSecondaryLanguage());
         info = word.getInfo(languageItem.getSecondaryLanguage());
-        text = combineText(transcription, info);
+        quantity = word.getQuantity(languageItem.getSecondaryLanguage());
+        text = combineText(combineText(transcription, info), quantity);
         setTranscriptionAndVisibility(textViewTrans2, text);
 
         String example = word.getExample(languageItem.getPrimaryLanguage());
@@ -234,6 +295,10 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         textView.post(new Runnable() {
             @Override
             public void run() {
+
+                if(Utils.isEmpty(text)) {
+                    return;
+                }
 
                 String[] items = text.split("\n");
                 String textLine = "";
@@ -377,6 +442,14 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         if(Utils.isEmpty(info)) {
             info = word.getGPTDescription(helper.language.getSecondaryLanguage());
         }
+        return info + "\r\n\r\n"+ getWBDescription(word) + "\r\n\r\n" + helper.currentWord.getPath();
+    }
+
+    private String getWBDescription(WordItem word) {
+        String info = word.getWBDescription(helper.language.getPrimaryLanguage());
+        if(Utils.isEmpty(info)) {
+            info = word.getWBDescription(helper.language.getSecondaryLanguage());
+        }
         return info;
     }
 
@@ -393,15 +466,61 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         return info;
     }
 
+    private void createFile() {
+        XmlParser.createFile();
+    }
+
+    private void addItemToFile() {
+
+        String lang1 = helper.language.getPrimaryLanguage();
+        String lang2 = helper.language.getSecondaryLanguage();
+
+        if("ru".equals(lang1)) {
+            XmlParser.addItemToFile(helper.currentWord, lang1, lang2);
+        } else {
+            XmlParser.addItemToFile(helper.currentWord, lang2, lang1);
+        }
+    }
+
+    private void openFile() {
+        Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
+        intent.putExtra(FilesChooserWithButtonsActivity.PREDICATE, new StudyFilesPredicate());
+        intent.putExtra(FilesChooserWithButtonsActivity.TITLE, getString(R.string.combine_files));
+        intent.putExtra(FilesChooserWithButtonsActivity.INITIAL_PATH, AppConfigs.getInstance().getStudyDir());
+        startActivityForResult(intent, REQUEST_FILE);
+    }
+
+    private void openFile(String name) {
+        XmlParser.openFile(name);
+    }
+
+    private void openLastFile() {
+        XmlParser.openLastFile();
+    }
+
     private void showInfo(View v, String info) {
 
         final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         popupView = inflater.inflate(R.layout.popup_design, null, false);
 
-
         TextView popupTextView = (TextView) popupView.findViewById(R.id.textPopup); // Идентификатор из popup_layout.xml
 
-        popupTextView.setText(info + "\r\n");
+        SpannableString spannableString = new SpannableString(info+ "\r\n");
+
+        // Задаем ширину отступа табуляции в пикселях (например, 200px)
+        int tabSpacePixels = 50;
+
+        spannableString.setSpan(
+                new TabStopSpan.Standard(tabSpacePixels),
+                0,
+                info.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+
+        popupTextView.setText(spannableString);
+
+
+        //popupTextView.setText(info + "\r\n");
 
         popupView.setOnTouchListener(new View.OnTouchListener() {
 

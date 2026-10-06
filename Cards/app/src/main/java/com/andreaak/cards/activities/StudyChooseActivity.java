@@ -9,7 +9,7 @@ import android.widget.ImageButton;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.configs.AppConfigs;
-import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.cards.utils.xml.XmlParser;
 import com.andreaak.common.activitiesShared.FilesChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.predicates.StudyFilesPredicate;

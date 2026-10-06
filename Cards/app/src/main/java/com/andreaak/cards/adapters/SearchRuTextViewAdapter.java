@@ -15,25 +15,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
+public class SearchRuTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
 
     private final Object lock =  new Object();
 
     private ArrayList<SimpleWordItem> items;
     private ArrayList<SimpleWordItem> itemsAll;
     private ArrayList<SimpleWordItem> suggestions;
-    private String lang;
+    private String lang1;
+    private String lang2;
     private int viewResourceId;
 
+    private String currentLang = "lang2";
+
     @SuppressWarnings("unchecked")
-    public SearchTextViewAdapter(Context context, int viewResourceId,
-                                 ArrayList<SimpleWordItem> items, String lang) {
+    public SearchRuTextViewAdapter(Context context, int viewResourceId,
+                                   ArrayList<SimpleWordItem> items, String lang1, String lang2) {
         super(context, viewResourceId, items);
         this.items = items;
         this.itemsAll = (ArrayList<SimpleWordItem>) items.clone();
         this.suggestions = new ArrayList<>();
         this.viewResourceId = viewResourceId;
-        this.lang = lang;
+        this.lang1 = lang1;//ru
+        this.lang2 = lang2;
+        currentLang = lang2;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -47,7 +52,7 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
         if (item != null) {
             TextView itemLabel = (TextView)  v.findViewById(android.R.id.text1);
             if (itemLabel != null) {
-                itemLabel.setText(item.getDisplayName(lang));
+                itemLabel.setText(item.getDisplayName(currentLang, lang1, lang2));
                 itemLabel.setTextSize(20);
             }
         }
@@ -61,7 +66,7 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
 
     Filter nameFilter = new Filter() {
         public String convertResultToString(Object resultValue) {
-            String str = ((SimpleWordItem) (resultValue)).getDisplayName(lang);
+            String str = ((SimpleWordItem) (resultValue)).getDisplayName(currentLang, lang1, lang2);
             return str;
         }
 
@@ -73,9 +78,22 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
 
                 if (constraint != null) {
                     suggestions.clear();
-                    String ct = Utils.normalizeForComparatorAndRemoveArtikles(constraint.toString());
+
+                    String crt = constraint.toString();
+                    currentLang = isRussian(crt) ? lang1 : lang2;
+
+                    String ct = currentLang.equals(lang1) ?
+                            Utils.normalizeRuForComparator(crt) :
+                            Utils.normalizeForComparatorAndRemoveArtikles(crt);
+
+
+
+
+
                     for (SimpleWordItem item : itemsAll) {
-                        String value = Utils.normalizeForComparatorAndRemoveArtikles(item.getValue(lang));
+                        String value = currentLang.equals(lang1) ?
+                                Utils.normalizeRuForComparator(item.getValue(currentLang)) :
+                                Utils.normalizeForComparatorAndRemoveArtikles(item.getValue(currentLang));
 
                         if (isContains(value, ct)) {
                             suggestions.add(item);
@@ -99,7 +117,7 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
                     @Override
                     public int compare(SimpleWordItem a, SimpleWordItem b)
                     {
-                        return a.getValue(lang).compareTo(b.getValue(lang));
+                        return a.getValue(lang2).compareTo(b.getValue(lang2));
                     }
                 });
 
@@ -109,6 +127,12 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
             filterResults.values = suggestions;
             filterResults.count = suggestions.size();
             return filterResults;
+        }
+
+        private boolean isRussian(String text) {
+
+            boolean res =  text.matches("^[а-яА-ЯёЁ\\s\\p{P}]+$");
+            return res;
         }
 
         @Override
@@ -134,7 +158,9 @@ public class SearchTextViewAdapter extends ArrayAdapter<SimpleWordItem> {
             return value.endsWith(ct.substring(1));
         } else if(ct.endsWith("*")) {
             return value.startsWith(ct.substring(0, ct.length() - 1));
-         } else {
+        } else if(ct.endsWith("@")) {
+            return value.equals(ct.substring(0, ct.length() - 1));
+        } else {
             return value.contains(ct);
         }
     }

@@ -16,6 +16,11 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     private static final String SP_LESSONS_PREFFIX_DEFAULT = "lesson_";
     private static final String SP_VERB_PREFFIX = "SP_VERB_PREFFIX";
     private static final String SP_VERB_PREFFIX_DEFAULT = "verb_";
+    private static final String SP_SUBST_PREFFIX = "SP_SUBST_PREFFIX";
+    private static final String SP_SUBST_PREFFIX_DEFAULT = "subst_";
+    public static final String SP_LANG = "SP_LANG";
+    public static final String SP_LANG_DEFAULT = "de";
+
     private static final String LESSONS_DIR = "Lessons";
     private static final String GOOGLE_LESSONS_DIR = "Export";
 
@@ -25,11 +30,12 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     private static final String GRAMMAR_DIR = "Grammar";
     private static final String VERB_FORMS_DIR = "VerbForms";
     private static final String VERB_DIR = "Verb";
+    private static final String SUBST_DIR = "Subst";
     private static final String STUDY_DIR = "Study";
     private static final String AI_DIR = "Ai";
     private static final String SOUNDS_DIR = "Sounds";
     // Google
-    private static final String SP_GOOGLE_DIR_DEFAULT = "Eng";
+    private static final String SP_GOOGLE_DIR_DEFAULT = "English";
     //irregular
     public static final String SP_IRR_VERB_EN_DEFAULT = "irregular_en";
     //
@@ -43,6 +49,8 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     public String LessonsExtension;
     public String LessonsPrefix;
     public String VerbPrefix;
+    public String SubstPrefix;
+    public Lang Language;
     public String IrregularVerbPrefix;
     public float Scale;
 
@@ -70,6 +78,9 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
         GoogleDir = getConfig(helper, SP_GOOGLE_DIR,
                 SP_GOOGLE_DIR_DEFAULT);
 
+        Language = Lang.getLanguage(getConfig(helper, SP_LANG,
+                SP_LANG_DEFAULT));
+
         Scale = getConfig(helper, SP_TRANS_SCALE,
                 1f);
 
@@ -78,6 +89,11 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
         IrregularVerbPrefix = getConfig(helper, SP_IRREGULAR_VERB_PREFFIX,
                 SP_IRREGULAR_VERB_PREFFIX_DEFAULT);
+
+        SubstPrefix = getConfig(helper, SP_SUBST_PREFFIX,
+                SP_SUBST_PREFFIX_DEFAULT);
+
+
     }
 
     public boolean saveSoundsDirectory(String path) {
@@ -94,24 +110,12 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
         return WorkingDir + "/" + LESSONS_DIR;
     }
 
-    public String getRemoteLessonsDir() {
-        return GoogleDir + "/" + GOOGLE_LESSONS_DIR;
-    }
-
     public String getIrregularVerbDir() {
         return WorkingDir + "/" + IRREGULAR_VERB_DIR;
     }
 
-    public String getRemoteIrregularVerbDir() {
-        return GoogleDir + "/" + IRREGULAR_VERB_DIR;
-    }
-
     public String getGrammarDir() {
         return WorkingDir + "/" + GRAMMAR_DIR;
-    }
-
-    public String getRemoteGrammarDir() {
-        return GoogleDir + "/" + GRAMMAR_DIR;
     }
 
     public String getVerbFormDir() {
@@ -122,6 +126,10 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
         return WorkingDir + "/" + VERB_DIR;
     }
 
+    public String getSubstDir() {
+        return WorkingDir + "/" + SUBST_DIR;
+    }
+
     public String getStudyDir() {
         return WorkingDir + "/" + STUDY_DIR;
     }
@@ -130,9 +138,16 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
         return WorkingDir + "/" + AI_DIR;
     }
 
+
+    public String getRemoteLessonsDir() { return GoogleDir + "/" + GOOGLE_LESSONS_DIR; }
+    public String getRemoteGrammarDir() {
+        return GoogleDir + "/" + GRAMMAR_DIR;
+    }
     public String getRemoteSoundsDir() {
         return GoogleDir + "/" + SOUNDS_DIR;
     }
+
+    public Lang getLanguage() { return Language; }
 
     protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {
         return defaultValue;
@@ -146,3 +161,4 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 //        }
     }
 }
+

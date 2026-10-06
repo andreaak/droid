@@ -32,13 +32,15 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
         ((ImageButton) findViewById(R.id.buttonOpenCards)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonOpenVerbs)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonOpenSubst)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonOpenStudy)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonOpenVerbCards)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonOpenGrammar)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonOpenVerbForm)).setOnClickListener(this);
-        ((ImageButton) findViewById(R.id.buttonSearchLesson)).setOnClickListener(this);
-        ((ImageButton) findViewById(R.id.buttonSearchVerb)).setOnClickListener(this);
-        ((ImageButton) findViewById(R.id.buttonSearchAll)).setOnClickListener(this);
+//        ((ImageButton) findViewById(R.id.buttonSearchLesson)).setOnClickListener(this);
+//        ((ImageButton) findViewById(R.id.buttonSearchVerb)).setOnClickListener(this);
+//        ((ImageButton) findViewById(R.id.buttonSearchAll)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonSearchRuAll)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonSearchAI)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonGD)).setOnClickListener(this);
 
@@ -94,7 +96,11 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
             chooseLesson();
         } else if(id == R.id.buttonOpenVerbs)  {
             chooseVerbs();
-        }  else if(id == R.id.buttonOpenStudy)  {
+        }  else if(id == R.id.buttonOpenVerbs)  {
+            chooseVerbs();
+        } else if(id == R.id.buttonOpenSubst)  {
+            chooseSubst();
+        } else if(id == R.id.buttonOpenStudy)  {
             chooseStudy();
         } else if(id == R.id.buttonOpenVerbCards)  {
             chooseIrregularVerbs();
@@ -102,12 +108,14 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
             openGrammar();
         } else if(id == R.id.buttonOpenVerbForm)  {
             openVerbForm();
-        } else if(id == R.id.buttonSearchLesson)  {
-            searchLesson();
-        } else if(id == R.id.buttonSearchVerb)  {
-            searchVerb();
-        } else if(id == R.id.buttonSearchAll)  {
-            searchAll();
+//        } else if(id == R.id.buttonSearchLesson)  {
+//            searchLesson();
+//        } else if(id == R.id.buttonSearchVerb)  {
+//            searchVerb();
+//        } else if(id == R.id.buttonSearchAll)  {
+//            searchAll();
+        }else if(id == R.id.buttonSearchRuAll)  {
+            searchRuAll();
         } else if(id == R.id.buttonSearchAI)  {
             searchAI();
         } else if(id == R.id.buttonGD)  {
@@ -134,8 +142,11 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
     }
 
     private void chooseLesson() {
-        Intent intent = new Intent(this, LessonChooseActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(this, SelectLessonAndLanguageActivity.class);
+        intent.putExtra(SelectLessonAndLanguageActivity.DIRECTORY, AppConfigs.getInstance().getLessonsDir());
+        intent.putExtra(SelectLessonAndLanguageActivity.PREFIX, AppConfigs.getInstance().LessonsPrefix);
+        intent.putExtra(SelectLessonAndLanguageActivity.SORT_ITEMS, "true");
+        startActivityForResult(intent, SelectLessonAndLanguageActivity.REQUEST_LESSON_AND_LANGUAGE_CHOOSER);
     }
 
     private void chooseVerbs() {
@@ -143,7 +154,15 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
         intent.putExtra(SelectLessonAndLanguageActivity.DIRECTORY, AppConfigs.getInstance().getVerbDir());
         intent.putExtra(SelectLessonAndLanguageActivity.PREFIX, AppConfigs.getInstance().VerbPrefix);
         intent.putExtra(SelectLessonAndLanguageActivity.SORT_ITEMS, "");
-        startActivityForResult(intent, LessonChooseActivity.REQUEST_LESSON_AND_LANGUAGE_CHOOSER);
+        startActivityForResult(intent, SelectLessonAndLanguageActivity.REQUEST_LESSON_AND_LANGUAGE_CHOOSER);
+    }
+
+    private void chooseSubst() {
+        Intent intent = new Intent(this, SelectLessonAndLanguageActivity.class);
+        intent.putExtra(SelectLessonAndLanguageActivity.DIRECTORY, AppConfigs.getInstance().getSubstDir());
+        intent.putExtra(SelectLessonAndLanguageActivity.PREFIX, AppConfigs.getInstance().SubstPrefix);
+        intent.putExtra(SelectLessonAndLanguageActivity.SORT_ITEMS, "");
+        startActivityForResult(intent, SelectLessonAndLanguageActivity.REQUEST_LESSON_AND_LANGUAGE_CHOOSER);
     }
 
     private void chooseStudy() {
@@ -185,6 +204,13 @@ public class MainActivity extends HandleExceptionActivity implements View.OnClic
 
     private void searchAll() {
         Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchActivity.PATH, AppConfigs.getInstance().getVerbDir() + "|" + AppConfigs.getInstance().getLessonsDir());
+        intent.putExtra(SearchActivity.PREFIXES, AppConfigs.getInstance().VerbPrefix + "|" + AppConfigs.getInstance().LessonsPrefix);
+        startActivity(intent);
+    }
+
+    private void searchRuAll() {
+        Intent intent = new Intent(this, SearchRuActivity.class);
         intent.putExtra(SearchActivity.PATH, AppConfigs.getInstance().getVerbDir() + "|" + AppConfigs.getInstance().getLessonsDir());
         intent.putExtra(SearchActivity.PREFIXES, AppConfigs.getInstance().VerbPrefix + "|" + AppConfigs.getInstance().LessonsPrefix);
         startActivity(intent);

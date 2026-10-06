@@ -64,6 +64,12 @@
         android:summary="Set lessons extension"
         android:title="Lessons Extension" />
 
+    <EditTextPreference
+        android:key="SP_LANG"
+        android:defaultValue="SP_LANG_DEFAULT"
+        android:summary="Set language"
+        android:title="Language" />
+
     <Preference
         android:key="RESET_BUTTON"
         android:summary=""

@@ -14,6 +14,7 @@ import com.andreaak.cards.model.VerbForm;
 import com.andreaak.cards.model.VerbFormItem;
 import com.andreaak.cards.model.VerbFormType;
 import com.andreaak.cards.model.WordItem;
+import com.andreaak.cards.utils.xml.XmlParser;
 import com.andreaak.common.utils.Utils;
 
 import java.io.File;
@@ -21,11 +22,8 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 public class AppUtils {
 
@@ -147,7 +145,7 @@ public class AppUtils {
         return res;
     }
 
-    public static ArrayList<SimpleWordItem> getSimpleWortItems(String paths, String prefixes, LanguageItem lg) {
+    public static ArrayList<SimpleWordItem> getSimpleWortItems(String paths, String prefixes) {
 
         String[] ps = paths.split("\\|");
         String[] px = prefixes.split("\\|");
@@ -157,10 +155,10 @@ public class AppUtils {
         for (int i = 0; i < ps.length; i++) {
             res.add(new DirectoryItem(ps[i], px[i]));
         }
-        return getSimpleWortItems(res, lg);
+        return getSimpleWortItems(res);
     }
 
-    private static ArrayList<SimpleWordItem> getSimpleWortItems(ArrayList<DirectoryItem> paths, LanguageItem lg) {
+    private static ArrayList<SimpleWordItem> getSimpleWortItems(ArrayList<DirectoryItem> paths) {
 
         ArrayList<SimpleWordItem> res = new ArrayList<>();
         for(DirectoryItem di : paths) {

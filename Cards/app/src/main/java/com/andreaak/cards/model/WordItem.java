@@ -15,9 +15,11 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
     public static final String ExampleSuffix = "_example";
     public static final String DescriptionSuffix = "_description";
     public static final String GPTDescriptionSuffix = "_gptdescription";
+    public static final String WBDescriptionSuffix = "_wbdescription";
     public static final String LevelSuffix = "_level";
     public static final String WordClassSuffix = "_wordclass";
     public static final String PrapSuffix = "_prap";
+    public static final String QuantitySuffix = "_quantity";
     public static final String Rank = "rank";
 
 
@@ -28,7 +30,9 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
     private Map<String, String> example = new HashMap<String, String>();
     private Map<String, String> descriptions = new HashMap<String, String>();
     private Map<String, String> gptdescriptions = new HashMap<String, String>();
+    private Map<String, String> wbdescriptions = new HashMap<String, String>();
     private Map<String, String> praps = new HashMap<String, String>();
+    private Map<String, String> quantities = new HashMap<String, String>();
 
     private int id;
     private String rank;
@@ -68,12 +72,20 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
         return praps.get(language + PrapSuffix);
     }
 
+    public String getQuantity(String language) {
+        return quantities.get(language + QuantitySuffix);
+    }
+
     public String getDescription(String language) {
         return descriptions.get(language + DescriptionSuffix);
     }
 
     public String getGPTDescription(String language) {
         return gptdescriptions.get(language + GPTDescriptionSuffix);
+    }
+
+    public String getWBDescription(String language) {
+        return wbdescriptions.get(language + WBDescriptionSuffix);
     }
 
     public String getWordClass() {
@@ -85,8 +97,13 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
         return level.get(language + LevelSuffix);
     }
 
+    private String path;
     public String getPath() {
-        return "";
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public void addItem(String tag, String value) {
@@ -104,10 +121,14 @@ public class WordItem implements java.io.Serializable, Comparable<WordItem> {
             example.put(tag, value);
         } else if (tag.endsWith(DescriptionSuffix)) {
             descriptions.put(tag, value);
-        }else if (tag.endsWith(GPTDescriptionSuffix)) {
+        } else if (tag.endsWith(GPTDescriptionSuffix)) {
             gptdescriptions.put(tag, value);
+        } else if (tag.endsWith(WBDescriptionSuffix)) {
+            wbdescriptions.put(tag, value);
         } else if (tag.endsWith(PrapSuffix)) {
             praps.put(tag, value);
+        } else if (tag.endsWith(QuantitySuffix)) {
+            quantities.put(tag, value);
         } else if (tag.contains("_")) {
 
         } else {

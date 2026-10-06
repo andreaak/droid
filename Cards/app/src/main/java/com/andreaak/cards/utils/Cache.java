@@ -27,6 +27,11 @@ public class Cache {
         wordItems.put(key, items);
     }
 
+    public void clear() {
+
+        wordItems.clear();
+    }
+
     public void addWordListItems(String key, ArrayList<String> items) {
         wordListItems.put(key, items);
     }
@@ -44,6 +49,8 @@ public class Cache {
     }
 
     public ArrayList<String> getWordListItems(String key) {
-        return wordListItems.get(key);
+
+        ArrayList<String> lst = wordListItems.get(key);
+        return lst == null ? lst : (ArrayList<String>) wordListItems.get(key).clone();
     }
 }

@@ -27,19 +27,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.LessonChooseActivity"
-            android:label="@string/select_lesson"
-            android:theme="@android:style/Theme.Holo"
-            android:exported="true">
-            <intent-filter>
-
-            <action android:name="com.andreaak.cards.activities.LessonChooseActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".activities.CardActivity"
             android:label=""
             android:theme="@style/Theme.AppCompat.DayNight"
@@ -269,9 +256,20 @@
             android:theme="@android:style/Theme.Holo"
             android:exported="true">
             <intent-filter>
-            <action android:name="com.andreaak.cards.activitiesShared.GoogleFilesChooserActivity" />
+            <action android:name="com.andreaak.cards.activities.SearchActivity" />
 
             <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.SearchRuActivity"
+            android:label="@string/select_word"
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.andreaak.cards.activities.SearchRuActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

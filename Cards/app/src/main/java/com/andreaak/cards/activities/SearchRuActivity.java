@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.SelectSimpleWordHelper;
 import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
+import com.andreaak.cards.adapters.SearchRuTextViewAdapter;
 import com.andreaak.cards.adapters.SearchTextViewAdapter;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.SimpleWordItem;
@@ -20,7 +21,7 @@ import com.andreaak.common.utils.logger.Logger;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends HandleExceptionActivity implements View.OnClickListener {
+public class SearchRuActivity extends HandleExceptionActivity implements View.OnClickListener {
 
     public static final String PATH = "path";
     public static final String PREFIXES = "prefixes";
@@ -30,7 +31,7 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
     private Button buttonClear;
 
     private SelectSimpleWordHelper helper;
-    private SearchTextViewAdapter verbFormsAdapter;
+    private SearchRuTextViewAdapter verbFormsAdapter;
 
     private AutoCompleteTextView autoCompleteTextView;
 
@@ -65,7 +66,7 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
             helper.isRestore = true;
             if(helper.items != null) {
 
-                initializeVerbSpinner((ArrayList<SimpleWordItem>) helper.items.clone(), helper.lg.getPrimaryLanguage());
+                initializeVerbSpinner((ArrayList<SimpleWordItem>) helper.items.clone(), helper.lg.getSecondaryLanguage(), helper.lg.getPrimaryLanguage());
                 setTitle(String.valueOf(helper.items.size()));
             }
         } else {
@@ -73,13 +74,13 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
                 helper = new SelectSimpleWordHelper();
                 String directories = getIntent().getStringExtra(PATH);
                 String prefixes = getIntent().getStringExtra(PREFIXES);
-                String lang = "de";
+                String lang1 = "ru";
+                String lang2 = "de";
                 if(directories.toLowerCase().contains("english")) {
-                    lang = "en";
+                    lang2 = "en";
                 }
-                helper.lg = new LanguageItem(lang, "ru");
+                helper.lg = new LanguageItem(lang2, lang1);
 
-                String finalLang = lang;
                 setTitle("Download...");
                 new Thread(() -> {
 
@@ -89,7 +90,9 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
 
                     runOnUiThread(() -> {
 
-                        initializeVerbSpinner((ArrayList<SimpleWordItem>) helper.items.clone(), finalLang);
+                        initializeVerbSpinner((ArrayList<SimpleWordItem>) helper.items.clone(),
+                                helper.lg.getSecondaryLanguage(),
+                                helper.lg.getPrimaryLanguage());
                         setTitle(String.valueOf(helper.items.size()));
                     });
 
@@ -101,12 +104,12 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
         }
     }
 
-    private void initializeVerbSpinner(ArrayList<SimpleWordItem> items, String lang) {
+    private void initializeVerbSpinner(ArrayList<SimpleWordItem> items, String lang1, String lang2) {
 
         //ArrayList<SimpleWordItem> list = (ArrayList<SimpleWordItem>) items.clone();
-        verbFormsAdapter = new SearchTextViewAdapter(SearchActivity.this,
+        verbFormsAdapter = new SearchRuTextViewAdapter(SearchRuActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
-                items, lang);
+                items, lang1, lang2);
 
         autoCompleteTextView.setAdapter(verbFormsAdapter);
 
@@ -131,7 +134,7 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
 
         if (helper.isRestore) {
             if(helper.currentItem != null) {
-                autoCompleteTextView.setText(helper.currentItem.getDisplayName(lang), false);
+                autoCompleteTextView.setText(helper.currentItem.getRuDisplayName(lang1, lang2), false);
             }
         } else {
             autoCompleteTextView.setText("");

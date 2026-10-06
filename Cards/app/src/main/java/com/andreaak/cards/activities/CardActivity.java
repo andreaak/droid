@@ -1,9 +1,8 @@
 package com.andreaak.cards.activities;
 
-import android.graphics.Paint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.VelocityTracker;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,9 +30,12 @@ import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.Cache;
 import com.andreaak.cards.utils.FilesHelper;
 import com.andreaak.cards.utils.MediaPlayerHelper;
-import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.cards.utils.xml.XmlParser;
+import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
+import com.andreaak.common.activitiesShared.FilesChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
 import com.andreaak.common.configs.SharedPreferencesHelper;
+import com.andreaak.common.predicates.StudyFilesPredicate;
 import com.andreaak.common.utils.Utils;
 
 import java.util.ArrayDeque;
@@ -43,25 +45,23 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static com.andreaak.cards.utils.AppUtils.setViewGravity;
 import static com.andreaak.cards.utils.FilesHelper.getTempFilePath;
 import static com.andreaak.cards.utils.FilesHelper.getWordId;
 
 public class CardActivity extends HandleExceptionAppCompatActivity implements View.OnClickListener {
 
+    public static final int REQUEST_FILE = 1;
     //in
     public static final String HELPER = "Helper";
     public static final String ALL = "All";
     public static final String A1B2 = "A1-B2";
 
     private ImageButton buttonStudy;
-//    private ImageButton buttonToggle;
     private ImageButton buttonSound;
     private ImageButton buttonExample;
     private ImageButton buttonDescription;
     private ImageButton buttonGPTDescription;
     private ImageButton buttonPrap;
-//    private ImageButton buttonRemove;
 
     private TextView textViewWord1;
     private TextView textViewTrans1;
@@ -76,7 +76,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
     private Menu menu;
 
     private CardActivityHelper helper;
-    //private WordsSpinAdapter wordsAdapter;
     private WordsSpinAdapter spinnerAdapterWords;
     private LevelsSpinAdapter spinnerAdapterLevels;
     private VelocityTracker mVelocityTracker = null;
@@ -142,7 +141,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                 ArrayList<String> list = FilesHelper.getFileLines(path);
                 helper.lessonItem.setIgnoredItems(list);
             }
-            setTitle(helper.lessonItem.getDisplayName());
         }
     }
 
@@ -193,7 +191,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
         spinnerWords.setAdapter(spinnerAdapterWords);
 
-        setTitle(copy.size() + " " + helper.lessonItem.getDisplayName());
         List<String> levels = GetLevels(words, language);
 
         spinnerAdapterLevels = new LevelsSpinAdapter(CardActivity.this,
@@ -212,9 +209,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
             position = spinnerAdapterLevels.getPosition(helper.currentLevel);
             spinnerLevels.setSelected(false);// must
             spinnerLevels.setSelection(position, true);  //must
-
+            activateWord(helper.currentWord, helper.lessonItem.getCurrentLanguage());
             helper.isRestore = false;
         }
+        setTitle2(0);
 
         spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -227,7 +225,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                     helper.currentWord = word;
                     helper.lessonItem.resetLanguage();
 
-                    activateWord(word);
+                    activateWord(word, helper.lessonItem.getCurrentLanguage());
                 } else {
                     isSelectWord = false;
                 }
@@ -250,7 +248,9 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                 if(!spinnerAdapterWords.setLevel(level)) {
                     return;
                 }
-                setTitle(spinnerAdapterWords.getCount() + " " + helper.lessonItem.getDisplayName());
+
+                setTitle2(0);
+
                 helper.currentLevel = level;
 
                 spinnerAdapterWords.setLevel(level);
@@ -260,7 +260,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
                 spinnerWords.setSelection(0, true);
 
                 helper.currentWord = spinnerAdapterWords.getItem(0);
-                activateWord(helper.currentWord);
+                activateWord(helper.currentWord, helper.lessonItem.getCurrentLanguage());
             }
 
             @Override
@@ -286,14 +286,14 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         } else if(id == R.id.menu_restore)  {
             clearWords();
             return true;
-        }else if(id == R.id.menu_createFile)  {
+        } else if(id == R.id.menu_createFile)  {
             createFile();
             return true;
-        }else if(id == R.id.menu_addItemToFile)  {
+        } else if(id == R.id.menu_addItemToFile)  {
             addItemToFile();
             return true;
-        }else if(id == R.id.menu_openLastFile)  {
-            openLastFile();
+        } else if(id == R.id.menu_openFile)  {
+            openFile();
             return true;
         } else if(id == R.id.menu_shuffle_words)  {
             shuffleWords();
@@ -301,6 +301,19 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_FILE:
+                if (resultCode == RESULT_OK) {
+                    String name = (String) data.getSerializableExtra(FileChooserWithButtonsActivity.FILE_NAME);
+                    openFile(name);
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void sortSpinner() {
@@ -411,15 +424,15 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         }
     }
 
-    private void activateWord(WordItem word) {
+    private void activateWord(WordItem word, String lesson) {
         if(isStudy) {
             activateStudyWord(word);
         } else {
-            activateCheckWord(word);
+            activateCheckWord(word, lesson);
         }
     }
 
-    private void activateCheckWord(WordItem word) {
+    private void activateCheckWord(WordItem word, String lang) {
 
         setVisibility(textViewWord2, View.GONE);
         setVisibility(textViewTrans2, View.GONE);
@@ -430,17 +443,18 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         buttonGPTDescription.setVisibility(View.INVISIBLE);
         buttonPrap.setVisibility(View.INVISIBLE);
 
-        String wordText = word.getValue(helper.lessonItem.getCurrentLanguage());
-        SetWordAndVisibility(textViewWord1, wordText);
+        String wordText = word.getValue(lang);
+        SetWordAndVisibility(textViewWord1, wordText, R.color.colorBlack);
         AppUtils.adoptFontSize(textViewWord1, wordText, 45, 38);
 
-        String transcription = word.getTranscription(helper.lessonItem.getCurrentLanguage());
-        String info = word.getInfo(helper.lessonItem.getCurrentLanguage());
-        String level = word.getLevel(helper.lessonItem.getCurrentLanguage());
-        String text = combineText(combineText(transcription, info), level);
+        String transcription = word.getTranscription(lang);
+        String info = word.getInfo(lang);
+        String level = word.getLevel(lang);
+        String quantity = word.getQuantity(lang);
+        String text = combineText(combineText(combineText(transcription, info), level), quantity);
         setTranscriptionAndVisibility(textViewTrans1, text);
 
-        Queue<String> files = getSoundFiles(helper.lessonItem.getCurrentLanguage());
+        Queue<String> files = getSoundFiles(lang);
         boolean isVisible = !files.isEmpty();
         int flag = isVisible ? View.VISIBLE : View.INVISIBLE;
         buttonSound.setVisibility(flag);
@@ -451,21 +465,23 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         LanguageItem languageItem = helper.lessonItem.getLanguageItem();
 
         String wordText = word.getValue(languageItem.getPrimaryLanguage());
-        SetWordAndVisibility(textViewWord1, wordText);
+        SetWordAndVisibility(textViewWord1, wordText, R.color.colorBlack);
 
         String transcription = word.getTranscription(languageItem.getPrimaryLanguage());
         String info = word.getInfo(languageItem.getPrimaryLanguage());
         String level = word.getLevel(languageItem.getPrimaryLanguage());
-        String text = combineText(combineText(transcription, info), level);
+        String quantity = word.getQuantity(languageItem.getPrimaryLanguage());
+        String text = combineText(combineText(combineText(transcription, info), level), quantity);
         setTranscriptionAndVisibility(textViewTrans1, text);
 
         wordText = word.getValue(languageItem.getSecondaryLanguage());
-        SetWordAndVisibility(textViewWord2, wordText);
+        SetWordAndVisibility(textViewWord2, wordText, R.color.colorBlue);
         AppUtils.adoptFontSize(textViewWord2, wordText, 45, 25);
 
         transcription = word.getTranscription(languageItem.getSecondaryLanguage());
         info = word.getInfo(languageItem.getSecondaryLanguage());
-        text = combineText(transcription, info);
+        quantity = word.getQuantity(languageItem.getSecondaryLanguage());
+        text = combineText(combineText(transcription, info), quantity);
         setTranscriptionAndVisibility(textViewTrans2, text);
 
         String example = word.getExample(helper.lessonItem.getCurrentLanguage());
@@ -488,8 +504,10 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         buttonPrap.setVisibility(flag);
 
         if(isExample && !Utils.isEmpty(example)) {
-            textViewExample.setGravity(Gravity.CENTER);
-            setTranscriptionAndVisibility(textViewExample, example);
+//            textViewExample.setGravity(Gravity.CENTER);
+           setTranscriptionAndVisibility(textViewExample, example);
+
+            AppUtils.adoptFontSize(textViewExample, example, 35, 25);
         } else {
             setVisibility(textViewExample, View.GONE);
         }
@@ -504,7 +522,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         return first == null ? second : second == null ? first : first + "  " + second;
     }
 
-    private void SetWordAndVisibility(TextView textView, String word) {
+    private void SetWordAndVisibility(TextView textView, String word, int color) {
         if (!Utils.isEmpty(word)) {
             textView.setText(word);
             if(word.toLowerCase().startsWith("der ")) {
@@ -514,7 +532,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
             } else if(word.toLowerCase().startsWith("das ")) {
                 textView.setTextColor(getResources().getColor(R.color.colorGreen));
             } else {
-                //textView.setTextColor(getResources().getColor(R.color.colorBlack));
+                textView.setTextColor(getResources().getColor(color));
             }
         }
         setVisibility(textView, View.VISIBLE);
@@ -536,18 +554,18 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
     }
 
     private void toggle() {
-        helper.lessonItem.ToggleLanguage();
-        activateWord(helper.currentWord);
+        String language = helper.lessonItem.getOtherLanguage();
+        activateWord(helper.currentWord, language);
     }
 
     private void showStudy() {
         isStudy = !isStudy;
-        activateWord(helper.currentWord);
+        activateWord(helper.currentWord, helper.lessonItem.getCurrentLanguage());
     }
 
     private void showExample() {
         isExample = !isExample;
-        activateWord(helper.currentWord);
+        activateWord(helper.currentWord, helper.lessonItem.getCurrentLanguage());
     }
 
     PopupWindow popupWindow;
@@ -577,6 +595,14 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         String info = word.getGPTDescription(helper.lessonItem.getCurrentLanguage());
         if(Utils.isEmpty(info)) {
             info = word.getGPTDescription(helper.lessonItem.getOtherLanguage());
+        }
+        return info + "\r\n" + getWBDescription(word) + "\r\n" + helper.lessonItem.getFileName();
+    }
+
+    private String getWBDescription(WordItem word) {
+        String info = word.getWBDescription(helper.lessonItem.getCurrentLanguage());
+        if(Utils.isEmpty(info)) {
+            info = word.getWBDescription(helper.lessonItem.getOtherLanguage());
         }
         return info;
     }
@@ -644,6 +670,18 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         } else {
             XmlParser.addItemToFile(helper.currentWord, lang2, lang1);
         }
+    }
+
+    private void openFile() {
+        Intent intent = new Intent(this, FileChooserWithButtonsActivity.class);
+        intent.putExtra(FilesChooserWithButtonsActivity.PREDICATE, new StudyFilesPredicate());
+        intent.putExtra(FilesChooserWithButtonsActivity.TITLE, getString(R.string.combine_files));
+        intent.putExtra(FilesChooserWithButtonsActivity.INITIAL_PATH, AppConfigs.getInstance().getStudyDir());
+        startActivityForResult(intent, REQUEST_FILE);
+    }
+
+    private void openFile(String name) {
+        XmlParser.openFile(name);
     }
 
     private void openLastFile() {
@@ -715,14 +753,25 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         int position = spinnerAdapterWords.getPosition(helper.currentWord);
         WordItem word = spinnerAdapterWords.getItem(position + index);
         helper.currentWord = word;
-        setTitle(helper.lessonItem.getDisplayName() + " " + (position + index + 1) +
-                " of " + spinnerAdapterWords.getCount()
-        + " " + Cache.getInstance().getItem(XmlParser.FileKey));
+
+        setTitle2(position + index);
+
         position = spinnerAdapterWords.getPosition(helper.currentWord);
         isSelectWord = true;
         spinnerWords.setSelected(false);// must
         spinnerWords.setSelection(position, false);
-        activateWord(word);
+        activateWord(word, helper.lessonItem.getCurrentLanguage());
+    }
+
+    private void setTitle2(int index) {
+
+        String fileName = Cache.getInstance().getItem(XmlParser.CurrentStudyFileKey);
+
+
+        setTitle(//helper.lessonItem.getDisplayName() + " " +
+                (index + 1) +
+                " of " + spinnerAdapterWords.getCount()
+                + (Utils.isEmpty(fileName) ? "" : (" " + fileName)));
     }
 
     @Override

@@ -49,7 +49,11 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
     private TextView textView_3_Trans;
     private TextView textView_4;
     private TextView textView_4_Trans;
+    private LinearLayout layout_1;
+    private LinearLayout layout_2;
+    private LinearLayout layout_3;
     private LinearLayout layout_4;
+    private LinearLayout layout_5;
     private TextView textViewTranslation;
 
     private ImageButton buttonSound;
@@ -87,8 +91,14 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         textView_3_Trans = (TextView) findViewById(R.id.textViewPastParticipleTrans);
         textView_4 = (TextView) findViewById(R.id.textView_4);
         textView_4_Trans = (TextView) findViewById(R.id.textView_4_Trans);
-        layout_4 = (LinearLayout) findViewById(R.id._4);
+
         textViewTranslation = (TextView) findViewById(R.id.textViewTranslation);
+
+        layout_1 = (LinearLayout) findViewById(R.id._1);
+        layout_2 = (LinearLayout) findViewById(R.id._2);
+        layout_3 = (LinearLayout) findViewById(R.id._3);
+        layout_4 = (LinearLayout) findViewById(R.id._4);
+        layout_5 = (LinearLayout) findViewById(R.id._5);
 
         buttonSound = (ImageButton) findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
@@ -598,18 +608,23 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
             }
         }
 
-        textView_2.setVisibility(show2 ? View.VISIBLE : View.INVISIBLE);
-        textView_2_Trans.setVisibility(show2 ? View.VISIBLE : View.INVISIBLE);
+        layout_2.setVisibility(show2 ? View.VISIBLE : View.GONE);
+        layout_3.setVisibility(show3 ? View.VISIBLE : View.GONE);
+        layout_4.setVisibility(show4 ? View.VISIBLE : View.GONE);
+        layout_5.setVisibility(show5 ? View.VISIBLE : View.GONE);
 
-        textView_3.setVisibility(show3 ? View.VISIBLE : View.INVISIBLE);
-        textView_3_Trans.setVisibility(show3 ? View.VISIBLE : View.INVISIBLE);
-
-        textView_4.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
-        textView_4_Trans.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
-        textView_4.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
-        textView_4_Trans.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
-
-        textViewTranslation.setVisibility(show5 ? View.VISIBLE : View.INVISIBLE);
+//        textView_2.setVisibility(show2 ? View.VISIBLE : View.INVISIBLE);
+//        textView_2_Trans.setVisibility(show2 ? View.VISIBLE : View.INVISIBLE);
+//
+//        textView_3.setVisibility(show3 ? View.VISIBLE : View.INVISIBLE);
+//        textView_3_Trans.setVisibility(show3 ? View.VISIBLE : View.INVISIBLE);
+//
+//        textView_4.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
+//        textView_4_Trans.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
+//        textView_4.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
+//        textView_4_Trans.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
+//
+//        textViewTranslation.setVisibility(show5 ? View.VISIBLE : View.INVISIBLE);
 
     }
 }

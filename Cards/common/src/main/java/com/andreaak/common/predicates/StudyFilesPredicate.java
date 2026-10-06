@@ -7,6 +7,6 @@ public class StudyFilesPredicate implements DirectoryPredicate, Serializable {
 
     @Override
     public boolean isValid(File directory) {
-        return true;
+        return !directory.getName().contains(".xmltemp");
     }
 }

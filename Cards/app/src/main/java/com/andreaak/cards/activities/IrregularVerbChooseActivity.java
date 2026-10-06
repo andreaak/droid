@@ -14,7 +14,7 @@ import com.andreaak.cards.activities.helpers.FileHelper;
 import com.andreaak.cards.activities.helpers.FileItem;
 import com.andreaak.cards.activities.helpers.VerbActivityHelper;
 import com.andreaak.cards.model.VerbLessonItem;
-import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.cards.utils.xml.XmlParser;
 
 import com.andreaak.common.fileSystemItems.ItemType;
 

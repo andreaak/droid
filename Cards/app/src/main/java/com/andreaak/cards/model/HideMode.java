@@ -1,4 +1,4 @@
-package com.andreaak.cards.activities;
+package com.andreaak.cards.model;
 
 public enum HideMode
 {

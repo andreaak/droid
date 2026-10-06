@@ -1,6 +1,6 @@
 package com.andreaak.cards.model;
 
-import com.andreaak.cards.utils.XmlParser;
+import com.andreaak.cards.utils.xml.XmlParser;
 import com.andreaak.common.utils.Utils;
 
 import java.io.File;

@@ -10,6 +10,7 @@ import android.widget.ListView;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.model.SyncFileInfo;
+import com.andreaak.cards.utils.Cache;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.DriveRepository;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
@@ -411,6 +412,8 @@ public class DriveSyncActivity extends HandleExceptionActivity {
                                         }
                                 );
                             }
+
+                            Cache.getInstance().clear();
 
                             runOnUiThread(
                                     new Runnable() {

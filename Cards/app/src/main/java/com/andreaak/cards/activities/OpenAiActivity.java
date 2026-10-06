@@ -3,25 +3,20 @@ package com.andreaak.cards.activities;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.adapters.AITextViewAdapter;
-import com.andreaak.cards.adapters.LessonsSpinAdapter;
 import com.andreaak.cards.configs.AppConfigs;
-import com.andreaak.cards.model.LessonItem;
+import com.andreaak.cards.configs.Lang;
 import com.andreaak.cards.utils.Cache;
-import com.andreaak.cards.utils.XmlParser;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.utils.Utils;
 
+import org.intellij.lang.annotations.Language;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -42,7 +37,7 @@ import okhttp3.Response;
 public class OpenAiActivity extends HandleExceptionActivity implements View.OnClickListener {
 
     private final String modelName = "gpt-4.1-mini";
-    private final String apiKey = "";//alexandrzpua19
+    private final String apiKey = "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";//alexandrzpua19
 
     private AutoCompleteTextView editPrompt;
     private AITextViewAdapter lessonsAdapter;
@@ -59,6 +54,8 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
     private String aiFolder;
 
     private OkHttpClient client;
+
+    private Lang lang;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,10 +80,11 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
         buttonSave.setOnClickListener(this);
 
         aiFolder = AppConfigs.getInstance().getAIDir();
+        lang = AppConfigs.getInstance().getLanguage();
 
         setTitle("AI");
 
-        ArrayList<String> values = loadWordsFile(AppConfigs.getInstance().WorkingDir, "index.dic");
+        ArrayList<String> values = loadWordsFile(AppConfigs.getInstance().WorkingDir, String.format("index_%s.dic", Lang.getLanguage(lang)));
 
         lessonsAdapter = new AITextViewAdapter(OpenAiActivity.this,
                 R.layout.item_autocomplete,
@@ -109,6 +107,8 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
             }
         });
 
+        editPrompt.setText("");
+
         client =
                 new OkHttpClient.Builder()
                         .connectTimeout(15, TimeUnit.SECONDS)
@@ -117,6 +117,8 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
                         .callTimeout(180, TimeUnit.SECONDS)
                         .retryOnConnectionFailure(true)
                         .build();
+
+
     }
 
     @Override
@@ -139,7 +141,6 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
             if(!Utils.isEmpty(data)) {
                 textResult.setText(data);
             } else {
-                String lang = "de";
                 askOpenAi(getAIPrompt(lang, word));
             }
         }
@@ -152,7 +153,6 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
             if(!Utils.isEmpty(data)) {
                 textResult.setText(data);
             } else {
-                String lang = "de";
                 askOpenAi(getAIRuPrompt(lang, word));
             }
         }
@@ -166,15 +166,15 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
         }
     }
 
-    private String getAIPrompt(String lang, String word) {
+    private String getAIPrompt(Lang lang, String word) {
 
         String langItem;
         switch (lang)
         {
-            case "de":
+            case DE:
                 langItem = "немецкого";
                 break;
-            case "en":
+            case EN:
                 langItem = "английского";
                 break;
             default:
@@ -186,15 +186,15 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
                 "транскрипция и также уровень слова", langItem, word);
     }
 
-    private String getAIRuPrompt(String lang, String word) {
+    private String getAIRuPrompt(Lang lang, String word) {
 
         String langItem;
         switch (lang)
         {
-            case "de":
+            case DE:
                 langItem = "немецкий";
                 break;
-            case "en":
+            case EN:
                 langItem = "английский";
                 break;
             default:
@@ -208,7 +208,7 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
 
     private void askOpenAi(String prompt) {
 
-        buttonAsk.setEnabled(false);
+        setAskButtonState(false);
 
         new Thread(
                 new Runnable() {
@@ -224,7 +224,7 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
                                         @Override
                                         public void run() {
                                             textResult.setText(response);
-                                            buttonAsk.setEnabled(true);
+                                            setAskButtonState(true);
                                         }
                                     }
                             );
@@ -237,7 +237,7 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
                                         public void run() {
 
                                             textResult.setText(ex.getMessage());
-                                            buttonAsk .setEnabled(true);
+                                            setAskButtonState(true);
                                         }
                                     }
                             );
@@ -245,6 +245,12 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
                     }
                 }
         ).start();
+    }
+
+    private void setAskButtonState(boolean enabled) {
+        buttonAsk.setEnabled(enabled);
+        buttonAskRu.setEnabled(enabled);
+        buttonSave.setEnabled(enabled);
     }
 
     private String requestOpenAi(
@@ -391,7 +397,7 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
             }
 
             Cache.getInstance().addWordListItems(cacheKey, values);
-            return values;
+            return Cache.getInstance().getWordListItems(cacheKey);
 
         } catch (Exception ex) {
 
@@ -406,7 +412,7 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
     }
 
     private String getFileName(String word) {
-        return "gpt_" + word + ".txt";
+        return "gpt_" + Lang.getLanguage(lang) + "_"  + word + ".txt";
    }
     private void onClear() {
         editPrompt.setText("");

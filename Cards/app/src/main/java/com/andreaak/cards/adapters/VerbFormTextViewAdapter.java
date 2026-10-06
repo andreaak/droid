@@ -66,8 +66,9 @@ public class VerbFormTextViewAdapter extends ArrayAdapter<VerbForm> {
                 suggestions.clear();
                 String ct = Utils.normalizeForComparator(constraint.toString().toLowerCase());
                 for (VerbForm item : itemsAll) {
-                    if (Utils.normalizeForComparator(item.getDisplayName().toLowerCase())
-                            .contains(ct)) {
+                    String value = Utils.normalizeForComparator(item.getDisplayName().toLowerCase());
+
+                    if (isContains(value, ct)) {
                         suggestions.add(item);
                         if(suggestions.size() >= 20) {
                             break;
@@ -97,5 +98,17 @@ public class VerbFormTextViewAdapter extends ArrayAdapter<VerbForm> {
             }
         }
     };
+
+
+    private static boolean isContains(String value, String ct) {
+
+        if(ct.startsWith("*")) {
+            return value.endsWith(ct.substring(1));
+        } else if(ct.endsWith("*")) {
+            return value.startsWith(ct.substring(0, ct.length() - 1));
+        } else {
+            return value.contains(ct);
+        }
+    }
 }
 

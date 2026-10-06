@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.andreaak.cards.R;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.SyncFileInfo;
+import com.andreaak.cards.utils.Cache;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.DriveRepository;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
@@ -94,7 +95,7 @@ public class DriveActivity extends HandleExceptionActivity {
                             int position,
                             long id) {
 
-                        updateDownloadButtonState();
+                        updateButtonState();
                     }
                 }
         );
@@ -103,11 +104,10 @@ public class DriveActivity extends HandleExceptionActivity {
         buttonDownload = findViewById(R.id.buttonDownload);
 
         buttonDownload.setOnClickListener(v -> {
-                    buttonDownload.setEnabled(false);
+
                     downloadSelectedFiles();
                 }
         );
-        buttonDownload.setEnabled(false);
 
         buttonSelectAll =
                 findViewById(R.id.buttonSelectAll);
@@ -115,6 +115,8 @@ public class DriveActivity extends HandleExceptionActivity {
         buttonSelectAll.setOnClickListener(
                 v -> toggleSelection()
         );
+
+        enableButtons(false);
 
         prefixes = getIntent().getStringExtra(PREFIXES);
 
@@ -246,6 +248,7 @@ public class DriveActivity extends HandleExceptionActivity {
                             @Override
                             public void run() {
 
+                                updateButtonState();
                                 adapter.notifyDataSetChanged();
                                 if(fileNames.size() == 0) {
                                     setTitle("Not found");
@@ -268,7 +271,7 @@ public class DriveActivity extends HandleExceptionActivity {
                             @Override
                             public void run() {
 
-                                buttonDownload.setEnabled(true);
+                                updateButtonState();
 
                                 Toast.makeText(
                                         DriveActivity.this,
@@ -319,8 +322,11 @@ public class DriveActivity extends HandleExceptionActivity {
     // =========================================================
 
     private void downloadSelectedFiles() {
+        enableButtons(false);
 
-        setTitle("Downloading files...");
+        SparseBooleanArray checked = listView.getCheckedItemPositions();
+        int count = checked.size();
+        setTitle("Downloading files " + count);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -329,8 +335,7 @@ public class DriveActivity extends HandleExceptionActivity {
 
                     final ArrayList<Integer> downloadedPositions = new ArrayList<>();
 
-                    SparseBooleanArray checked = listView.getCheckedItemPositions();
-
+                    int cnt = count;
                     for (int i = 0; i < checked.size(); i++) {
 
                         int position = checked.keyAt(i);
@@ -342,20 +347,24 @@ public class DriveActivity extends HandleExceptionActivity {
                             repository.downloadFileToFolder(driveFile, destinationFolder);
 
                             downloadedPositions.add(position);
-                        }
+
+                            int finalCnt = --cnt;
+                            runOnUiThread(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setTitle("Downloading files " + finalCnt);
+                                        }
+                                    }
+                            );                        }
                     }
+
+                    Cache.getInstance().clear();
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
 
-//                            // снять выделение только у скачанных файлов
-//                            for (Integer position : downloadedPositions) {
-//
-//                                listView.setItemChecked(position, false);
-//                            }
-//                            adapter.notifyDataSetChanged();
-                            buttonDownload.setEnabled(false);
                             Toast.makeText(
                                     DriveActivity.this,
                                     "Download completed",
@@ -373,7 +382,7 @@ public class DriveActivity extends HandleExceptionActivity {
                                 @Override
                                 public void run() {
 
-                                    buttonDownload.setEnabled(true);
+                                    updateButtonState();
 
                                     Toast.makeText(
                                             DriveActivity.this,
@@ -426,20 +435,53 @@ public class DriveActivity extends HandleExceptionActivity {
 
     private void updateDownloadButtonState() {
 
-        SparseBooleanArray checked =
-                listView.getCheckedItemPositions();
 
-        boolean hasSelected = false;
+        boolean enable = false;
 
-        for (int i = 0; i < checked.size(); i++) {
+        if(listView.getAdapter().getCount() != 0) {
+            SparseBooleanArray checked = listView.getCheckedItemPositions();
 
-            if (checked.valueAt(i)) {
+            for (int i = 0; i < checked.size(); i++) {
 
-                hasSelected = true;
-                break;
+                if (checked.valueAt(i)) {
+
+                    enable = true;
+                    break;
+                }
             }
         }
 
-        buttonDownload.setEnabled(hasSelected);
+        buttonDownload.setEnabled(enable);
+    }
+
+    private void updateButtonState() {
+        updateSelectAllButtonState();
+        updateDownloadButtonState();
+    }
+
+    private void updateSelectAllButtonState() {
+
+        boolean enable = false;
+
+        if(listView.getAdapter().getCount() != 0) {
+           SparseBooleanArray checked = listView.getCheckedItemPositions();
+
+           enable = checked.size() == 0;
+           for (int i = 0; i < checked.size(); i++) {
+
+                if (!checked.valueAt(i)) {
+
+                    enable = true;
+                    break;
+                }
+            }
+        }
+
+        buttonSelectAll.setEnabled(enable);
+    }
+
+    private void enableButtons(boolean enable) {
+        buttonDownload.setEnabled(enable);
+        buttonSelectAll.setEnabled(enable);
     }
 }

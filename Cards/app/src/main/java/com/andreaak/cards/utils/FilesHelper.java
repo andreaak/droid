@@ -54,7 +54,10 @@ public class FilesHelper {
         // This will reference one line at a time
         String line = null;
         ArrayList<String> list =  new ArrayList<>();
-
+        File file = new File(path);
+        if(!file.exists()) {
+            return list;
+        }
         BufferedReader bufferedReader = null;
         try {
             InputStreamReader reader = new InputStreamReader(

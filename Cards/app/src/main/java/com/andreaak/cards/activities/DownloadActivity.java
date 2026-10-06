@@ -1,7 +1,6 @@
 package com.andreaak.cards.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,12 +10,6 @@ import android.widget.ImageButton;
 import com.andreaak.cards.R;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
-import com.andreaak.common.configs.SharedPreferencesHelper;
-import com.andreaak.common.utils.Utils;
-import com.andreaak.common.utils.logger.FileLogger;
-import com.andreaak.common.utils.logger.ILogger;
-import com.andreaak.common.utils.logger.Logger;
-import com.andreaak.common.utils.logger.NativeLogger;
 
 public class DownloadActivity extends HandleExceptionActivity implements View.OnClickListener {
 
@@ -27,6 +20,7 @@ public class DownloadActivity extends HandleExceptionActivity implements View.On
 
         ((ImageButton) findViewById(R.id.buttonGDLessons)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonGDVerbs)).setOnClickListener(this);
+        ((ImageButton) findViewById(R.id.buttonGDSubst)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonGDIrregularVerbs)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonGDSounds)).setOnClickListener(this);
         ((ImageButton) findViewById(R.id.buttonGDGrammar)).setOnClickListener(this);
@@ -55,6 +49,8 @@ public class DownloadActivity extends HandleExceptionActivity implements View.On
             googleDriveLessons();
         } else if(id == R.id.buttonGDVerbs)  {
             googleDriveVerbs();
+        } else if(id == R.id.buttonGDSubst)  {
+            googleDriveSubst();
         } else if(id == R.id.buttonGDSounds)  {
             googleDriveSounds();
         } else if(id == R.id.buttonGDGrammar)  {
@@ -81,6 +77,13 @@ public class DownloadActivity extends HandleExceptionActivity implements View.On
         Intent intent = new Intent(this, DriveActivity.class);
         intent.putExtra(DriveActivity.PATH, AppConfigs.getInstance().getVerbDir());
         intent.putExtra(DriveActivity.PREFIXES, AppConfigs.getInstance().VerbPrefix);
+        startActivity(intent);
+    }
+
+    private void googleDriveSubst() {
+        Intent intent = new Intent(this, DriveActivity.class);
+        intent.putExtra(DriveActivity.PATH, AppConfigs.getInstance().getSubstDir());
+        intent.putExtra(DriveActivity.PREFIXES, AppConfigs.getInstance().SubstPrefix);
         startActivity(intent);
     }
 

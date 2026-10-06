@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
-import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.common.utils.Utils;
 
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ public class AITextViewAdapter extends ArrayAdapter<String> {
 
     private final Object lock =  new Object();
 
-    private ArrayList<String> items;
     private ArrayList<String> itemsAll;
     private ArrayList<String> suggestions;
     private int viewResourceId;
@@ -27,7 +25,6 @@ public class AITextViewAdapter extends ArrayAdapter<String> {
     public AITextViewAdapter(Context context, int viewResourceId,
                              ArrayList<String> items) {
         super(context, viewResourceId, items);
-        this.items = items;
         this.itemsAll = (ArrayList<String>) items.clone();
         this.suggestions = new ArrayList<>();
         this.viewResourceId = viewResourceId;
@@ -73,8 +70,9 @@ public class AITextViewAdapter extends ArrayAdapter<String> {
                     suggestions.clear();
                     String ct = Utils.normalizeForComparatorAndRemoveArtikles(constraint.toString());
                     for (String item : itemsAll) {
-                        if (Utils.normalizeForComparatorAndRemoveArtikles(item)
-                                .contains(ct)) {
+                        String value = Utils.normalizeForComparatorAndRemoveArtikles(item);
+
+                        if (isContains(value, ct)) {
                             suggestions.add(item);
                             if(suggestions.size() >= 100) {
                                 break;
@@ -118,4 +116,15 @@ public class AITextViewAdapter extends ArrayAdapter<String> {
             }
         }
     };
+
+    private static boolean isContains(String value, String ct) {
+
+        if(ct.startsWith("*")) {
+            return value.endsWith(ct.substring(1));
+        } else if(ct.endsWith("*")) {
+            return value.startsWith(ct.substring(0, ct.length() - 1));
+        } else {
+            return value.contains(ct);
+        }
+    }
 }

@@ -1,7 +1,8 @@
-package com.andreaak.cards.utils;
+package com.andreaak.cards.utils.xml;
 
 import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.model.WordItem;
+import com.andreaak.cards.utils.BreakParsingException;
 import com.andreaak.common.utils.Utils;
 
 import org.xml.sax.Attributes;
@@ -38,7 +39,9 @@ public class WordItemHandler extends DefaultHandler {
             case "de_example":
             case "de_description":
             case "de_gptdescription":
+            case "de_wbdescription":
             case "de_prap":
+            case "de_quantity":
             case "en":
             case "en_tr":
             case "en_wordclass":
@@ -86,7 +89,9 @@ public class WordItemHandler extends DefaultHandler {
             case "de_example":
             case "de_description":
             case "de_gptdescription":
+            case "de_wbdescription":
             case "de_prap":
+            case "de_quantity":
             case "en":
             case "en_tr":
             case "en_wordclass":

@@ -18,7 +18,7 @@
     <item
         android:id="@+id/menu_addItemToFile"
         android:gravity="right"
-        android:icon="@drawable/plus"
+        android:icon="@drawable/addinfile"
         app:showAsAction="ifRoom"
         android:title="@string/add_item"></item>
 
@@ -37,15 +37,15 @@
     <item
         android:id="@+id/menu_createFile"
         android:gravity="right"
-        android:icon="@drawable/file"
+        android:icon="@drawable/create"
         app:showAsAction="ifRoom"
         android:title="@string/create_file"></item>
     <item
-        android:id="@+id/menu_openLastFile"
+        android:id="@+id/menu_openFile"
         android:gravity="right"
-        android:icon="@drawable/exit"
+        android:icon="@drawable/open"
         app:showAsAction="ifRoom"
-        android:title="@string/open_last_file"></item>
+        android:title="@string/open_file"></item>
     <item
         android:id="@+id/menu_plus"
         android:gravity="right"
