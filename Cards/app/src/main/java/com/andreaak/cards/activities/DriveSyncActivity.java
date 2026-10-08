@@ -120,7 +120,18 @@ public class DriveSyncActivity extends HandleExceptionActivity {
         localRoot = new java.io.File(directory);
         driveRoot = getIntent().getStringExtra(DRIVE_PATH);
 
-        signIn();
+        checkSignIn();
+    }
+
+    private void checkSignIn() {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        Scope driveScope = new Scope(DriveScopes.DRIVE_READONLY);
+
+        if (account != null && GoogleSignIn.hasPermissions(account, driveScope)) {
+            initDriveService(account);
+        } else {
+            signIn();
+        }
     }
 
     private void signIn() {
@@ -142,8 +153,48 @@ public class DriveSyncActivity extends HandleExceptionActivity {
                 client.getSignInIntent(),
                 RC_SIGN_IN
         );
+    }
 
+    private void initDriveService(GoogleSignInAccount account) {
+        try {
+            GoogleAccountCredential credential =
+                    GoogleAccountCredential.usingOAuth2(
+                            this,
+                            Collections.singleton(
+                                    DriveScopes.DRIVE_READONLY
+                            )
+                    );
 
+            credential.setSelectedAccount(
+                    account.getAccount()
+            );
+
+            Drive driveService =
+                    new Drive.Builder(
+                            new NetHttpTransport(),
+                            GsonFactory.getDefaultInstance(),
+                            credential
+                    )
+                            .setApplicationName("Cards")
+                            .build();
+
+            repository = new DriveRepository(driveService);
+
+            loadFilesInfo();
+        } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            runOnUiThread(
+                    () -> {
+                        Toast.makeText(
+                                DriveSyncActivity.this,
+                                e.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
+                        setTitle("Error");
+                    }
+            );
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -168,45 +219,18 @@ public class DriveSyncActivity extends HandleExceptionActivity {
                                 .getSignedInAccountFromIntent(data)
                                 .getResult();
 
-                GoogleAccountCredential credential =
-                        GoogleAccountCredential.usingOAuth2(
-                                this,
-                                Collections.singleton(
-                                        DriveScopes.DRIVE_READONLY
-                                )
-                        );
-
-                credential.setSelectedAccount(
-                        account.getAccount()
-                );
-
-                Drive driveService =
-                        new Drive.Builder(
-                                new NetHttpTransport(),
-                                GsonFactory.getDefaultInstance(),
-                                credential
-                        )
-                                .setApplicationName("Cards")
-                                .build();
-
-                repository = new DriveRepository(driveService);
-
-                loadFilesInfo();
+                initDriveService(account);
 
             } catch (Exception e) {
                 Logger.e(Constants.LOG_TAG, e.getMessage(), e);
                 runOnUiThread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-
-                                Toast.makeText(
-                                        DriveSyncActivity.this,
-                                        e.getMessage(),
-                                        Toast.LENGTH_LONG
-                                ).show();
-                                setTitle("Error");
-                            }
+                        () -> {
+                            Toast.makeText(
+                                    DriveSyncActivity.this,
+                                    e.getMessage(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                            setTitle("Error");
                         }
                 );
                 e.printStackTrace();

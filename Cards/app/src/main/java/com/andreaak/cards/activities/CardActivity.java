@@ -86,15 +86,8 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            // Set the local night mode to some value
-            getDelegate().setLocalNightMode(
-                    AppCompatDelegate.MODE_NIGHT_YES);
-            // Now recreate for it to take effect
-            recreate();
-        }
 
         setContentView(R.layout.activity_card);
 
@@ -682,10 +675,6 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
     private void openFile(String name) {
         XmlParser.openFile(name);
-    }
-
-    private void openLastFile() {
-        XmlParser.openLastFile();
     }
 
     MediaPlayerHelper mediaHelper;

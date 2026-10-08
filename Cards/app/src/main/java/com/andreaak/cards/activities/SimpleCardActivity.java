@@ -6,14 +6,11 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.TabStopSpan;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.VelocityTracker;
-import androidx.appcompat.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -21,18 +18,23 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
 import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
+import com.andreaak.cards.utils.Cache;
 import com.andreaak.cards.utils.MediaPlayerHelper;
 import com.andreaak.cards.utils.xml.XmlParser;
 import com.andreaak.common.activitiesShared.FileChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.FilesChooserWithButtonsActivity;
 import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
-import com.andreaak.common.configs.SharedPreferencesHelper;
 import com.andreaak.common.predicates.StudyFilesPredicate;
 import com.andreaak.common.utils.Utils;
 
@@ -42,12 +44,8 @@ import java.util.Queue;
 
 public class SimpleCardActivity extends HandleExceptionAppCompatActivity implements View.OnClickListener {
 
-    //in
     public static final String HELPER = "Helper";
 
-    public static final int REQUEST_FILE = 1;
-
-    private Menu menu;
     private ImageButton buttonSound;
     private ImageButton buttonExample;
     private ImageButton buttonDescription;
@@ -62,22 +60,24 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
 
     private SimpleCardActivityHelper helper;
 
-    private VelocityTracker mVelocityTracker = null;
-    private float x;
     private boolean isExample;
     private boolean isDescription;
 
+    private PopupWindow popupWindow;
+    private MediaPlayerHelper mediaHelper;
+
+    private final ActivityResultLauncher<Intent> openFileLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    String name = (String) result.getData().getSerializableExtra(FileChooserWithButtonsActivity.FILE_NAME);
+                    openFile(name);
+                }
+            });
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            // Set the local night mode to some value
-            getDelegate().setLocalNightMode(
-                    AppCompatDelegate.MODE_NIGHT_YES);
-            // Now recreate for it to take effect
-            recreate();
-        }
 
         setContentView(R.layout.activity_card);
 
@@ -85,114 +85,75 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         findViewById(R.id.buttonToggle).setVisibility(View.INVISIBLE);
         findViewById(R.id.buttonRemove).setVisibility(View.INVISIBLE);
 
-        buttonSound = (ImageButton) findViewById(R.id.buttonSound);
+        buttonSound = findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
 
-        buttonExample = (ImageButton) findViewById(R.id.buttonExample);
+        buttonExample = findViewById(R.id.buttonExample);
         buttonExample.setOnClickListener(this);
 
-        buttonDescription = (ImageButton) findViewById(R.id.buttonDescription);
+        buttonDescription = findViewById(R.id.buttonDescription);
         buttonDescription.setOnClickListener(this);
 
-        buttonGPTDescription = (ImageButton) findViewById(R.id.buttonGPTDescription);
+        buttonGPTDescription = findViewById(R.id.buttonGPTDescription);
         buttonGPTDescription.setOnClickListener(this);
 
-        buttonPrap = (ImageButton) findViewById(R.id.buttonPrap);
+        buttonPrap = findViewById(R.id.buttonPrap);
         buttonPrap.setOnClickListener(this);
 
-        textViewWord1 = (TextView) findViewById(R.id.textViewWord1);
-        textViewTrans1 = (TextView) findViewById(R.id.textViewTrans1);
-        textViewWord2 = (TextView) findViewById(R.id.textViewWord2);
-        textViewTrans2 = (TextView) findViewById(R.id.textViewTrans2);
-        textViewExample = (TextView) findViewById(R.id.textViewExample);
+        textViewWord1 = findViewById(R.id.textViewWord1);
+        textViewTrans1 = findViewById(R.id.textViewTrans1);
+        textViewWord2 = findViewById(R.id.textViewWord2);
+        textViewTrans2 = findViewById(R.id.textViewTrans2);
+        textViewExample = findViewById(R.id.textViewExample);
 
-        setFontSize();
         onRestoreNonConfigurationInstance();
     }
 
+    @SuppressWarnings("deprecation")
     private void onRestoreNonConfigurationInstance() {
-
         helper = (SimpleCardActivityHelper) getLastCustomNonConfigurationInstance();
         if (helper == null) {
-            helper =  (SimpleCardActivityHelper) getIntent().getSerializableExtra(SimpleCardActivity.HELPER);
-            setTitle(helper.currentSimpleWord.getDisplayName(helper.language.getPrimaryLanguage()));
+            helper = (SimpleCardActivityHelper) getIntent().getSerializableExtra(SimpleCardActivity.HELPER);
         }
+        if (helper == null) {
+            return;
+        }
+        setTitle(helper.currentSimpleWord.getDisplayName(helper.language.getPrimaryLanguage()));
         String lang = helper.language.getPrimaryLanguage();
         WordItem res = XmlParser.getWordItem(helper.currentSimpleWord, lang);
 
-        if(res != null) {
+        if (res != null) {
             helper.currentWord = res;
             activateWord(res);
+            setTitle2();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_card_simple, menu);
-        menu.setGroupVisible(com.andreaak.cards.R.id.groupGoogle, false /*googleDriveHelper.isConnected()*/);
-
-        this.menu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Object onRetainCustomNonConfigurationInstance() {
         return helper;
     }
 
-    private void setFontSize() {
-//        float factor = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
-//        setTextSize(factor);
-    }
-
-    private void saveFontSize(float factor) {
-        SharedPreferencesHelper.getInstance().save(AppConfigs.SP_TEXT_FONT_SIZE, factor);
-    }
-
-    private void setTextSize(float factor) {
-        setTextSize(textViewWord1, factor);
-        setTextSize(textViewTrans1, factor);
-        setTextSize(textViewWord2, factor);
-        setTextSize(textViewTrans2, factor);
-        setTextSize(textViewExample, factor);
-        saveFontSize(factor);
-    }
-
-    private void setTextSize(TextView view, float factor) {
-        float newSize = view.getTextSize() * factor;
-        setViewTextSize(view, newSize);
-    }
-
-    private void setViewTextSize(TextView textView, float size) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(Math.round(0), Math.round(0), Math.round(0), Math.round(0));
-
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
-        textView.setLayoutParams(params);
-        textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
-        textView.setPadding(0, 0, 0, 0);
-        //textView.setHeight((int) size + 20);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
 
-        if(id == R.id.menu_plus)  {
-            //textBigger();
+        if (id == R.id.menu_plus || id == R.id.menu_minus) {
             return true;
-        } else if(id == R.id.menu_minus)  {
-            //textSmaller();
-            return true;
-        } else if(id == R.id.menu_createFile)  {
+        } else if (id == R.id.menu_createFile) {
             createFile();
             return true;
-        } else if(id == R.id.menu_addItemToFile)  {
+        } else if (id == R.id.menu_addItemToFile) {
             addItemToFile();
             return true;
-        } else if(id == R.id.menu_openFile)  {
+        } else if (id == R.id.menu_openFile) {
             openFile();
             return true;
         }
@@ -201,41 +162,31 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_FILE:
-                if (resultCode == RESULT_OK) {
-                    String name = (String) data.getSerializableExtra(FileChooserWithButtonsActivity.FILE_NAME);
-                    openFile(name);
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void onClick(View v) {
         int id = v.getId();
 
-        if(id == R.id.buttonSound)  {
+        if (id == R.id.buttonSound) {
             playSound();
-        } else if(id == R.id.buttonExample)  {
+        } else if (id == R.id.buttonExample) {
             showExample();
-        } else if(id == R.id.buttonDescription)  {
+        } else if (id == R.id.buttonDescription) {
             showDescription(v);
-        } else if(id == R.id.buttonGPTDescription)  {
+        } else if (id == R.id.buttonGPTDescription) {
             showGPTDescription(v);
-        } else if(id == R.id.buttonPrap)  {
+        } else if (id == R.id.buttonPrap) {
             showPrap(v);
         }
     }
 
     private void activateWord(WordItem word) {
+        if (word == null || helper == null || helper.language == null) {
+            return;
+        }
 
         LanguageItem languageItem = helper.language;
 
         String wordText = word.getValue(languageItem.getPrimaryLanguage());
-        SetWordAndVisibility(textViewWord1, wordText);
+        setWordAndVisibility(textViewWord1, wordText);
 
         String transcription = word.getTranscription(languageItem.getPrimaryLanguage());
         String info = word.getInfo(languageItem.getPrimaryLanguage());
@@ -245,7 +196,7 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         setTranscriptionAndVisibility(textViewTrans1, text);
 
         wordText = word.getValue(languageItem.getSecondaryLanguage());
-        SetWordAndVisibility(textViewWord2, wordText);
+        setWordAndVisibility(textViewWord2, wordText);
         adoptFontSize(textViewWord2, wordText, 45, 25);
 
         transcription = word.getTranscription(languageItem.getSecondaryLanguage());
@@ -255,7 +206,7 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         setTranscriptionAndVisibility(textViewTrans2, text);
 
         String example = word.getExample(languageItem.getPrimaryLanguage());
-        if(Utils.isEmpty(example)) {
+        if (Utils.isEmpty(example)) {
             example = word.getExample(languageItem.getSecondaryLanguage());
         }
         int flag = !Utils.isEmpty(example) ? View.VISIBLE : View.INVISIBLE;
@@ -273,11 +224,11 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         flag = !Utils.isEmpty(prap) ? View.VISIBLE : View.INVISIBLE;
         buttonPrap.setVisibility(flag);
 
-        if(isExample && !Utils.isEmpty(example)) {
+        if (isExample && !Utils.isEmpty(example)) {
             textViewExample.setGravity(Gravity.CENTER);
             setTranscriptionAndVisibility(textViewExample, example);
-        } else if(isDescription && !Utils.isEmpty(description)) {
-            textViewExample.setGravity(Gravity.LEFT);
+        } else if (isDescription && !Utils.isEmpty(description)) {
+            textViewExample.setGravity(Gravity.START);
             setTranscriptionAndVisibility(textViewExample, description);
         } else {
             setVisibility(textViewExample, View.GONE);
@@ -290,103 +241,76 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     private void adoptFontSize(TextView textView, String text, float minFontSize, float defaultFontSize) {
+        textView.post(() -> {
+            if (Utils.isEmpty(text)) {
+                return;
+            }
 
-        final float defaultFontSize1 = defaultFontSize;
-        textView.post(new Runnable() {
-            @Override
-            public void run() {
-
-                if(Utils.isEmpty(text)) {
-                    return;
-                }
-
-                String[] items = text.split("\n");
-                String textLine = "";
-                for(String item : items) {
-                    if(textLine.length() < item.length()) {
-                        textLine = item;
-                    }
-                }
-
-                int displayWidth = textView.getMeasuredWidth();
-                int displayWidth1 = textView.getWidth();
-                if(displayWidth <= 0) {
-                    return;
-                }
-
-                float fontSizeOld = textView.getTextSize();
-                float density = textView.getResources().getDisplayMetrics().density;
-                float defaultFontSize2 = defaultFontSize1 * density;
-                Paint paint = new Paint();
-                paint.setTextSize(defaultFontSize2); // размер в пикселях
-                float widthPx = paint.measureText(textLine);
-                if(widthPx > displayWidth) {
-                    float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize2);
-                    setViewTextSize(textView, fontSize);
-                    setViewGravity(textView, false);
-                } else {
-                    setViewTextSize(textView, defaultFontSize2);
-                    setViewGravity(textView, true);
+            String[] items = text.split("\n");
+            String textLine = "";
+            for (String item : items) {
+                if (textLine.length() < item.length()) {
+                    textLine = item;
                 }
             }
+
+            int displayWidth = textView.getMeasuredWidth();
+            if (displayWidth <= 0) {
+                return;
+            }
+
+            float density = textView.getResources().getDisplayMetrics().density;
+            float defaultFontSize2 = defaultFontSize * density;
+            Paint paint = new Paint();
+            paint.setTextSize(defaultFontSize2);
+            float widthPx = paint.measureText(textLine);
+            if (widthPx > displayWidth) {
+                float fontSize = Math.max(minFontSize, displayWidth / widthPx * defaultFontSize2);
+                setViewTextSize(textView, fontSize);
+                setViewGravity(textView, false);
+            } else {
+                setViewTextSize(textView, defaultFontSize2);
+                setViewGravity(textView, true);
+            }
         });
-
-
-//        String[] items = text.split("\n");
-//        String textLine = "";
-//        for(String item : items) {
-//            if(textLine.length() < item.length()) {
-//                textLine = item;
-//            }
-//        }
-//
-//        int displayWidth = textView.getMeasuredWidth();
-//        if(displayWidth <= 0) {
-//            return;
-//        }
-//
-//        float fontSizeOld = textView.getTextSize();
-//        float density = textView.getResources().getDisplayMetrics().density;
-//        defaultFontSize = defaultFontSize * density;
-//        Paint paint = new Paint();
-//        paint.setTextSize(defaultFontSize); // размер в пикселях
-//        float widthPx = paint.measureText(textLine);
-//        if(widthPx > displayWidth) {
-//            float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize);
-//            setViewTextSize(textView, fontSize);
-//            setViewGravity(textView, false);
-//        } else {
-//            setViewTextSize(textView, defaultFontSize);
-//            setViewGravity(textView, true);
-//        }
     }
 
     private void setViewGravity(TextView textView, boolean isCenter) {
-        if(isCenter){
-            textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        if (isCenter) {
+            textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
         } else {
-            textView.setGravity(Gravity.LEFT);
+            textView.setGravity(Gravity.START);
         }
         textView.setPadding(0, 0, 0, 0);
     }
 
+    private void setViewTextSize(TextView textView, float size) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 0, 0, 0);
 
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+        textView.setLayoutParams(params);
+        textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+        textView.setPadding(0, 0, 0, 0);
+    }
 
     private String combineText(String first, String second) {
         return first == null ? second : second == null ? first : first + "  " + second;
     }
 
-    private void SetWordAndVisibility(TextView textView, String word) {
+    private void setWordAndVisibility(TextView textView, String word) {
         if (!Utils.isEmpty(word)) {
             textView.setText(word);
-            if(word.toLowerCase().startsWith("der ")) {
-                textView.setTextColor(getResources().getColor(R.color.colorBlue));
-            } else if(word.toLowerCase().startsWith("die ")) {
-                textView.setTextColor(getResources().getColor(R.color.colorRed));
-            } else if(word.toLowerCase().startsWith("das ")) {
-                textView.setTextColor(getResources().getColor(R.color.colorGreen));
-            } else {
-                //textView.setTextColor(getResources().getColor(R.color.colorBlack));
+            String lowerWord = word.toLowerCase();
+            if (lowerWord.startsWith("der ")) {
+                textView.setTextColor(ContextCompat.getColor(this, R.color.colorBlue));
+            } else if (lowerWord.startsWith("die ")) {
+                textView.setTextColor(ContextCompat.getColor(this, R.color.colorRed));
+            } else if (lowerWord.startsWith("das ")) {
+                textView.setTextColor(ContextCompat.getColor(this, R.color.colorGreen));
             }
         }
         setVisibility(textView, View.VISIBLE);
@@ -401,8 +325,8 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         }
     }
 
-    private void setVisibility(TextView textView, int flag){
-        if(textView.getVisibility() != flag){
+    private void setVisibility(TextView textView, int flag) {
+        if (textView.getVisibility() != flag) {
             textView.setVisibility(flag);
         }
     }
@@ -413,44 +337,57 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         activateWord(helper.currentWord);
     }
 
-    PopupWindow popupWindow;
-    View popupView;
+    private interface WordFieldGetter {
+        String get(WordItem item, String lang);
+    }
 
+    private String getLocalizedField(WordItem word, WordFieldGetter getter) {
+        if (word == null || helper == null || helper.language == null) {
+            return "";
+        }
+        String info = getter.get(word, helper.language.getPrimaryLanguage());
+        if (Utils.isEmpty(info)) {
+            info = getter.get(word, helper.language.getSecondaryLanguage());
+        }
+        return info != null ? info : "";
+    }
 
     private void showDescription(View v) {
-
         String info = getDescription(helper.currentWord);
         showInfo(v, info);
     }
 
     private String getDescription(WordItem word) {
-        String info = word.getDescription(helper.language.getPrimaryLanguage());
-        if(Utils.isEmpty(info)) {
-            info = word.getDescription(helper.language.getSecondaryLanguage());
-        }
-        return info;
+        return getLocalizedField(word, WordItem::getDescription);
     }
 
     private void showGPTDescription(View v) {
-
         String info = getGPTDescription(helper.currentWord);
         showInfo(v, info);
     }
 
     private String getGPTDescription(WordItem word) {
-        String info = word.getGPTDescription(helper.language.getPrimaryLanguage());
-        if(Utils.isEmpty(info)) {
-            info = word.getGPTDescription(helper.language.getSecondaryLanguage());
+        String gpt = getLocalizedField(word, WordItem::getGPTDescription);
+        String wb = getWBDescription(word);
+        String path = (word != null && word.getPath() != null) ? word.getPath() : "";
+
+        StringBuilder sb = new StringBuilder();
+        if (!Utils.isEmpty(gpt)) {
+            sb.append(gpt);
         }
-        return info + "\r\n\r\n"+ getWBDescription(word) + "\r\n\r\n" + helper.currentWord.getPath();
+        if (!Utils.isEmpty(wb)) {
+            if (sb.length() > 0) sb.append("\r\n\r\n");
+            sb.append(wb);
+        }
+        if (!Utils.isEmpty(path)) {
+            if (sb.length() > 0) sb.append("\r\n\r\n");
+            sb.append(path);
+        }
+        return sb.toString();
     }
 
     private String getWBDescription(WordItem word) {
-        String info = word.getWBDescription(helper.language.getPrimaryLanguage());
-        if(Utils.isEmpty(info)) {
-            info = word.getWBDescription(helper.language.getSecondaryLanguage());
-        }
-        return info;
+        return getLocalizedField(word, WordItem::getWBDescription);
     }
 
     private void showPrap(View v) {
@@ -459,23 +396,19 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     private String getPrap(WordItem word) {
-        String info = word.getPrap(helper.language.getPrimaryLanguage());
-        if(Utils.isEmpty(info)) {
-            info = word.getPrap(helper.language.getSecondaryLanguage());
-        }
-        return info;
+        return getLocalizedField(word, WordItem::getPrap);
     }
 
     private void createFile() {
         XmlParser.createFile();
+        setTitle2();
     }
 
     private void addItemToFile() {
-
         String lang1 = helper.language.getPrimaryLanguage();
         String lang2 = helper.language.getSecondaryLanguage();
 
-        if("ru".equals(lang1)) {
+        if ("ru".equals(lang1)) {
             XmlParser.addItemToFile(helper.currentWord, lang1, lang2);
         } else {
             XmlParser.addItemToFile(helper.currentWord, lang2, lang1);
@@ -487,27 +420,27 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         intent.putExtra(FilesChooserWithButtonsActivity.PREDICATE, new StudyFilesPredicate());
         intent.putExtra(FilesChooserWithButtonsActivity.TITLE, getString(R.string.combine_files));
         intent.putExtra(FilesChooserWithButtonsActivity.INITIAL_PATH, AppConfigs.getInstance().getStudyDir());
-        startActivityForResult(intent, REQUEST_FILE);
+        openFileLauncher.launch(intent);
     }
 
     private void openFile(String name) {
         XmlParser.openFile(name);
+        setTitle2();
     }
 
-    private void openLastFile() {
-        XmlParser.openLastFile();
+    private void setTitle2() {
+        String fileName = Cache.getInstance().getItem(XmlParser.CurrentStudyFileKey);
+        setTitle(Utils.isEmpty(fileName) ? "" : (" " + fileName));
     }
 
     private void showInfo(View v, String info) {
-
         final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        popupView = inflater.inflate(R.layout.popup_design, null, false);
+        View popupView = inflater.inflate(R.layout.popup_design, findViewById(android.R.id.content), false);
 
-        TextView popupTextView = (TextView) popupView.findViewById(R.id.textPopup); // Идентификатор из popup_layout.xml
+        TextView popupTextView = popupView.findViewById(R.id.textPopup);
 
-        SpannableString spannableString = new SpannableString(info+ "\r\n");
+        SpannableString spannableString = new SpannableString(info + "\r\n");
 
-        // Задаем ширину отступа табуляции в пикселях (например, 200px)
         int tabSpacePixels = 50;
 
         spannableString.setSpan(
@@ -519,33 +452,25 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
 
         popupTextView.setText(spannableString);
 
-
-        //popupTextView.setText(info + "\r\n");
-
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View arg0, MotionEvent arg1) {
+        popupView.setOnTouchListener((view, motionEvent) -> {
+            if (popupWindow != null) {
                 popupWindow.dismiss();
-                return true;
             }
+            view.performClick();
+            return true;
         });
 
-        popupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.FILL_PARENT, true);
+        popupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, true);
         popupWindow.setAnimationStyle(android.R.style.Animation_InputMethod);
-        //popupWindow.showAtLocation(v, Gravity.LEFT, 0, 10);
-        popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0); // Отображает всплывающее окно в центре экрана
+        popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0);
     }
 
-    MediaPlayerHelper mediaHelper;
-
     private void playSound() {
-
         if (mediaHelper != null && mediaHelper.IsActive) {
             return;
         }
 
-        String language = helper.language.getSoundLanguage();;
+        String language = helper.language.getSoundLanguage();
 
         Queue<String> files = getSoundFiles(language);
         if (files.isEmpty()) {
@@ -558,84 +483,39 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     }
 
     private Queue<String> getSoundFiles(String language) {
-
-        Queue<String> files = new ArrayDeque<String>();
+        Queue<String> files = new ArrayDeque<>();
 
         List<String> words = AppUtils.getWords(helper.currentWord.getValue(language));
 
         boolean isValid = false;
 
         for (String word : words) {
-            word = word.replace("|" , "");
+            word = word.replace("|", "");
             String fileTemplate = AppUtils.getSoundFile(language, word);
             boolean res = AppUtils.addSoundFile(files, fileTemplate);
-            if(res && !isArtikle(word)) {
+            if (res && !isArticle(word)) {
                 isValid = true;
             }
         }
 
-        if(!isValid){
+        if (!isValid) {
             files.clear();
         }
         return files;
     }
 
-    private boolean isArtikle(String value) {
+    private boolean isArticle(String value) {
         return "der".equals(value) || "die".equals(value) || "das".equals(value);
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int index = event.getActionIndex();
-        int action = event.getActionMasked();
-        int pointerId = event.getPointerId(index);
-
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                if (mVelocityTracker == null) {
-                    // Retrieve a new VelocityTracker object to watch the
-                    // velocity of a motion.
-                    mVelocityTracker = VelocityTracker.obtain();
-                } else {
-                    // Reset the velocity tracker back to its initial state.
-                    mVelocityTracker.clear();
-                }
-                // Add a user's movement to the tracker.
-                mVelocityTracker.addMovement(event);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                mVelocityTracker.addMovement(event);
-                // When you want to determine the velocity, call
-                // computeCurrentVelocity(). Then call getXVelocity()
-                // and getYVelocity() to retrieve the velocity for each pointer ID.
-                mVelocityTracker.computeCurrentVelocity(1000);
-                // Log velocity of pixels per second
-                // Best practice to use VelocityTrackerCompat where possible.
-
-                x = mVelocityTracker.getXVelocity(pointerId);
-
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                // Return a VelocityTracker object back to be re-used by others.
-                //mVelocityTracker.recycle();
-
-//                if (Math.abs(x) > 500 && wordsAdapter != null) {
-//
-//                    int position = wordsAdapter.getPosition(helper.currentWord);
-//                    if (x < 0) {
-//                        if (position < (wordsAdapter.getCount() - 1)) {
-//                            nextWord();
-//                        }
-//                    } else {
-//                        if (position > 0) {
-//                            previousWord();
-//                        }
-//                    }
-//                }
-                x = 0;
-                break;
+    protected void onDestroy() {
+        if (popupWindow != null && popupWindow.isShowing()) {
+            popupWindow.dismiss();
         }
-        return true;
+        if (mediaHelper != null) {
+            mediaHelper.stop();
+        }
+        super.onDestroy();
     }
 }

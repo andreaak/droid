@@ -25,6 +25,7 @@ public class EditWordActivity extends HandleExceptionActivity implements View.On
     public static final String CHANGED = "Changed";
     public static final String NEWWORD = "NewWord";
 
+
     private Button buttonOk;
     private Button buttonCancel;
 

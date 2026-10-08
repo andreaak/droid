@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.configs.AppConfigs;
-import com.andreaak.cards.model.SyncFileInfo;
 import com.andreaak.cards.utils.Cache;
 import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.DriveRepository;
@@ -123,12 +122,23 @@ public class DriveActivity extends HandleExceptionActivity {
         String directories = getIntent().getStringExtra(PATH);
         destinationFolder = new java.io.File(directories);
         googleDriveFolder = AppConfigs.getInstance().getRemoteLessonsDir();
-        signIn();
+        checkSignIn();
     }
 
     // =========================================================
     // Google Sign-In
     // =========================================================
+
+    private void checkSignIn() {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        Scope driveScope = new Scope(DriveScopes.DRIVE_READONLY);
+
+        if (account != null && GoogleSignIn.hasPermissions(account, driveScope)) {
+            initDriveService(account);
+        } else {
+            signIn();
+        }
+    }
 
     private void signIn() {
 
@@ -149,6 +159,36 @@ public class DriveActivity extends HandleExceptionActivity {
                 client.getSignInIntent(),
                 RC_SIGN_IN
         );
+    }
+
+    private void initDriveService(GoogleSignInAccount account) {
+        try {
+            GoogleAccountCredential credential =
+                    GoogleAccountCredential.usingOAuth2(
+                            this,
+                            Collections.singleton(DriveScopes.DRIVE_READONLY)
+                    );
+
+            credential.setSelectedAccount(account.getAccount());
+
+            Drive driveService =
+                    new Drive.Builder(
+                            new NetHttpTransport(),
+                            GsonFactory.getDefaultInstance(),
+                            credential
+                    )
+                            .setApplicationName("Cards")
+                            .build();
+
+            repository = new DriveRepository(driveService);
+
+            setTitle("Loading info...");
+            loadFilesInfo(googleDriveFolder);
+
+        } catch (Exception e) {
+            Logger.e(Constants.LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -173,31 +213,7 @@ public class DriveActivity extends HandleExceptionActivity {
                                 .getSignedInAccountFromIntent(data)
                                 .getResult();
 
-                GoogleAccountCredential credential =
-                        GoogleAccountCredential.usingOAuth2(
-                                this,
-                                Collections.singleton(
-                                        DriveScopes.DRIVE_READONLY
-                                )
-                        );
-
-                credential.setSelectedAccount(
-                        account.getAccount()
-                );
-
-                Drive driveService =
-                        new Drive.Builder(
-                                new NetHttpTransport(),
-                                GsonFactory.getDefaultInstance(),
-                                credential
-                        )
-                                .setApplicationName("Cards")
-                                .build();
-
-                repository = new DriveRepository(driveService);
-
-                setTitle("Loading info...");
-                loadFilesInfo(googleDriveFolder);
+                initDriveService(account);
 
             } catch (Exception e) {
                 Logger.e(Constants.LOG_TAG, e.getMessage(), e);
@@ -325,8 +341,18 @@ public class DriveActivity extends HandleExceptionActivity {
         enableButtons(false);
 
         SparseBooleanArray checked = listView.getCheckedItemPositions();
-        int count = checked.size();
-        setTitle("Downloading files " + count);
+        if (checked == null) {
+            return;
+        }
+
+        int selectedCount = 0;
+        for (int i = 0; i < checked.size(); i++) {
+            if (checked.valueAt(i)) {
+                selectedCount++;
+            }
+        }
+        final int totalToDownload = selectedCount;
+        setTitle("Downloading files " + totalToDownload);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -335,7 +361,7 @@ public class DriveActivity extends HandleExceptionActivity {
 
                     final ArrayList<Integer> downloadedPositions = new ArrayList<>();
 
-                    int cnt = count;
+                    int cnt = totalToDownload;
                     for (int i = 0; i < checked.size(); i++) {
 
                         int position = checked.keyAt(i);
@@ -434,19 +460,16 @@ public class DriveActivity extends HandleExceptionActivity {
     }
 
     private void updateDownloadButtonState() {
-
-
         boolean enable = false;
 
-        if(listView.getAdapter().getCount() != 0) {
+        if (adapter != null && adapter.getCount() > 0) {
             SparseBooleanArray checked = listView.getCheckedItemPositions();
-
-            for (int i = 0; i < checked.size(); i++) {
-
-                if (checked.valueAt(i)) {
-
-                    enable = true;
-                    break;
+            if (checked != null) {
+                for (int i = 0; i < checked.size(); i++) {
+                    if (checked.valueAt(i)) {
+                        enable = true;
+                        break;
+                    }
                 }
             }
         }
@@ -460,24 +483,28 @@ public class DriveActivity extends HandleExceptionActivity {
     }
 
     private void updateSelectAllButtonState() {
+        int count = adapter != null ? adapter.getCount() : 0;
+        if (count == 0) {
+            buttonSelectAll.setEnabled(false);
+            buttonSelectAll.setText("Select all");
+            return;
+        }
 
-        boolean enable = false;
+        buttonSelectAll.setEnabled(true);
 
-        if(listView.getAdapter().getCount() != 0) {
-           SparseBooleanArray checked = listView.getCheckedItemPositions();
-
-           enable = checked.size() == 0;
-           for (int i = 0; i < checked.size(); i++) {
-
-                if (!checked.valueAt(i)) {
-
-                    enable = true;
-                    break;
-                }
+        boolean allSelected = true;
+        for (int i = 0; i < count; i++) {
+            if (!listView.isItemChecked(i)) {
+                allSelected = false;
+                break;
             }
         }
 
-        buttonSelectAll.setEnabled(enable);
+        if (allSelected) {
+            buttonSelectAll.setText("Unselect all");
+        } else {
+            buttonSelectAll.setText("Select all");
+        }
     }
 
     private void enableButtons(boolean enable) {

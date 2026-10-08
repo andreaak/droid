@@ -24,10 +24,13 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -48,12 +51,7 @@ import java.util.List;
 
 public class XmlParser {
 
-    public static LessonItem parseLesson(String path, String prefix) {
-
-        LessonItem lesson = new LessonItem(new File(path), prefix, true);
-        parseLesson(lesson);
-        return lesson;
-    }
+    private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
 
     public static LessonItem parseLesson(LessonItem lesson) {
 
@@ -71,22 +69,20 @@ public class XmlParser {
     }
 
     public static ArrayList<SimpleWordItem> getSimpleWordItems(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return new ArrayList<>();
+        }
 
-        try {
-            SAXParserFactory fabrique = SAXParserFactory.newInstance();
-            SAXParser parser = fabrique.newSAXParser();
-
-            File file = new File(path);
+        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
+            SAXParser parser = SAX_PARSER_FACTORY.newSAXParser();
             SimpleWordItemHandler handler = new SimpleWordItemHandler(path);
-            parser.parse(file, handler);
-
+            parser.parse(inputStream, handler);
             return handler.words;
         } catch (FileNotFoundException e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
         } catch (Exception e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
         }
         return new ArrayList<>();
     }

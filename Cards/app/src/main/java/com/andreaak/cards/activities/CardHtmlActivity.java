@@ -77,15 +77,8 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            // Set the local night mode to some value
-            getDelegate().setLocalNightMode(
-                    AppCompatDelegate.MODE_NIGHT_YES);
-            // Now recreate for it to take effect
-            recreate();
-        }
 
         setContentView(R.layout.activity_card_html);
 

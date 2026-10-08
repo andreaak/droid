@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+def generateVersionCode = {
+    return Integer.parseInt(new Date().format("yyMMddHH"))
+}
+
+def generateVersionName = {
+    return "2." + new Date().format("yy.MM.dd")
+}
+
 android {
     namespace "com.andreaak.cards"
     compileSdk 34
@@ -7,8 +15,8 @@ android {
         applicationId "com.andreaak.cards"
         minSdk 21
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +44,12 @@ android {
             shrinkResources false
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "Cards_${variant.versionName}.apk"
         }
     }
 }

@@ -81,4 +81,16 @@ public class MediaPlayerHelper {
         reset();
         IsActive = false;
     }
+
+    public void stop() {
+        if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+            } catch (Exception ignored) {
+            }
+            clean();
+        }
+    }
 }

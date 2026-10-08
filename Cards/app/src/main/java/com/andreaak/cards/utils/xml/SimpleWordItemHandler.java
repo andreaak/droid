@@ -12,11 +12,11 @@ public class SimpleWordItemHandler extends DefaultHandler {
 
     private StringBuilder buffer;
     private SimpleWordItem word;
-    private String path;
+    private final String path;
 
-    public ArrayList<SimpleWordItem> words = new ArrayList<>();
+    public final ArrayList<SimpleWordItem> words = new ArrayList<>(128);
 
-    SimpleWordItemHandler(String path){
+    SimpleWordItemHandler(String path) {
         this.path = path;
     }
 
@@ -34,30 +34,29 @@ public class SimpleWordItemHandler extends DefaultHandler {
             case "de_info":
             case "en_wordclass":
             case "en_info":
-                if(buffer == null) {
+                if (buffer == null) {
                     buffer = new StringBuilder();
                 } else {
                     buffer.setLength(0);
                 }
-
                 break;
         }
     }
 
     @Override
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
-        String content = new String(ch, start, length);
-        if (buffer != null)
-            buffer.append(content);
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        if (buffer != null) {
+            buffer.append(ch, start, length);
+        }
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName)
-            throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         switch (qName) {
             case "word":
-                words.add(word);
+                if (word != null) {
+                    words.add(word);
+                }
                 break;
             case "ru":
             case "en":
@@ -66,13 +65,10 @@ public class SimpleWordItemHandler extends DefaultHandler {
             case "de_info":
             case "en_wordclass":
             case "en_info":
-                word.addItem(qName, buffer.toString());
+                if (word != null && buffer != null) {
+                    word.addItem(qName, buffer.toString());
+                }
                 break;
         }
-    }
-
-    @Override
-    public void endDocument() throws SAXException {
-
     }
 }
