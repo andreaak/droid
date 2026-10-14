@@ -148,6 +148,7 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     }
 
     public Lang getLanguage() { return Language; }
+    public String getLanguageCode() { return Lang.getLanguageCode(Language); }
 
     protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {
         return defaultValue;

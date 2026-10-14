@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat;
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
 import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.cards.configs.Lang;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
@@ -61,7 +62,6 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
     private SimpleCardActivityHelper helper;
 
     private boolean isExample;
-    private boolean isDescription;
 
     private PopupWindow popupWindow;
     private MediaPlayerHelper mediaHelper;
@@ -227,9 +227,6 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         if (isExample && !Utils.isEmpty(example)) {
             textViewExample.setGravity(Gravity.CENTER);
             setTranscriptionAndVisibility(textViewExample, example);
-        } else if (isDescription && !Utils.isEmpty(description)) {
-            textViewExample.setGravity(Gravity.START);
-            setTranscriptionAndVisibility(textViewExample, description);
         } else {
             setVisibility(textViewExample, View.GONE);
         }
@@ -333,7 +330,6 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
 
     private void showExample() {
         isExample = !isExample;
-        isDescription = false;
         activateWord(helper.currentWord);
     }
 
@@ -408,7 +404,7 @@ public class SimpleCardActivity extends HandleExceptionAppCompatActivity impleme
         String lang1 = helper.language.getPrimaryLanguage();
         String lang2 = helper.language.getSecondaryLanguage();
 
-        if ("ru".equals(lang1)) {
+        if (Lang.isRu(lang1)) {
             XmlParser.addItemToFile(helper.currentWord, lang1, lang2);
         } else {
             XmlParser.addItemToFile(helper.currentWord, lang2, lang1);

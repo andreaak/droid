@@ -11,6 +11,8 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.SelectSimpleWordHelper;
 import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
 import com.andreaak.cards.adapters.SearchTextViewAdapter;
+import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.cards.configs.Lang;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.utils.AppUtils;
@@ -73,11 +75,10 @@ public class SearchActivity extends HandleExceptionActivity implements View.OnCl
                 helper = new SelectSimpleWordHelper();
                 String directories = getIntent().getStringExtra(PATH);
                 String prefixes = getIntent().getStringExtra(PREFIXES);
-                String lang = "de";
-                if(directories.toLowerCase().contains("english")) {
-                    lang = "en";
-                }
-                helper.lg = new LanguageItem(lang, "ru");
+
+                String lang = AppConfigs.getInstance().getLanguage().getCode();
+
+                helper.lg = new LanguageItem(lang, Lang.RU.getCode());
 
                 String finalLang = lang;
                 setTitle("Download...");

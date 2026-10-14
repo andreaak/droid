@@ -28,7 +28,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/_0"
+                    android:id="@+id/layout_0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="false"
@@ -63,7 +63,7 @@
 
 
                 <LinearLayout
-                    android:id="@+id/_1"
+                    android:id="@+id/layout_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
@@ -95,10 +95,10 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/_2"
+                    android:id="@+id/layout_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/_1"
+                    android:layout_below="@id/layout_1"
                     android:background="@drawable/customborder"
                     android:orientation="horizontal">
 
@@ -127,10 +127,10 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/_3"
+                    android:id="@+id/layout_3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/_2"
+                    android:layout_below="@id/layout_2"
                     android:background="@drawable/customborder"
                     android:orientation="horizontal">
 
@@ -159,10 +159,10 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/_4"
+                    android:id="@+id/layout_4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/_3"
+                    android:layout_below="@id/layout_3"
                     android:background="@drawable/customborder"
                     android:orientation="horizontal">
 
@@ -191,10 +191,10 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/_5"
+                    android:id="@+id/layout_5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/_4"
+                    android:layout_below="@id/layout_4"
                     android:background="@drawable/customborder"
                     android:orientation="horizontal">
 

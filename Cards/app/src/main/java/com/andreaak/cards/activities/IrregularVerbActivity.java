@@ -88,11 +88,11 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
 
         textViewTranslation = (TextView) findViewById(R.id.textViewTranslation);
 
-        layout_1 = (LinearLayout) findViewById(R.id._1);
-        layout_2 = (LinearLayout) findViewById(R.id._2);
-        layout_3 = (LinearLayout) findViewById(R.id._3);
-        layout_4 = (LinearLayout) findViewById(R.id._4);
-        layout_5 = (LinearLayout) findViewById(R.id._5);
+        layout_1 = findViewById(R.id.layout_1);
+        layout_2 = findViewById(R.id.layout_2);
+        layout_3 = findViewById(R.id.layout_3);
+        layout_4 = findViewById(R.id.layout_4);
+        layout_5 = findViewById(R.id.layout_5);
 
         buttonSound = (ImageButton) findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
@@ -377,7 +377,7 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         textViewTranslation.setText(text);
 
         //if(helper.hideMode == HideMode.SHOW_ALL) {
-            AppUtils.adoptFontSize(textViewTranslation, text, 45, 20);
+            AppUtils.adoptFontSize(textViewTranslation, text, 35, 15);
         //}
 
 
@@ -441,9 +441,6 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                // Return a VelocityTracker object back to be re-used by others.
-                //mVelocityTracker.recycle();
-
                 if (Math.abs(x) > 500 && spinnerAdapterWords != null) {
 
                     int position = spinnerAdapterWords.getPosition(helper.currentWord);
@@ -456,6 +453,10 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
                             previousWord();
                         }
                     }
+                }
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.recycle();
+                    mVelocityTracker = null;
                 }
                 x = 0;
                 break;
@@ -606,20 +607,14 @@ public class IrregularVerbActivity extends HandleExceptionAppCompatActivity impl
         layout_3.setVisibility(show3 ? View.VISIBLE : View.GONE);
         layout_4.setVisibility(show4 ? View.VISIBLE : View.GONE);
         layout_5.setVisibility(show5 ? View.VISIBLE : View.GONE);
+    }
 
-//        textView_2.setVisibility(show2 ? View.VISIBLE : View.INVISIBLE);
-//        textView_2_Trans.setVisibility(show2 ? View.VISIBLE : View.INVISIBLE);
-//
-//        textView_3.setVisibility(show3 ? View.VISIBLE : View.INVISIBLE);
-//        textView_3_Trans.setVisibility(show3 ? View.VISIBLE : View.INVISIBLE);
-//
-//        textView_4.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
-//        textView_4_Trans.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
-//        textView_4.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
-//        textView_4_Trans.setVisibility(show4 ? View.VISIBLE : View.INVISIBLE);
-//
-//        textViewTranslation.setVisibility(show5 ? View.VISIBLE : View.INVISIBLE);
-
+    @Override
+    protected void onDestroy() {
+        if (mediaHelper != null) {
+            mediaHelper.stop();
+        }
+        super.onDestroy();
     }
 }
 

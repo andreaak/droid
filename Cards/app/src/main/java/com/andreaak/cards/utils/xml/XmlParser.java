@@ -3,6 +3,7 @@ package com.andreaak.cards.utils.xml;
 import androidx.annotation.Nullable;
 
 import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.cards.configs.Lang;
 import com.andreaak.cards.model.DeVerbItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.SimpleWordItem;
@@ -28,9 +29,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -111,26 +113,30 @@ public class XmlParser {
 
 
     public static WordItem getWordItem(SimpleWordItem wordItem, String lang) {
+        if (wordItem == null || wordItem.getPath() == null) {
+            return null;
+        }
+
+        File file = new File(wordItem.getPath());
+        if (!file.exists()) {
+            return null;
+        }
 
         WordItemHandler handler = new WordItemHandler(wordItem, lang);
-        try {
-
-            SAXParserFactory fabrique = SAXParserFactory.newInstance();
-            SAXParser parser = fabrique.newSAXParser();
-            File file = new File(wordItem.getPath());
-            parser.parse(file, handler);
-
+        try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+            SAXParser parser = SAX_PARSER_FACTORY.newSAXParser();
+            parser.parse(is, handler);
         } catch (SAXException e) {
             if (!(e.getException() instanceof BreakParsingException)) {
                 Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
             }
-        } catch (ParserConfigurationException | IOException e) {
+        } catch (Exception e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
         }
         WordItem wi = handler.result;
-        wi.setPath(wordItem.getPath());
+        if (wi != null) {
+            wi.setPath(wordItem.getPath());
+        }
         return wi;
     }
 
@@ -175,9 +181,13 @@ public class XmlParser {
         return verbFormItem;
     }
 
-    private static Document getXMLDocument(File file){
-        try {
-            InputSource input = new InputSource(new FileReader(file));
+    private static Document getXMLDocument(File file) {
+        if (file == null || !file.exists()) {
+            return null;
+        }
+        try (InputStream is = new BufferedInputStream(new FileInputStream(file));
+             InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+            InputSource input = new InputSource(reader);
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(false);
             dbf.setValidating(false);
@@ -185,7 +195,6 @@ public class XmlParser {
             return db.parse(input);
         } catch (Exception e) {
             Logger.e(Constants.LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
             return null;
         }
     }
@@ -213,9 +222,9 @@ public class XmlParser {
     }
 
     private static VerbItem getVerbItem(String language, int id) {
-        if(language == VerbLessonItem.English) {
+        if(language == Lang.EN.getCode()) {
             return new VerbItem(id);
-        } else if(language == VerbLessonItem.Deutsch) {
+        } else if(language == Lang.DE.getCode()) {
             return new DeVerbItem(id);
         }
         return new VerbItem(id);
@@ -310,7 +319,12 @@ public class XmlParser {
             for (String xmlFile : xmlFiles) {
 
                 File file = new File(xmlFile);
-                Document doc = builder.parse(file);
+                if (!file.exists()) continue;
+
+                Document doc;
+                try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+                    doc = builder.parse(is);
+                }
 
                 NodeList words = doc.getElementsByTagName("word");
 
@@ -393,11 +407,17 @@ public class XmlParser {
             }
 
             File file = new File(directory, fileName);
+            if (!file.exists()) {
+                return false;
+            }
 
             // Загрузка XML
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
+            Document doc;
+            try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+                doc = builder.parse(is);
+            }
 
             // Корневой элемент <words>
             Element root = doc.getDocumentElement();

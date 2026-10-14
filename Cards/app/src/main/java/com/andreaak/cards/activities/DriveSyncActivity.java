@@ -388,15 +388,25 @@ public class DriveSyncActivity extends HandleExceptionActivity {
 
         buttonDownload.setEnabled(false);
         SparseBooleanArray checked = listView.getCheckedItemPositions();
-        final int count = checked.size();
-        setTitle("Downloading files " + count);
+        if (checked == null) {
+            return;
+        }
+
+        int selectedCount = 0;
+        for (int i = 0; i < checked.size(); i++) {
+            if (checked.valueAt(i)) {
+                selectedCount++;
+            }
+        }
+        final int totalToDownload = selectedCount;
+        setTitle("Downloading files " + totalToDownload);
         new Thread(
                 new Runnable() {
                     @Override
                     public void run() {
 
                         try {
-                            int cnt = count;
+                            int cnt = totalToDownload;
                             SparseBooleanArray checked = listView.getCheckedItemPositions();
 
                             final ArrayList<Integer> downloaded = new ArrayList<Integer>();
@@ -521,10 +531,21 @@ public class DriveSyncActivity extends HandleExceptionActivity {
     }
 
     private void updateDownloadButtonState() {
+        boolean enable = false;
 
-        SparseBooleanArray checked = listView.getCheckedItemPositions();
-        boolean hasSelection = checked.size() > 0;
-        buttonDownload.setEnabled(hasSelection);
+        if (adapter != null && adapter.getCount() > 0) {
+            SparseBooleanArray checked = listView.getCheckedItemPositions();
+            if (checked != null) {
+                for (int i = 0; i < checked.size(); i++) {
+                    if (checked.valueAt(i)) {
+                        enable = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        buttonDownload.setEnabled(enable);
     }
 }
 

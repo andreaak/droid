@@ -11,7 +11,7 @@ import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.SelectSimpleWordHelper;
 import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
 import com.andreaak.cards.adapters.SearchRuTextViewAdapter;
-import com.andreaak.cards.adapters.SearchTextViewAdapter;
+import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.utils.AppUtils;
@@ -75,10 +75,9 @@ public class SearchRuActivity extends HandleExceptionActivity implements View.On
                 String directories = getIntent().getStringExtra(PATH);
                 String prefixes = getIntent().getStringExtra(PREFIXES);
                 String lang1 = "ru";
-                String lang2 = "de";
-                if(directories.toLowerCase().contains("english")) {
-                    lang2 = "en";
-                }
+
+                String lang2 = AppConfigs.getInstance().getLanguage().getCode();
+
                 helper.lg = new LanguageItem(lang2, lang1);
 
                 setTitle("Download...");
@@ -103,6 +102,8 @@ public class SearchRuActivity extends HandleExceptionActivity implements View.On
             }
         }
     }
+
+
 
     private void initializeVerbSpinner(ArrayList<SimpleWordItem> items, String lang1, String lang2) {
 

@@ -1,14 +1,12 @@
 package com.andreaak.cards.model;
 
+import com.andreaak.cards.configs.Lang;
 import com.andreaak.common.utils.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class VerbLessonItem implements Serializable {
-
-    public static final String English = "en";
-    public static final String Deutsch = "de";
 
     private String fileName;
     private String path;
@@ -34,12 +32,12 @@ public class VerbLessonItem implements Serializable {
 
     private String getLanguage(String fileName) {
         if(fileName.contains("_en")) {
-            return English;
+            return Lang.EN.getCode();
         } else if(fileName.contains("_de")) {
-            return Deutsch;
+            return Lang.DE.getCode();
         }
 
-        return English;
+        return Lang.EN.getCode();
     }
 
     public String getDisplayName() {

@@ -1,54 +1,39 @@
 package com.andreaak.cards.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.VelocityTracker;
-import androidx.appcompat.app.AppCompatDelegate;
 import android.text.Html;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-
+import android.view.VelocityTracker;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.andreaak.cards.R;
 import com.andreaak.cards.activities.helpers.CardActivityHelper;
 import com.andreaak.cards.adapters.WordsHtmlSpinAdapter;
 import com.andreaak.cards.adapters.WordsSpinAdapter;
-import com.andreaak.cards.configs.AppConfigs;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.WordItem;
 import com.andreaak.cards.utils.AppUtils;
 import com.andreaak.cards.utils.MediaPlayerHelper;
 import com.andreaak.common.activitiesShared.HandleExceptionAppCompatActivity;
-import com.andreaak.common.configs.SharedPreferencesHelper;
-import com.andreaak.common.utils.Constants;
 import com.andreaak.common.utils.Utils;
-import com.andreaak.common.utils.logger.Logger;
 
-import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-import static com.andreaak.common.utils.Utils.showText;
-
 public class CardHtmlActivity extends HandleExceptionAppCompatActivity implements View.OnClickListener {
 
     private static final int REQUEST_UPDATE_WORD = 1;
-
-    //in
     public static final String HELPER = "Helper";
 
     private ImageButton buttonStudy;
@@ -59,14 +44,8 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
     private WebView textViewTrans1;
     private WebView textViewWord2;
     private WebView textViewTrans2;
-    private LinearLayout texts;
 
     private Spinner spinnerWords;
-
-    private Menu menu;
-
-//    private GoogleDriveHelper googleDriveHelper;
-//    private OperationGoogleDrive operationGoogleDriveHelper;
 
     private CardActivityHelper helper;
     private WordsSpinAdapter wordsAdapter;
@@ -75,6 +54,8 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
     private float x;
     private boolean isStudy;
 
+    private MediaPlayerHelper mediaHelper;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -82,23 +63,19 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
 
         setContentView(R.layout.activity_card_html);
 
-        buttonStudy = (ImageButton) findViewById(R.id.buttonStudy);
+        buttonStudy = findViewById(R.id.buttonStudy);
         buttonStudy.setOnClickListener(this);
 
-        buttonToggle = (ImageButton) findViewById(R.id.buttonToggle);
+        buttonToggle = findViewById(R.id.buttonToggle);
         buttonToggle.setOnClickListener(this);
 
-        buttonSound = (ImageButton) findViewById(R.id.buttonSound);
+        buttonSound = findViewById(R.id.buttonSound);
         buttonSound.setOnClickListener(this);
 
-        textViewWord1 = (WebView) findViewById(R.id.textViewWord1);
-        textViewTrans1 = (WebView) findViewById(R.id.textViewTrans1);
-        textViewWord2 = (WebView) findViewById(R.id.textViewWord2);
-        textViewTrans2 = (WebView) findViewById(R.id.textViewTrans2);
-        texts = (LinearLayout) findViewById(R.id.texts);
-
-        setFontSize();
-        //setInitialCardVisibility();
+        textViewWord1 = findViewById(R.id.textViewWord1);
+        textViewTrans1 = findViewById(R.id.textViewTrans1);
+        textViewWord2 = findViewById(R.id.textViewWord2);
+        textViewTrans2 = findViewById(R.id.textViewTrans2);
 
         onRestoreNonConfigurationInstance();
     }
@@ -108,10 +85,10 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
         if (helper != null) {
             helper.isRestore = true;
         } else {
-            helper = (CardActivityHelper) getIntent()
-                    .getSerializableExtra(CardHtmlActivity.HELPER);
-
-            setTitle(helper.lessonItem.getDisplayName());
+            helper = (CardActivityHelper) getIntent().getSerializableExtra(CardHtmlActivity.HELPER);
+            if (helper != null && helper.lessonItem != null) {
+                setTitle(helper.lessonItem.getDisplayName());
+            }
         }
     }
 
@@ -125,142 +102,111 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
         getMenuInflater().inflate(R.menu.menu_card, menu);
 
         MenuItem item = menu.findItem(R.id.spinnerWords);
-        spinnerWords = (Spinner) item.getActionView();
-        spinnerWords.setVisibility(View.GONE);
-        if (helper.lessonItem.isContainsWords()) {
+        if (item != null) {
+            spinnerWords = (Spinner) item.getActionView();
+        }
+
+        if (spinnerWords != null) {
+            spinnerWords.setVisibility(View.GONE);
+        }
+
+        if (helper != null && helper.lessonItem != null && helper.lessonItem.isContainsWords()) {
             setTitle(helper.lessonItem.getDisplayName());
             helper.lessonItem.resetLanguage();
-            wordsAdapter = new WordsSpinAdapter(CardHtmlActivity.this,
+            wordsAdapter = new WordsSpinAdapter(
+                    CardHtmlActivity.this,
                     android.R.layout.simple_spinner_item,
-                    helper.lessonItem.getLessonWords(), false, helper.lessonItem.getCurrentLanguage());
+                    helper.lessonItem.getLessonWords(),
+                    false,
+                    helper.lessonItem.getCurrentLanguage()
+            );
 
             initializeWordsSpinner(helper.lessonItem.getSortedLessonWords(), helper.lessonItem.getCurrentLanguage());
 
-            if(helper.currentWord == null) {
+            if (helper.currentWord == null && wordsAdapter.getCount() > 0) {
                 helper.currentWord = wordsAdapter.getItem(0);
             }
-            activateWord(helper.currentWord);
+            if (helper.currentWord != null) {
+                activateWord(helper.currentWord);
+            }
         }
 
-        this.menu = menu;
-        //operationGoogleDriveHelper.setMenu(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_UPDATE_WORD:
-                if (resultCode == RESULT_OK) {
-                    Boolean res = data.getBooleanExtra(EditWordActivity.CHANGED, false);
-                    if (res) {
-                        helper.currentWord = (WordItem) data.getSerializableExtra(EditWordActivity.NEWWORD);
-                        helper.lessonItem.changeWord(helper.currentWord);
-                        activateWord(helper.currentWord);
-                    }
-                }
-                break;
+        if (requestCode == REQUEST_UPDATE_WORD && resultCode == RESULT_OK && data != null) {
+            boolean res = data.getBooleanExtra(EditWordActivity.CHANGED, false);
+            if (res) {
+                helper.currentWord = (WordItem) data.getSerializableExtra(EditWordActivity.NEWWORD);
+                helper.lessonItem.changeWord(helper.currentWord);
+                activateWord(helper.currentWord);
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
-        if(id == R.id.menu_plus)  {
-            textBigger();
-            return true;
-        } else if(id == R.id.menu_minus)  {
-            textSmaller();
-            return true;
-        } else if(id == R.id.menu_settings)  {
-            setSettings();
+        if (id == R.id.menu_plus || id == R.id.menu_minus || id == R.id.menu_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void setFontSize() {
-//        float fontSize1 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TEXT_FONT_SIZE);
-//        float fontSize2 = SharedPreferencesHelper.getInstance().getFloat(AppConfigs.SP_TRANS_FONT_SIZE);
-//        if (fontSize1 > 0 && fontSize2 > 0) {
-//            //setTextSize(fontSize1, fontSize2, 1);
-//        }
-    }
-
-    private void textSmaller() {
-
-        float factor = 0.95f;
-        //setTextSize(textViewWord2.getTextSize(), textViewTrans2.getTextSize(), factor);
-    }
-
-    private void textBigger() {
-        float factor = 1.05f;
-        //setTextSize(textViewWord2.getTextSize(), textViewTrans2.getTextSize(), factor);
-    }
-
-    private void editWord() {
-        Intent intent = new Intent(this, EditWordActivity.class);
-        intent.putExtra(EditWordActivity.LESSON, helper.lessonItem);
-        intent.putExtra(EditWordActivity.WORD, helper.currentWord);
-        startActivityForResult(intent, REQUEST_UPDATE_WORD);
-    }
-
-    private void setSettings() {
-    }
-
     private void initializeWordsSpinner(ArrayList<WordItem> words, String language) {
-
-        wordsSpinAdapter = new WordsHtmlSpinAdapter(CardHtmlActivity.this,
+        wordsSpinAdapter = new WordsHtmlSpinAdapter(
+                CardHtmlActivity.this,
                 android.R.layout.simple_spinner_item,
-                words, language);
+                words,
+                language
+        );
 
-        spinnerWords.setAdapter(wordsSpinAdapter);
+        if (spinnerWords != null) {
+            spinnerWords.setAdapter(wordsSpinAdapter);
 
-        if (helper.isRestore) {
-            int position = wordsSpinAdapter.getPosition(helper.currentWord);
-            spinnerWords.setSelected(false);// must
-            spinnerWords.setSelection(position, true);  //must
-            activateWord(helper.currentWord);
-            helper.isRestore = false;
+            if (helper.isRestore) {
+                int position = wordsSpinAdapter.getPosition(helper.currentWord);
+                spinnerWords.setSelected(false);
+                spinnerWords.setSelection(position, true);
+                activateWord(helper.currentWord);
+                helper.isRestore = false;
+            }
+
+            spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                    WordItem word = wordsSpinAdapter.getItem(position);
+                    helper.currentWord = word;
+                    helper.lessonItem.resetLanguage();
+                    activateWord(word);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapter) {
+                }
+            });
         }
-
-        spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
-
-                WordItem word = wordsSpinAdapter.getItem(position);
-                helper.currentWord = word;
-                helper.lessonItem.resetLanguage();
-
-                activateWord(word);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-            }
-        });
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
 
-        if(id == R.id.buttonToggle)  {
+        if (id == R.id.buttonToggle) {
             toggle();
-        } else if(id == R.id.buttonSound)  {
+        } else if (id == R.id.buttonSound) {
             playSound();
-        } else if(id == R.id.buttonStudy) {
+        } else if (id == R.id.buttonStudy) {
             showStudy();
         }
     }
 
     private void activateWord(WordItem word) {
-        if(isStudy) {
+        if (isStudy) {
             activateStudyWord(word);
         } else {
             activateCheckWord(word);
@@ -268,17 +214,16 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
     }
 
     private void activateCheckWord(WordItem word) {
-
-        SetWordAndVisibility(textViewWord1, "");
-        SetTranscriptionAndVisibility(textViewTrans1, "");
+        setWordAndVisibility(textViewWord1, "");
+        setTranscriptionAndVisibility(textViewTrans1, "");
 
         String wordText = word.getValue(helper.lessonItem.getCurrentLanguage());
-        SetWordAndVisibility(textViewWord2, wordText);
+        setWordAndVisibility(textViewWord2, wordText);
 
         String transcription = word.getTranscription(helper.lessonItem.getCurrentLanguage());
         String info = word.getInfo(helper.lessonItem.getCurrentLanguage());
         String text = getText(transcription, info);
-        SetTranscriptionAndVisibility(textViewTrans2, text);
+        setTranscriptionAndVisibility(textViewTrans2, text);
 
         Queue<String> files = getSoundFiles(helper.lessonItem.getCurrentLanguage());
         boolean isVisible = !files.isEmpty();
@@ -287,24 +232,23 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
     }
 
     private void activateStudyWord(WordItem word) {
-
         LanguageItem languageItem = helper.lessonItem.getLanguageItem();
 
         String wordText = word.getValue(languageItem.getPrimaryLanguage());
-        SetWordAndVisibility(textViewWord1, wordText);
+        setWordAndVisibility(textViewWord1, wordText);
 
         String transcription = word.getTranscription(languageItem.getPrimaryLanguage());
         String info = word.getInfo(languageItem.getPrimaryLanguage());
         String text = getText(transcription, info);
-        SetTranscriptionAndVisibility(textViewTrans1, text);
+        setTranscriptionAndVisibility(textViewTrans1, text);
 
         wordText = word.getValue(languageItem.getSecondaryLanguage());
-        SetWordAndVisibility(textViewWord2, wordText);
+        setWordAndVisibility(textViewWord2, wordText);
 
         transcription = word.getTranscription(languageItem.getSecondaryLanguage());
         info = word.getInfo(languageItem.getSecondaryLanguage());
         text = getText(transcription, info);
-        SetTranscriptionAndVisibility(textViewTrans2, text);
+        setTranscriptionAndVisibility(textViewTrans2, text);
 
         String lang = languageItem.getSoundLanguage();
 
@@ -318,19 +262,17 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
         return transcription == null ? info : info == null ? transcription : transcription + "  " + info;
     }
 
-    private void SetWordAndVisibility(WebView webView, String word) {
+    private void setWordAndVisibility(WebView webView, String word) {
         webView.loadUrl("about:blank");
         if (!Utils.isEmpty(word)) {
             webView.loadData(word, "text/html; charset=UTF-8", null);
         }
     }
 
-    private void SetTranscriptionAndVisibility(WebView webView, String transcription) {
-
+    private void setTranscriptionAndVisibility(WebView webView, String transcription) {
         webView.loadUrl("about:blank");
         if (!Utils.isEmpty(transcription)) {
             webView.loadData(transcription, "text/html; charset=UTF-8", null);
-
         }
     }
 
@@ -344,19 +286,16 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
         activateWord(helper.currentWord);
     }
 
-    MediaPlayerHelper mediaHelper;
-
     private void playSound() {
-
         if (mediaHelper != null && mediaHelper.IsActive) {
             return;
         }
 
         String language;
-        if(isStudy){
+        if (isStudy) {
             LanguageItem languageItem = helper.lessonItem.getLanguageItem();
             language = languageItem.getSecondaryLanguage();
-        }else {
+        } else {
             language = helper.lessonItem.getCurrentLanguage();
         }
 
@@ -371,11 +310,8 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
     }
 
     private Queue<String> getSoundFiles(String language) {
-
-        Queue<String> files = new ArrayDeque<String>();
-
+        Queue<String> files = new ArrayDeque<>();
         String t = Html.fromHtml(helper.currentWord.getValue(language)).toString();
-
         List<String> words = AppUtils.getWords(t);
 
         for (String word : words) {
@@ -399,8 +335,10 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
         helper.currentWord = word;
 
         position = wordsSpinAdapter.getPosition(helper.currentWord);
-        spinnerWords.setSelected(false);// must
-        spinnerWords.setSelection(position, true);
+        if (spinnerWords != null) {
+            spinnerWords.setSelected(false);
+            spinnerWords.setSelection(position, true);
+        }
         activateWord(word);
     }
 
@@ -413,35 +351,24 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 if (mVelocityTracker == null) {
-                    // Retrieve a new VelocityTracker object to watch the
-                    // velocity of a motion.
                     mVelocityTracker = VelocityTracker.obtain();
                 } else {
-                    // Reset the velocity tracker back to its initial state.
                     mVelocityTracker.clear();
                 }
-                // Add a user's movement to the tracker.
                 mVelocityTracker.addMovement(event);
                 break;
+
             case MotionEvent.ACTION_MOVE:
-                mVelocityTracker.addMovement(event);
-                // When you want to determine the velocity, call
-                // computeCurrentVelocity(). Then call getXVelocity()
-                // and getYVelocity() to retrieve the velocity for each pointer ID.
-                mVelocityTracker.computeCurrentVelocity(1000);
-                // Log velocity of pixels per second
-                // Best practice to use VelocityTrackerCompat where possible.
-
-                x = mVelocityTracker.getXVelocity(pointerId);
-
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.addMovement(event);
+                    mVelocityTracker.computeCurrentVelocity(1000);
+                    x = mVelocityTracker.getXVelocity(pointerId);
+                }
                 break;
+
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                // Return a VelocityTracker object back to be re-used by others.
-                //mVelocityTracker.recycle();
-
                 if (Math.abs(x) > 500 && wordsAdapter != null) {
-
                     int position = wordsAdapter.getPosition(helper.currentWord);
                     if (x < 0) {
                         if (position < (wordsAdapter.getCount() - 1)) {
@@ -453,9 +380,21 @@ public class CardHtmlActivity extends HandleExceptionAppCompatActivity implement
                         }
                     }
                 }
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.recycle();
+                    mVelocityTracker = null;
+                }
                 x = 0;
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mediaHelper != null) {
+            mediaHelper.stop();
+        }
+        super.onDestroy();
     }
 }

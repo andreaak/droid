@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
@@ -20,6 +21,12 @@
             android:layout_height="fill_parent"
             android:orientation="vertical">
 
+            <ScrollView
+                android:id="@+id/scrollViewContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
             <LinearLayout
 
                 android:layout_width="match_parent"
@@ -32,58 +39,55 @@
                     android:id="@+id/textViewWord1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:text="TEST"
+                    android:gravity="center"
                     android:textColor="@color/colorBlack"
-                    android:textSize="40dp"
-                    android:visibility="gone" />
+                    android:textSize="40sp"
+                    android:visibility="gone"
+                    tools:text="TEST" />
 
                 <TextView
                     android:id="@+id/textViewTrans1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:text="[TEST]"
+                    android:gravity="center"
                     android:textColor="@color/colorTrans"
-                    android:textSize="20dp"
-                    android:visibility="gone" />
+                    android:textSize="20sp"
+                    android:visibility="gone"
+                    tools:text="[TEST]" />
 
+                <!-- Размер шрифта подбирает TextFitter в коде (по самой длинной строке). -->
                 <TextView
                     android:id="@+id/textViewWord2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerHorizontal="false"
-                    android:gravity="left"
-                    android:text="TEST"
+                    android:gravity="center"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="25dp"
-                    android:textAlignment="gravity"
-                    android:visibility="invisible" />
+                    android:textSize="25sp"
+                    android:visibility="invisible"
+                    tools:text="TEST" />
 
-                <!--android:background="@drawable/customborder"-->
                 <TextView
                     android:id="@+id/textViewTrans2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:text="[TEST]"
+                    android:gravity="center"
                     android:textColor="@color/colorTrans"
-                    android:textSize="20dp"
-                    android:visibility="invisible" />
+                    android:textSize="20sp"
+                    android:visibility="invisible"
+                    tools:text="[TEST]" />
 
                 <TextView
                     android:id="@+id/textViewExample"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerHorizontal="false"
-                    android:text="[TEST]"
+                    android:gravity="center"
                     android:textColor="@android:color/holo_green_dark"
-                    android:textSize="20dp"
-                    android:visibility="invisible" />
-            </LinearLayout>
+                    android:textSize="20sp"
+                    android:visibility="invisible"
+                    tools:text="[TEST]" />
 
+                </LinearLayout>
+            </ScrollView>
         </RelativeLayout>
 
     </LinearLayout>

@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.andreaak.cards.configs.AppConfigs;
+import com.andreaak.cards.configs.Lang;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.SimpleWordItem;
@@ -34,7 +35,7 @@ public class AppUtils {
             new ReplaceItem("ü", "!u")};
 
 
-    public static void adoptFontSize(TextView textView, String text, float minFontSize, float defaultFontSize) {
+    public static void adoptFontSize2(TextView textView, String text, float minFontSize, float defaultFontSize) {
 
         if(Utils.isEmpty(text)) {
             return;
@@ -75,6 +76,43 @@ public class AppUtils {
                 }
             }
         });
+    }
+
+    public static void adoptFontSize(TextView textView, String text, float maxSp, float minSp) {
+        int availableWidth = textView.getWidth()
+                - textView.getPaddingLeft() - textView.getPaddingRight();
+        if (availableWidth <= 0) {
+            return;
+        }
+
+        float maxPx = toPx(textView, maxSp);
+        float minPx = toPx(textView, minSp);
+
+        // Копия Paint сохраняет шрифт и стиль TextView.
+        Paint paint = new Paint(textView.getPaint());
+        paint.setTextSize(maxPx);
+
+        float widestLine = 0f;
+        for (String line : text.split("\n")) {
+            widestLine = Math.max(widestLine, paint.measureText(line));
+        }
+
+        widestLine += 20;
+
+        float sizePx = maxPx;
+        boolean fits = widestLine <= availableWidth;
+        if (!fits) {
+            sizePx = Math.max(minPx, maxPx * availableWidth / widestLine);
+        }
+
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, sizePx);
+        // Влезло — по центру; уменьшали — выравниваем по левому краю, как раньше.
+        textView.setGravity(fits ? Gravity.CENTER : Gravity.START);
+    }
+
+    private static float toPx(TextView textView, float sp) {
+        return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, sp, textView.getResources().getDisplayMetrics());
     }
 
     public static void setViewTextSize(TextView textView, float size) {
