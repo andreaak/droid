@@ -91,16 +91,6 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
                 lessons);
         autoCompleteTextViewLessons.setAdapter(lessonsAdapter);
 
-        if (helper.isRestore) {
-            int position = lessonsAdapter.getPosition(helper.lessonItem);
-
-            autoCompleteTextViewLessons.setText(helper.lessonItem.getDisplayName(), false);
-            initializeLanguageSpinner(helper.lessonItem.getWords());
-            if( helper.lessonItem.wordsCount() > 100) {
-                helper.lessonItem.subClear();
-            }
-        }
-
         autoCompleteTextViewLessons.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View arg0) {
@@ -121,6 +111,16 @@ public class SelectLessonAndLanguageActivity extends HandleExceptionActivity imp
                 }
             }
         });
+
+        if (helper.isRestore) {
+            autoCompleteTextViewLessons.setText(helper.lessonItem.getDisplayName(), false);
+            initializeLanguageSpinner(helper.lessonItem.getWords());
+            if( helper.lessonItem.wordsCount() > 100) {
+                helper.lessonItem.subClear();
+            }
+        } else {
+            autoCompleteTextViewLessons.setText("");
+        }
     }
 
     private void initializeLanguageSpinner(ArrayList<WordItem> words) {

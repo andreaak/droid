@@ -1,5 +1,6 @@
 package com.andreaak.cards.configs;
 
+import com.andreaak.cards.model.Lang;
 import com.andreaak.common.configs.SharedPreferencesHelper;
 
 public class AppConfigs extends com.andreaak.common.configs.Configs {
@@ -33,6 +34,7 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
     private static final String SUBST_DIR = "Subst";
     private static final String STUDY_DIR = "Study";
     private static final String AI_DIR = "Ai";
+    private static final String AI_MNEMO_DIR = "AiMnemo";
     private static final String SOUNDS_DIR = "Sounds";
     // Google
     private static final String SP_GOOGLE_DIR_DEFAULT = "English";
@@ -138,6 +140,10 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
         return WorkingDir + "/" + AI_DIR;
     }
 
+    public String getAIMnemoDir() {
+        return WorkingDir + "/" + AI_MNEMO_DIR;
+    }
+
 
     public String getRemoteLessonsDir() { return GoogleDir + "/" + GOOGLE_LESSONS_DIR; }
     public String getRemoteGrammarDir() {
@@ -149,6 +155,9 @@ public class AppConfigs extends com.andreaak.common.configs.Configs {
 
     public Lang getLanguage() { return Language; }
     public String getLanguageCode() { return Lang.getLanguageCode(Language); }
+
+    public String getOpenAiModelName() { return OPENAI_MODEL_NAME; }
+    public String getOpenAiApiKey() { return OPENAI_API_KEY; }
 
     protected float getConfig(SharedPreferencesHelper helper, String key, float defaultValue) {
         return defaultValue;

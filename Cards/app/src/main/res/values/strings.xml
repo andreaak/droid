@@ -28,6 +28,7 @@
     <string name="open_search_all">Search all</string>
     <string name="open_search_ru_all">Search RU all</string>
     <string name="open_search_ai">Search GPT</string>
+    <string name="open_ai_mnemo">Mnemo GPT</string>
     <string name="open_last_lesson">Open last lesson</string>
     <string name="select_language">Select language</string>
     <string name="select_log">Select log file folder</string>

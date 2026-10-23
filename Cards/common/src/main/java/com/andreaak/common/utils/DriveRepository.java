@@ -111,7 +111,7 @@ public class DriveRepository {
                 List<File> files = result.getFiles();
 
                 for (File file: files ) {
-                    if(file.getName().startsWith(filter)) {
+                    if(isProperFile(filter, file)) {
                         allFiles.add(file);
                     }
                 }
@@ -139,6 +139,11 @@ public class DriveRepository {
             );
 
             return allFiles;
+    }
+
+    private static boolean isProperFile(String filter, File file) {
+        return file.getName().startsWith(filter)
+                || file.getName().startsWith("!" + filter);
     }
 
     public Map<String, com.google.api.services.drive.model.File>

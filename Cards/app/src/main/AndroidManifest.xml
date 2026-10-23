@@ -49,17 +49,6 @@
         </intent-filter>
         </activity>
         <activity
-            android:name=".activities.CardHtmlActivity"
-            android:label=""
-            android:theme="@style/Theme.AppCompat.DayNight"
-            android:exported="true">
-            <intent-filter>
-            <action android:name="com.andreaak.cards.activities.CardHtmlActivity" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
-        </activity>
-        <activity
             android:name=".activities.SelectLessonAndLanguageActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo"
@@ -85,7 +74,7 @@
         <activity
             android:name=".activities.SelectVerbFormActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Holo"
+            android:theme="@style/Theme.AppCompat.DayNight"
             android:exported="true">
             <intent-filter>
             <action android:name="com.andreaak.cards.activities.SelectVerbFormActivity" />
@@ -93,24 +82,38 @@
             <category android:name="android.intent.category.DEFAULT" />
         </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/preferences"
             android:theme="@android:style/Theme.Holo"
             android:exported="true">
             <intent-filter>
-            <action android:name="com.andreaak.cards.activities.SettingsActivity" />
+                <action android:name="com.andreaak.cards.activities.SettingsActivity" />
 
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.OpenAiActivity"
-            android:label="@string/preferences"
+            android:label="@string/open_search_ai"
             android:theme="@android:style/Theme.Holo"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.andreaak.cards.activities.OpenAiActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.OpenAiMnemoActivity"
+            android:label="@string/open_search_ai"
+            android:theme="@android:style/Theme.Holo"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.andreaak.cards.activities.OpenAiMnemoActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

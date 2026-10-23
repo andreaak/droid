@@ -70,10 +70,12 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
     private Spinner spinnerWords;
     private Spinner spinnerLevels;
+    private Spinner spinnerQuantities;
 
     private CardActivityHelper helper;
     private WordsSpinAdapter spinnerAdapterWords;
     private LevelsSpinAdapter spinnerAdapterLevels;
+    private LevelsSpinAdapter spinnerAdapterQuantities;
     private VelocityTracker mVelocityTracker = null;
     private float x;
     private boolean isStudy;
@@ -156,9 +158,17 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         menu.setGroupVisible(R.id.groupGoogle, false);
 
         MenuItem wordsSpinner = menu.findItem(R.id.spinnerWords);
-        spinnerWords = (Spinner) wordsSpinner.getActionView();
+        if (wordsSpinner != null) {
+            spinnerWords = (Spinner) wordsSpinner.getActionView();
+        }
         MenuItem levelsSpinner = menu.findItem(R.id.spinnerLevels);
-        spinnerLevels = (Spinner) levelsSpinner.getActionView();
+        if (levelsSpinner != null) {
+            spinnerLevels = (Spinner) levelsSpinner.getActionView();
+        }
+        MenuItem quantitiesSpinner = menu.findItem(R.id.spinnerQuantities);
+        if (quantitiesSpinner != null) {
+            spinnerQuantities = (Spinner) quantitiesSpinner.getActionView();
+        }
 
         if (helper != null && helper.lessonItem != null && helper.lessonItem.isContainsWords()) {
             helper.lessonItem.resetLanguage();
@@ -171,6 +181,7 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
 
             if (!helper.isRestore && spinnerAdapterWords != null) {
                 helper.currentLevel = spinnerAdapterWords.level;
+                helper.currentQuantity = spinnerAdapterWords.quantity;
             }
 
             if (helper.currentWord == null && spinnerAdapterWords != null) {
@@ -188,71 +199,167 @@ public class CardActivity extends HandleExceptionAppCompatActivity implements Vi
         @SuppressWarnings("unchecked")
         ArrayList<WordItem> copy = (ArrayList<WordItem>) words.clone();
         spinnerAdapterWords = new WordsSpinAdapter(CardActivity.this, android.R.layout.simple_spinner_item, copy, sort, language);
-        spinnerWords.setAdapter(spinnerAdapterWords);
+        if (spinnerWords != null) {
+            spinnerWords.setAdapter(spinnerAdapterWords);
+        }
 
         List<String> levels = getLevels(words, language);
         spinnerAdapterLevels = new LevelsSpinAdapter(CardActivity.this, android.R.layout.simple_spinner_item, levels);
-        spinnerLevels.setAdapter(spinnerAdapterLevels);
+        if (spinnerLevels != null) {
+            spinnerLevels.setAdapter(spinnerAdapterLevels);
+        }
+
+        if (helper.currentLevel == null) {
+            helper.currentLevel = ALL;
+        }
+        if (helper.currentQuantity == null) {
+            helper.currentQuantity = ALL;
+        }
+
+        updateQuantitiesSpinner(helper.currentLevel, helper.currentQuantity);
 
         if (helper.isRestore) {
-            int position = spinnerAdapterWords.getPosition(helper.currentWord);
-            spinnerWords.setSelected(false);
-            spinnerWords.setSelection(position, true);
-
             spinnerAdapterWords.setLevel(helper.currentLevel);
+            spinnerAdapterWords.setQuantity(helper.currentQuantity);
 
-            position = spinnerAdapterLevels.getPosition(helper.currentLevel);
-            spinnerLevels.setSelected(false);
-            spinnerLevels.setSelection(position, true);
+            int posLevel = spinnerAdapterLevels.getPosition(helper.currentLevel);
+            if (spinnerLevels != null && posLevel >= 0) {
+                spinnerLevels.setSelected(false);
+                spinnerLevels.setSelection(posLevel, true);
+            }
+
+            int posWord = spinnerAdapterWords.getPosition(helper.currentWord);
+            if (spinnerWords != null && posWord >= 0) {
+                spinnerWords.setSelected(false);
+                spinnerWords.setSelection(posWord, true);
+            }
+
             activateWord(helper.currentWord, helper.lessonItem.getCurrentLanguage());
             helper.isRestore = false;
         }
         setTitle2(0);
 
-        spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                if (!isSelectWord) {
-                    WordItem word = spinnerAdapterWords.getItem(position);
-                    helper.currentWord = word;
-                    helper.lessonItem.resetLanguage();
-                    activateWord(word, helper.lessonItem.getCurrentLanguage());
-                } else {
-                    isSelectWord = false;
+        if (spinnerWords != null) {
+            spinnerWords.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                    if (!isSelectWord) {
+                        WordItem word = spinnerAdapterWords.getItem(position);
+                        if (word != null) {
+                            helper.currentWord = word;
+                            helper.lessonItem.resetLanguage();
+                            activateWord(word, helper.lessonItem.getCurrentLanguage());
+                        }
+                    } else {
+                        isSelectWord = false;
+                    }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
+                @Override
+                public void onNothingSelected(AdapterView<?> adapter) {}
+            });
+        }
+
+        if (spinnerLevels != null) {
+            spinnerLevels.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                    String selectedLevel = spinnerAdapterLevels.getItem(position);
+                    helper.currentLevel = selectedLevel;
+
+                    spinnerAdapterWords.setLevel(selectedLevel);
+                    updateQuantitiesSpinner(selectedLevel, helper.currentQuantity);
+
+                    if (spinnerWords != null) {
+                        spinnerWords.setSelected(false);
+                        spinnerWords.setSelection(0, true);
+                    }
+
+                    helper.currentWord = spinnerAdapterWords.getItem(0);
+                    if (helper.currentWord != null) {
+                        activateWord(helper.currentWord, helper.lessonItem.getCurrentLanguage());
+                    }
+                    setTitle2(0);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapter) {}
+            });
+        }
+
+        if (spinnerQuantities != null) {
+            spinnerQuantities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                    if (spinnerAdapterQuantities == null) return;
+                    String selectedQuantity = spinnerAdapterQuantities.getItem(position);
+                    helper.currentQuantity = selectedQuantity;
+
+                    if (!spinnerAdapterWords.setQuantity(selectedQuantity)) {
+                        return;
+                    }
+
+                    if (spinnerWords != null) {
+                        spinnerWords.setSelected(false);
+                        spinnerWords.setSelection(0, true);
+                    }
+
+                    helper.currentWord = spinnerAdapterWords.getItem(0);
+                    if (helper.currentWord != null) {
+                        activateWord(helper.currentWord, helper.lessonItem.getCurrentLanguage());
+                    }
+                    setTitle2(0);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapter) {}
+            });
+        }
+    }
+
+    private void updateQuantitiesSpinner(String currentLevel, String preferredQuantity) {
+        if (helper == null || helper.lessonItem == null || spinnerQuantities == null) {
+            return;
+        }
+        String language = helper.lessonItem.getCurrentLanguage();
+        List<WordItem> wordsForLevel = WordsSpinAdapter.getWordsForLevel(
+                helper.lessonItem.getLessonWords(),
+                language,
+                currentLevel
+        );
+        List<String> quantities = getQuantities(wordsForLevel, language);
+
+        spinnerAdapterQuantities = new LevelsSpinAdapter(CardActivity.this, android.R.layout.simple_spinner_item, quantities);
+        spinnerQuantities.setAdapter(spinnerAdapterQuantities);
+
+        String targetQuantity = preferredQuantity != null && quantities.contains(preferredQuantity) ? preferredQuantity : ALL;
+        int pos = spinnerAdapterQuantities.getPosition(targetQuantity);
+        if (pos < 0) {
+            pos = 0;
+        }
+        spinnerQuantities.setSelected(false);
+        spinnerQuantities.setSelection(pos, true);
+        spinnerAdapterWords.setQuantity(targetQuantity);
+        helper.currentQuantity = targetQuantity;
+    }
+
+    private List<String> getQuantities(List<WordItem> words, String language) {
+        Set<String> set = new TreeSet<>((a, b) -> {
+            try {
+                return Integer.compare(Integer.parseInt(a), Integer.parseInt(b));
+            } catch (Exception e) {
+                return a.compareTo(b);
             }
         });
 
-        spinnerLevels.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                String level = spinnerAdapterLevels.getItem(position);
+        for (WordItem w : words) {
+            String q = WordsSpinAdapter.normalizeQuantity(w.getQuantity(language));
+            set.add(q);
+        }
 
-                if (!spinnerAdapterWords.setLevel(level)) {
-                    return;
-                }
-
-                setTitle2(0);
-                helper.currentLevel = level;
-
-                spinnerAdapterWords.setLevel(level);
-                spinnerAdapterWords.notifyDataSetChanged();
-
-                spinnerWords.setSelected(false);
-                spinnerWords.setSelection(0, true);
-
-                helper.currentWord = spinnerAdapterWords.getItem(0);
-                activateWord(helper.currentWord, helper.lessonItem.getCurrentLanguage());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-            }
-        });
+        List<String> list = new ArrayList<>(set);
+        list.add(0, ALL);
+        return list;
     }
 
     @Override

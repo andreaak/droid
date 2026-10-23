@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.andreaak.cards.configs.AppConfigs;
-import com.andreaak.cards.configs.Lang;
+import com.andreaak.cards.model.Lang;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.LessonItem;
 import com.andreaak.cards.model.SimpleWordItem;
@@ -25,8 +25,25 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 public class AppUtils {
+
+    public static String combineText(String... parts) {
+        if (parts == null || parts.length == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            if (!Utils.isEmpty(part)) {
+                if (sb.length() > 0) {
+                    sb.append("  ");
+                }
+                sb.append(part);
+            }
+        }
+        return sb.toString();
+    }
 
     private static final String[] SOUND_FORMATS = {"mp3", "wav"};
 
@@ -34,54 +51,16 @@ public class AppUtils {
             new ReplaceItem("ö", "!o"),
             new ReplaceItem("ü", "!u")};
 
-
-    public static void adoptFontSize2(TextView textView, String text, float minFontSize, float defaultFontSize) {
+    public static void adoptFontSize(TextView textView, String text, float maxSp, float minSp) {
 
         if(Utils.isEmpty(text)) {
             return;
         }
 
-        final float defaultFontSize1 = defaultFontSize;
-        textView.post(new Runnable() {
-            @Override
-            public void run() {
-
-                String[] items = text.split("\n");
-                String textLine = "";
-                for(String item : items) {
-                    if(textLine.length() < item.length()) {
-                        textLine = item;
-                    }
-                }
-
-                int displayWidth = textView.getMeasuredWidth();
-                int displayWidth1 = textView.getWidth();
-                if(displayWidth <= 0) {
-                    return;
-                }
-
-                float fontSizeOld = textView.getTextSize();
-                float density = textView.getResources().getDisplayMetrics().density;
-                float defaultFontSize2 = defaultFontSize1 * density;
-                Paint paint = new Paint();
-                paint.setTextSize(defaultFontSize2); // размер в пикселях
-                float widthPx = paint.measureText(textLine);
-                if(widthPx > displayWidth) {
-                    float fontSize = Math.max(minFontSize, displayWidth/widthPx * defaultFontSize2);
-                    setViewTextSize(textView, fontSize);
-                    setViewGravity(textView, false);
-                } else {
-                   setViewTextSize(textView, defaultFontSize2);
-                   setViewGravity(textView, true);
-                }
-            }
-        });
-    }
-
-    public static void adoptFontSize(TextView textView, String text, float maxSp, float minSp) {
         int availableWidth = textView.getWidth()
                 - textView.getPaddingLeft() - textView.getPaddingRight();
         if (availableWidth <= 0) {
+            textView.post(() -> adoptFontSize(textView, text, maxSp, minSp));
             return;
         }
 
@@ -133,7 +112,6 @@ public class AppUtils {
         textView.setPadding(0, 0, 0, 0);
     }
 
-
     public static ArrayList<LessonItem> getLessons(String path, final String prefix, boolean sortItems) {
 
         if(path == null || path.trim().length() == 0) {
@@ -146,7 +124,8 @@ public class AppUtils {
             File[] files = directory.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return (Utils.isEmpty(prefix) || s.startsWith(prefix)) && s.endsWith(AppConfigs.getInstance().LessonsExtension);
+                    return (Utils.isEmpty(prefix) || s.startsWith(prefix) || s.startsWith("!" + prefix))
+                            && s.endsWith(AppConfigs.getInstance().LessonsExtension);
                 }
             });
 
@@ -213,7 +192,7 @@ public class AppUtils {
             File[] files = directory.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return true;
+                    return isProperFile(s);
                 }
             });
 
@@ -229,11 +208,17 @@ public class AppUtils {
                 }
             }
 
+            res1 = res1.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
+
             Cache.getInstance().add(di.path, new ArrayList<>(res1));
             res.addAll(res1);
         }
 
         return new ArrayList<>(res);
+    }
+
+    private static boolean isProperFile(String file) {
+        return !file.startsWith("!") && file.endsWith(AppConfigs.getInstance().LessonsExtension);
     }
 
     public static List<LanguageItem> getLangs(ArrayList<WordItem> words) {
@@ -337,7 +322,7 @@ public class AppUtils {
     private static SoundFileData getSoundFileData(String language) {
         String region;
         String suffix;
-        if ("en".equals(language.toLowerCase())) {
+        if (Lang.EN.getCode().equalsIgnoreCase(language)) {
             region = "us";
             suffix = "";
         } else {

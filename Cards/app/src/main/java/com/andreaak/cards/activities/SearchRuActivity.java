@@ -103,8 +103,6 @@ public class SearchRuActivity extends HandleExceptionActivity implements View.On
         }
     }
 
-
-
     private void initializeVerbSpinner(ArrayList<SimpleWordItem> items, String lang1, String lang2) {
 
         //ArrayList<SimpleWordItem> list = (ArrayList<SimpleWordItem>) items.clone();
@@ -135,7 +133,7 @@ public class SearchRuActivity extends HandleExceptionActivity implements View.On
 
         if (helper.isRestore) {
             if(helper.currentItem != null) {
-                autoCompleteTextView.setText(helper.currentItem.getRuDisplayName(lang1, lang2), false);
+                autoCompleteTextView.setText(helper.currentItem.getRuDisplayName(lang2), false);
             }
         } else {
             autoCompleteTextView.setText("");

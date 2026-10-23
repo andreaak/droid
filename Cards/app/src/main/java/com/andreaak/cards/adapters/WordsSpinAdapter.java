@@ -20,30 +20,30 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
     public static final String ALL = "All";
     public static final String A1B2 = "A1-B2";
 
-    private static List<String> Levels = Arrays.asList(new String[]{"A1", "A2", "B1", "B2", "C1", "C2"});
+    private static final List<String> Levels = Arrays.asList("A1", "A2", "B1", "B2", "C1", "C2");
 
-    private Context context;
-    private List<WordItem> sourceWords;
+    private final Context context;
+    private final List<WordItem> sourceWords;
     private List<WordItem> values;
-    private String language;
+    private final String language;
     public String level;
+    public String quantity;
     public boolean sort;
+    private boolean isShuffle;
 
     public WordsSpinAdapter(Context context, int textViewResourceId,
                             ArrayList<WordItem> values, boolean sort, String language) {
         super(context, textViewResourceId, values);
         this.context = context;
-        this.sourceWords = this.values = (ArrayList<WordItem>)values.clone();
+        this.sourceWords = new ArrayList<>(values);
+        this.values = new ArrayList<>(values);
         this.language = language;
 
         this.level = ALL;
-        setSort(sort);
-        if(sort) {
-            clear();
+        this.quantity = ALL;
+        this.sort = sort;
 
-            addAll(values);
-            notifyDataSetChanged();
-        }
+        applyFilters();
     }
 
     @Override
@@ -53,7 +53,10 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
 
     @Override
     public WordItem getItem(int position) {
-        return values.get(position);
+        if (position >= 0 && position < values.size()) {
+            return values.get(position);
+        }
+        return null;
     }
 
     @Override
@@ -68,135 +71,134 @@ public class WordsSpinAdapter extends ArrayAdapter<WordItem> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-
         TextView label = new TextView(context);
-        label.setText(values.get(position).getValue(language));
+        WordItem item = getItem(position);
+        label.setText(item != null ? item.getValue(language) : "");
         label.setTextSize(15);
         label.setPadding(2, 2, 2, 2);
-
         return label;
     }
 
     @Override
-    public View getDropDownView(int position, View convertView,
-                                ViewGroup parent) {
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(values.get(position).getValue(language));
+        WordItem item = getItem(position);
+        label.setText(item != null ? item.getValue(language) : "");
         label.setTextSize(15);
         label.setPadding(2, 2, 2, 2);
-
         return label;
     }
 
     public boolean setLevel(String level) {
-        if(Utils.isEqual(this.level, level)) {
+        if (Utils.isEqual(this.level, level)) {
             return false;
         }
-
         this.level = level;
-        values = GetWordsForLevel(sourceWords, language, level);
+        applyFilters();
+        return true;
+    }
+
+    public boolean setQuantity(String quantity) {
+        if (Utils.isEqual(this.quantity, quantity)) {
+            return false;
+        }
+        this.quantity = quantity;
+        applyFilters();
         return true;
     }
 
     public List<WordItem> setSort(boolean sort) {
-        if(this.sort == sort) {
-            return values;
-        }
-
         this.sort = sort;
-
-        if(!sort) {
-            values = GetWordsForLevel(sourceWords, language, level);
-        } else {
-
-            List<WordItem> copy = GetClonedWordsForLevel(sourceWords, language, level);
-            Collections.sort(copy, new WordsComparator(language));
-            values = copy;
-        }
-
+        applyFilters();
         return values;
     }
-
-    boolean isShuffle = false;
 
     public List<WordItem> shuffle() {
-
-        isShuffle = !isShuffle;
-        if(!isShuffle) {
-            values = GetWordsForLevel(sourceWords, language, level);
-        } else {
-
-            List<WordItem> copy = GetClonedWordsForLevel(sourceWords, language, level);
-            Collections.shuffle(copy);
-            values = copy;
-        }
-
+        this.isShuffle = !this.isShuffle;
+        applyFilters();
         return values;
     }
 
-    public List<WordItem> GetWords(String language, String level) {
-        return GetWordsForLevel(sourceWords, language, level);
+    public void applyFilters() {
+        List<WordItem> filtered = getWordsForLevelAndQuantity(sourceWords, language, level, quantity);
+        if (sort) {
+            Collections.sort(filtered, new WordsComparator(language));
+        } else if (isShuffle) {
+            Collections.shuffle(filtered);
+        }
+        this.values = filtered;
+        clear();
+        addAll(filtered);
+        notifyDataSetChanged();
     }
 
-    private List<WordItem> GetWordsForLevel(List<WordItem> words, String language, String level) {
-        if(ALL.equals(level) || Utils.isEmpty(level)) {
-            return words;
+    public List<WordItem> getWordsForLevel(String level) {
+        return getWordsForLevel(sourceWords, language, level);
+    }
+
+    public static List<WordItem> getWordsForLevel(List<WordItem> words, String language, String level) {
+        if (ALL.equals(level) || Utils.isEmpty(level)) {
+            return new ArrayList<>(words);
         }
 
         ArrayList<WordItem> list = new ArrayList<>();
-
-        for(WordItem w : words) {
+        for (WordItem w : words) {
             String l = w.getLevel(language);
-
-            if(isFiltered(level, l)) {
+            if (isLevelFiltered(level, l)) {
                 list.add(w);
             }
         }
-
         return list;
     }
 
-    private List<WordItem> GetClonedWordsForLevel(List<WordItem> words, String language, String level) {
-        if(ALL.equals(level) || Utils.isEmpty(level)) {
-            return new ArrayList<>(sourceWords);
+    public static List<WordItem> getWordsForLevelAndQuantity(List<WordItem> words, String language, String level, String quantity) {
+        List<WordItem> levelFiltered = getWordsForLevel(words, language, level);
+        if (ALL.equals(quantity) || Utils.isEmpty(quantity)) {
+            return levelFiltered;
         }
 
         ArrayList<WordItem> list = new ArrayList<>();
-
-        for(WordItem w : words) {
-            String l = w.getLevel(language);
-
-            if(isFiltered(level, l)) {
+        for (WordItem w : levelFiltered) {
+            String q = w.getQuantity(language);
+            if (isQuantityFiltered(quantity, q)) {
                 list.add(w);
             }
         }
-
         return list;
     }
 
-    private boolean isFiltered(String level, String l) {
-        if(level.contains("-")) {
-            if(isLevelInGroup(level, l)) {
+    private static boolean isLevelFiltered(String level, String l) {
+        if (level.contains("-")) {
+            if (isLevelInGroup(level, l)) {
                 return true;
             }
-        }
-        else if(Utils.isEqual(level, l) || Utils.isEmpty(l) && "CC".equals(level)) {
+        } else if (Utils.isEqual(level, l) || (Utils.isEmpty(l) && "CC".equals(level))) {
             return true;
         }
-
         return false;
     }
 
-    private boolean isLevelInGroup (String levelGroup, String level) {
-
+    private static boolean isLevelInGroup(String levelGroup, String level) {
         String[] values = levelGroup.split("-");
-        int startIndex =  Levels.indexOf(values[0]);
-        int endIndex =  Levels.indexOf(values[1]);
-
-        int index =  Levels.indexOf(level);
-
+        int startIndex = Levels.indexOf(values[0]);
+        int endIndex = Levels.indexOf(values[1]);
+        int index = Levels.indexOf(level);
         return startIndex <= index && index <= endIndex;
     }
 
+    public static boolean isQuantityFiltered(String filterQuantity, String wordQuantity) {
+        if (ALL.equals(filterQuantity) || Utils.isEmpty(filterQuantity)) {
+            return true;
+        }
+        String normFilter = normalizeQuantity(filterQuantity);
+        String normWord = normalizeQuantity(wordQuantity);
+        return Utils.isEqual(normFilter, normWord);
+    }
+
+    public static String normalizeQuantity(String q) {
+        if (Utils.isEmpty(q) || "0".equals(q.trim())) {
+            return "0";
+        }
+        return q.trim();
+    }
 }

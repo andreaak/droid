@@ -11,12 +11,11 @@ import android.widget.Toast;
 import com.andreaak.cards.R;
 import com.andreaak.cards.adapters.AITextViewAdapter;
 import com.andreaak.cards.configs.AppConfigs;
-import com.andreaak.cards.configs.Lang;
+import com.andreaak.cards.model.Lang;
 import com.andreaak.cards.utils.Cache;
 import com.andreaak.common.activitiesShared.HandleExceptionActivity;
 import com.andreaak.common.utils.Utils;
 
-import org.intellij.lang.annotations.Language;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -35,9 +34,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class OpenAiActivity extends HandleExceptionActivity implements View.OnClickListener {
-
-    private final String modelName = "gpt-4.1-mini";
-    private final String apiKey = "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";//alexandrzpua19
 
     private AutoCompleteTextView editPrompt;
     private AITextViewAdapter lessonsAdapter;
@@ -259,7 +255,8 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
 
         JSONObject root = new JSONObject();
 
-        root.put( "model", modelName);
+        root.put("model", AppConfigs.getInstance().getOpenAiModelName());
+
 
         JSONArray messages = new JSONArray();
 
@@ -282,7 +279,7 @@ public class OpenAiActivity extends HandleExceptionActivity implements View.OnCl
                         )
                         .addHeader(
                                 "Authorization",
-                                "Bearer " + apiKey
+                                "Bearer " + AppConfigs.getInstance().getOpenAiApiKey()
                         )
                         .post(body)
 

@@ -9,6 +9,13 @@
         android:background="#ff00"
         app:showAsAction="always" />
     <item
+        android:id="@+id/spinnerQuantities"
+        android:gravity="right"
+        android:title="Quantities"
+        app:actionViewClass="android.widget.Spinner"
+        android:background="#ff00"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/spinnerWords"
         android:gravity="right"
         android:title="Words"

@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import com.andreaak.common.utils.Utils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class SimpleWordItem extends WordItem implements java.io.Serializable {
@@ -25,26 +26,35 @@ public class SimpleWordItem extends WordItem implements java.io.Serializable {
     }
 
     public String getDisplayName(String lang) {
-        String wc = getWordClass();
-        if(Utils.isEmpty(wc)) {
-            return getValue(lang);
+        String val = getValue(lang);
+        if (Utils.isEmpty(val)) {
+            return null;
         }
-        return (getValue(lang) + " " + wc +
+        String wc = getWordClass();
+        if (Utils.isEmpty(wc)) {
+            return val;
+        }
+        return (val + " " + wc +
                 ("verb".equals(wc) ? (" " + getInfo(lang)) : "")).trim();
     }
 
     public String getRuDisplayName(String lang1, String lang2) {
         String wc = getWordClass();
-        String value = "" ;
-        if(!Utils.isEmpty(wc)) {
+        String value = "";
+        if (!Utils.isEmpty(wc)) {
             value += (wc + ("verb".equals(wc) ? (" " + getInfo(lang2)) : "") + " ");
         }
-        return  value + (getValue(lang2)).trim()  + " " + (getValue(lang1)).trim();
+        String v1 = getValue(lang1);
+        String v2 = getValue(lang2);
+        return value + (v2 != null ? v2.trim() : "") + " " + (v1 != null ? v1.trim() : "");
+    }
+
+    public String getRuDisplayName(String lang2) {
+        return getRuDisplayName(Lang.RU.getCode(), lang2);
     }
 
     public String getDisplayName(String currentLang, String lang1, String lang2) {
-
-        return "ru".equals(currentLang) ? getRuDisplayName(lang1, lang2) : getDisplayName(lang2);
+        return Lang.isRu(currentLang) ? getRuDisplayName(lang1, lang2) : getDisplayName(lang2);
     }
 
     public String getPath() {
@@ -74,28 +84,60 @@ public class SimpleWordItem extends WordItem implements java.io.Serializable {
         }
     }
 
+    private String getPreferredLang() {
+        String[] langs = getLangs();
+        List<String> langList = Arrays.asList(langs);
+        if (langList.contains(Lang.EN.getCode())) {
+            return Lang.EN.getCode();
+        }
+        if (langList.contains(Lang.DE.getCode())) {
+            return Lang.DE.getCode();
+        }
+        if (langs.length > 0) {
+            Arrays.sort(langs);
+            return langs[0];
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SimpleWordItem)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SimpleWordItem)) {
+            return false;
+        }
         SimpleWordItem p = (SimpleWordItem) o;
-        String[] langs = getLangs();
-        Arrays.sort(langs);
-        return getDisplayName(langs[0]).equals(p.getDisplayName(langs[0]));
+
+        String lang1 = getPreferredLang();
+        String lang2 = p.getPreferredLang();
+        if (lang1 == null || lang2 == null) {
+            return false;
+        }
+
+        String name1 = getDisplayName(lang1);
+        String name2 = p.getDisplayName(lang2);
+        return Objects.equals(name1, name2);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public int hashCode() {
-        String[] langs = getLangs();
-        Arrays.sort(langs);
-        return Objects.hash(getDisplayName(langs[0]));
+        String lang = getPreferredLang();
+        if (lang != null) {
+            return Objects.hash(getDisplayName(lang));
+        }
+        return 0;
     }
 
     @Override
     public String toString() {
-        String[] langs = getLangs();
-        Arrays.sort(langs);
-        return getDisplayName(langs[0]);
+        String lang = getPreferredLang();
+        if (lang != null) {
+            String name = getDisplayName(lang);
+            return name != null ? name : "";
+        }
+        return "";
     }
 }

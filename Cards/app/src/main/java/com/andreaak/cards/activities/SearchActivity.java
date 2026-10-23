@@ -12,7 +12,7 @@ import com.andreaak.cards.activities.helpers.SelectSimpleWordHelper;
 import com.andreaak.cards.activities.helpers.SimpleCardActivityHelper;
 import com.andreaak.cards.adapters.SearchTextViewAdapter;
 import com.andreaak.cards.configs.AppConfigs;
-import com.andreaak.cards.configs.Lang;
+import com.andreaak.cards.model.Lang;
 import com.andreaak.cards.model.LanguageItem;
 import com.andreaak.cards.model.SimpleWordItem;
 import com.andreaak.cards.utils.AppUtils;

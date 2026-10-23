@@ -1,6 +1,5 @@
 package com.andreaak.cards.model;
 
-import com.andreaak.cards.configs.Lang;
 import com.andreaak.common.utils.Utils;
 
 import java.io.Serializable;

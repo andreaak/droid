@@ -1,4 +1,4 @@
-package com.andreaak.cards.configs;
+package com.andreaak.cards.model;
 
 public enum Lang {
     DE("de"),
